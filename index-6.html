@@ -1,0 +1,3076 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agerium CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Accent — used sparingly: only active state, key values, status */
+  --accent:#2F6FED;
+  --accent-hi:#5589f5;
+  --accent-dim:rgba(47,111,237,.1);
+
+  /* Status — only for data meaning, never decoration */
+  --s-green:#1FAE6A;
+  --s-green-hi:#2ECC71;
+  --s-orange:#E98128;
+  --s-red:#E74C3C;
+  --s-red-hi:#ff6b6b;
+  --s-yellow:#F1C40F;
+
+  /* Surfaces */
+  --bg:#08080D;
+  --surface:#101016;
+  --raised:#191921;
+  --overlay:#212129;
+
+  /* Borders */
+  --border:rgba(255,255,255,.07);
+  --border-hi:rgba(255,255,255,.14);
+
+  /* Text — monochrome scale */
+  --text:#E8E8F0;
+  --text-2:#888898;
+  --text-3:#454555;
+
+  /* Type */
+  --fd:'Bebas Neue',sans-serif;
+  --fm:'JetBrains Mono',monospace;
+  --fb:'Barlow',sans-serif;
+
+  /* Layout */
+  --sidebar-w:228px;
+  --topbar-h:52px;
+  --radius:10px;
+  --gap:20px;
+
+  /* Legacy aliases — keep old code working */
+  --blue:var(--accent); --blue2:var(--accent-hi); --blue3:#1a4fb5;
+  --blue-hi:var(--accent-hi); --blue-dim:var(--accent-dim);
+  --orange:var(--s-orange); --orange2:#f5973e; --orange-dim:rgba(233,129,40,.1);
+  --green:var(--s-green); --green2:var(--s-green-hi); --green-hi:var(--s-green-hi);
+  --green-dim:rgba(31,174,106,.1);
+  --red:var(--s-red); --red2:var(--s-red-hi); --red-hi:var(--s-red-hi);
+  --red-dim:rgba(231,76,60,.1);
+  --yellow:var(--s-yellow); --yellow-dim:rgba(241,196,15,.1);
+  --bg2:var(--surface); --bg3:var(--raised); --bg4:var(--overlay); --bg5:#28282E;
+  --border2:var(--border-hi);
+  --muted:var(--text-3); --muted2:var(--text-2);
+  --radius-sm:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--fb);overflow:hidden;}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 18% 60%,rgba(47,111,237,0.05)0%,transparent 60%);pointer-events:none;z-index:0;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--overlay);border-radius:5px;}
+a{color:inherit;text-decoration:none;}
+button{cursor:pointer;border:none;font-family:inherit;}
+input,select,textarea{font-family:var(--fb);}
+
+/* ── MATERIAL ICONS ── */
+.mi{font-family:'Material Symbols Rounded';font-size:18px;display:inline-block;vertical-align:middle;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;line-height:1;}
+.mi-sm{font-size:15px;} .mi-lg{font-size:22px;} .mi-xl{font-size:28px;}
+
+/* ── LOGIN ── */
+#loginScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;background-image:radial-gradient(ellipse at 20% 50%,rgba(47,111,237,0.08)0%,transparent 60%);}
+.login-box{background:var(--surface);border:1px solid var(--border-hi);padding:48px 44px;width:380px;text-align:center;border-radius:16px;}
+.login-logo{margin-bottom:6px;display:flex;flex-direction:column;align-items:center;gap:0;}
+.login-logo svg{width:260px;height:auto;}
+.login-sub{font-family:var(--fm);font-size:10px;color:var(--text-3);letter-spacing:3px;margin-bottom:36px;margin-top:10px;text-transform:uppercase;}
+.lf{margin-bottom:14px;text-align:left;}
+.lf label{display:block;font-family:var(--fm);font-size:10px;color:var(--text-3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.lf select,.lf input{width:100%;background:var(--raised);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:14px;padding:11px 13px;outline:none;transition:border-color .2s;border-radius:8px;}
+.lf select:focus,.lf input:focus{border-color:var(--blue);}
+.lf select option{background:var(--raised);}
+.login-btn{width:100%;padding:13px;background:var(--blue);color:#fff;font-family:var(--fm);font-size:11px;letter-spacing:2px;text-transform:uppercase;margin-top:8px;transition:background .2s;border-radius:8px;}
+.login-btn:hover{background:var(--blue-hi);}
+.login-err{color:var(--red);font-family:var(--fm);font-size:10px;margin-top:10px;display:none;}
+
+/* ── APP SHELL ── */
+#app{display:none;height:100vh;flex-direction:row;}
+#app.visible{display:flex;}
+
+/* ── SIDEBAR ── */
+#sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:100;}
+.sb-brand{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.sb-logo{display:flex;align-items:center;}
+.sb-logo svg{width:130px;height:auto;}
+.sb-logo .it{color:var(--blue);} .sb-logo .so{color:var(--orange);} .sb-logo .ai{color:var(--green);}
+.sb-ver{font-family:var(--fm);font-size:9px;color:var(--text-3);letter-spacing:1px;margin-top:2px;}
+.sb-section{padding:16px 12px 4px;}
+.sb-section-lbl{font-family:var(--fm);font-size:9px;color:var(--text-3);letter-spacing:2px;text-transform:uppercase;padding:0 8px;margin-bottom:4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;color:var(--text-2);transition:all .15s;margin-bottom:2px;font-size:13px;font-weight:500;border-radius:8px;border-left:none;user-select:none;}
+.nav-item:hover{background:var(--raised);color:var(--text);}
+.nav-item.active{background:rgba(255,255,255,.06);color:var(--text);}
+.nav-item .mi{font-size:18px;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-family:var(--fm);font-size:9px;font-weight:700;}
+.sb-footer{margin-top:auto;padding:16px 16px;border-top:1px solid var(--border);}
+.sb-user{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.sb-avatar{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:14px;letter-spacing:1px;flex-shrink:0;}
+.sb-uname{font-size:13px;font-weight:700;}
+.sb-urole{font-family:var(--fm);font-size:9px;color:var(--text-3);letter-spacing:1px;margin-top:1px;}
+.sb-sync{display:flex;align-items:center;gap:7px;}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--text-3);flex-shrink:0;}
+.sdot.on{background:var(--green-hi);box-shadow:0 0 6px var(--green-hi);animation:pulse 2s infinite;}
+.sdot.err{background:var(--red);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.slbl{font-family:var(--fm);font-size:9px;color:var(--text-3);letter-spacing:1px;}
+.sb-logout{width:100%;padding:8px;background:transparent;border:1px solid var(--border);color:var(--text-3);font-family:var(--fm);font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-top:10px;border-radius:6px;transition:all .2s;}
+.sb-logout:hover{border-color:var(--red-hi);color:var(--red-hi);}
+
+/* ── MAIN ── */
+#main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOPBAR ── */
+#topbar{height:var(--topbar-h);min-height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:relative;z-index:50;}
+.tb-title{font-family:var(--fd);font-size:22px;letter-spacing:4px;color:var(--text);}
+.tb-actions{margin-left:auto;display:flex;align-items:center;gap:10px;}
+
+/* ── CONTENT ── */
+#content-container{flex:1;overflow-y:auto;padding:24px;position:relative;z-index:1;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── BUTTONS ── */
+.btn{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 16px;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:6px;border-radius:6px;}
+.btn-b{background:var(--blue);color:#fff;border:none;}.btn-b:hover{background:var(--blue-hi);}
+.btn-g{background:transparent;border:1px solid var(--border-hi);color:var(--text-2);border-radius:6px;}.btn-g:hover{border-color:var(--text-2);color:var(--text);}
+.btn-r{background:transparent;border:1px solid rgba(231,76,60,.35);color:var(--red);border-radius:6px;}
+.btn-sm{padding:5px 11px;font-size:9px;}
+.btn-icon{width:34px;height:34px;padding:0;justify-content:center;background:var(--raised);border:1px solid var(--border-hi);color:var(--text-2);border-radius:7px;}
+
+/* ── LAYOUT ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--gap);}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+.gap{margin-bottom:var(--gap);}
+.sec{font-family:var(--fd);font-size:13px;letter-spacing:4px;color:var(--text-3);margin:24px 0 14px;display:flex;align-items:center;gap:12px;}
+.sec::after{content:'';flex:1;height:1px;background:var(--border);}
+.page-header{margin-bottom:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;}
+.page-header h1{font-family:var(--fd);font-size:26px;letter-spacing:4px;}
+.page-header p{font-family:var(--fm);font-size:10px;color:var(--text-3);letter-spacing:1px;margin-top:6px;}
+.page-actions{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+
+/* ── CARD / STAT ── */
+.card{background:var(--surface);border:1px solid var(--border);padding:20px 22px;border-radius:var(--radius);}
+.ch{font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--text-3);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.ch::before{content:'';width:3px;height:10px;background:var(--border-hi);border-radius:2px;}
+.stat{background:var(--surface);border:1px solid var(--border);padding:16px 18px;border-radius:var(--radius);}
+.sv{font-family:var(--fd);font-size:26px;line-height:1;margin-bottom:4px;}
+.sl{font-family:var(--fm);font-size:10px;color:var(--text-3);letter-spacing:1px;}
+
+/* ── KPI CARDS ── */
+.kpi{background:var(--surface);border:1px solid var(--border);padding:20px 22px;position:relative;overflow:hidden;transition:border-color .2s;border-radius:var(--radius);}
+.kpi:hover{border-color:var(--border-hi);}
+.kpi .kpi-icon{position:absolute;right:16px;top:16px;opacity:0.1;font-family:'Material Symbols Rounded';font-size:40px;font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24;}
+.kpi-label{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--text-3);text-transform:uppercase;margin-bottom:10px;}
+.kpi-value{font-family:var(--fd);font-size:30px;letter-spacing:-0.5px;line-height:1;}
+.kpi-sub{font-family:var(--fm);font-size:10px;color:var(--text-2);margin-top:6px;}
+.kpi-delta{display:inline-flex;align-items:center;gap:3px;font-family:var(--fm);font-size:9px;font-weight:600;padding:3px 8px;border-radius:10px;margin-top:6px;}
+.kpi-delta.up{background:rgba(255,255,255,.06);color:var(--text-2);}
+.kpi-delta.warn{background:rgba(255,255,255,.06);color:var(--text-2);}
+
+/* ── TAGS / BADGES ── */
+.tag{display:inline-flex;align-items:center;gap:3px;padding:2px 9px;border-radius:20px;font-family:var(--fm);font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
+.tag-blue{background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border-hi);}
+.tag-green{background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border-hi);}
+.tag-orange{background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border-hi);}
+.tag-red{background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border-hi);}
+.tag-gray{background:rgba(255,255,255,.04);color:var(--text-2);border:1px solid var(--border);}
+.pillar-it{background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border-hi);font-family:var(--fm);font-size:9px;padding:2px 9px;letter-spacing:.5px;border-radius:20px;}
+.pillar-socials{background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border-hi);font-family:var(--fm);font-size:9px;padding:2px 9px;letter-spacing:.5px;border-radius:20px;}
+.pillar-ai{background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border-hi);font-family:var(--fm);font-size:9px;padding:2px 9px;letter-spacing:.5px;border-radius:20px;}
+
+/* ── STAGE PILLS ── */
+.sp{font-family:var(--fm);font-size:9px;letter-spacing:.5px;padding:3px 10px;text-transform:uppercase;white-space:nowrap;border-radius:20px;}
+.s-neu{background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border);}
+.s-kontakt{background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border-hi);}
+.s-angebot{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border-hi);}
+.s-verhandlung{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--border-hi);}
+.s-closed{background:rgba(31,174,106,.12);color:var(--s-green-hi);border:1px solid rgba(31,174,106,.25);}
+.s-lost{background:rgba(231,76,60,.1);color:var(--s-red-hi);border:1px solid rgba(231,76,60,.2);}
+
+/* ── TABLES ── */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--text-3);text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);cursor:pointer;white-space:nowrap;}
+td{padding:12px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle;color:var(--text-2);}
+td.td-main{color:var(--text);font-weight:700;}
+tr:hover td{background:rgba(255,255,255,.02);}
+tbody tr:last-child td{border-bottom:none;}
+
+/* ── MODAL ── */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);}
+.mbg.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border-hi);width:580px;max-width:100%;max-height:92vh;overflow-y:auto;border-radius:12px;}
+.mh{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.mt2{font-family:var(--fd);font-size:18px;letter-spacing:3px;color:var(--text);}
+.mcl{background:transparent;border:1px solid var(--border);color:var(--text-2);width:28px;height:28px;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all .15s;}
+.mcl:hover{border-color:var(--red);color:var(--red);}
+.mbody{padding:22px;}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--text-3);text-transform:uppercase;margin-bottom:6px;}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--raised);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:13px;padding:9px 12px;outline:none;transition:border-color .2s;border-radius:6px;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue);}
+.fg select option{background:var(--raised);}
+.fgr{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.mf{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.radio-group{display:flex;gap:0;border-radius:6px;overflow:hidden;}
+.radio-opt{flex:1;text-align:center;padding:9px;border:1px solid var(--border);font-family:var(--fm);font-size:10px;letter-spacing:1px;cursor:pointer;color:var(--text-2);transition:all .2s;}
+.radio-opt.active{background:rgba(255,255,255,.08);border-color:var(--border-hi);color:var(--text);}
+
+/* ── KANBAN ── */
+.kanban-wrap{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;}
+.kcol{background:var(--surface);border:1px solid var(--border);min-width:220px;width:220px;flex-shrink:0;border-radius:10px;overflow:hidden;}
+.kcol-h{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.kcol-t{font-family:var(--fm);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-2);}
+.kcol-n{font-family:var(--fm);font-size:10px;color:var(--text-3);}
+.kcol-b{padding:10px;display:flex;flex-direction:column;gap:7px;min-height:140px;}
+.cc{background:var(--raised);border:1px solid var(--border);padding:11px 12px;cursor:pointer;transition:all .18s;border-left:3px solid transparent;border-radius:7px;}
+.cc:hover{border-color:rgba(47,111,237,.35);border-left-color:var(--blue);}
+.cc.new-lead{border-left-color:var(--green-hi);animation:newl 3s ease-out forwards;}
+@keyframes newl{0%{background:rgba(31,174,106,.12);}100%{background:var(--raised);}}
+.ccn{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.ccs{font-size:10px;color:var(--text-2);margin-bottom:4px;}
+.ccv{font-family:var(--fd);font-size:16px;color:var(--text);}
+.ccm{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;}
+.cct{font-family:var(--fm);font-size:8px;letter-spacing:.5px;padding:2px 7px;text-transform:uppercase;border-radius:10px;}
+.kanban-add{width:100%;padding:9px;background:transparent;border:1px dashed var(--border);color:var(--text-3);font-family:var(--fm);font-size:9px;letter-spacing:1px;cursor:pointer;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .2s;border-radius:7px;}
+.kanban-add:hover{background:var(--overlay);color:var(--text);border-style:solid;border-color:var(--border-hi);}
+
+/* ── KUNDENKARTE ── */
+.kcard{background:var(--surface);border:1px solid var(--border);overflow:hidden;margin-bottom:16px;transition:border-color .2s;border-radius:10px;}
+.kcard:hover{border-color:rgba(47,111,237,.25);}
+.kprio-bar{height:3px;}
+.kprio-1 .kprio-bar{background:var(--text-2);}
+.kprio-2 .kprio-bar{background:var(--border-hi);}
+.kprio-3 .kprio-bar{background:var(--border);}
+.kh{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.kh-left{flex:1;min-width:0;}
+.kname{font-family:var(--fd);font-size:20px;letter-spacing:2px;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.kmeta{font-family:var(--fm);font-size:10px;color:var(--text-2);letter-spacing:1px;margin-top:5px;}
+.kh-right{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.kbadge{font-family:var(--fm);font-size:9px;padding:3px 9px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:20px;}
+.kbadge-pct{color:var(--orange);} .kbadge-fix{color:var(--blue);}
+.kprog-wrap{padding:12px 18px;border-bottom:1px solid var(--border);}
+.kprog-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.kprog-lbl{font-family:var(--fm);font-size:10px;color:var(--text-3);letter-spacing:1px;}
+.kprog-pct{font-family:var(--fd);font-size:18px;}
+.kprog-track{height:5px;background:rgba(255,255,255,.06);border-radius:5px;position:relative;overflow:hidden;}
+.kprog-fill{height:100%;background:var(--text-2);transition:width .5s ease;border-radius:5px;}
+.kdates{display:flex;gap:18px;margin-top:8px;}
+.kdate{font-family:var(--fm);font-size:10px;}
+.kdate-lbl{color:var(--text-3);margin-right:5px;}
+.kdate-val{color:var(--text-2);} .kdate-val.overdue{color:var(--red);}
+.kbody{padding:14px 18px;}
+.kstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.ks{background:var(--raised);padding:10px 11px;border-radius:7px;}
+.ks-l{font-family:var(--fm);font-size:10px;color:var(--text-3);letter-spacing:.5px;margin-bottom:4px;}
+.ks input{background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:var(--fd);font-size:18px;width:100%;outline:none;line-height:1;}
+.ks input:focus{border-bottom-color:var(--blue);}
+.kbill{display:flex;gap:10px;align-items:center;margin-bottom:10px;padding:10px 13px;background:var(--raised);border-left:3px solid var(--border-hi);border-radius:7px;}
+.kbill-lbl{font-family:var(--fm);font-size:10px;color:var(--text-3);letter-spacing:.5px;min-width:80px;}
+.kbill-val{font-size:13px;font-weight:700;color:var(--text);}
+.kbill-anteil{font-family:var(--fd);font-size:20px;color:var(--text);margin-left:auto;}
+.kpaket{font-family:var(--fm);font-size:9px;letter-spacing:.5px;padding:3px 10px;background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border-hi);display:inline-block;margin-bottom:10px;border-radius:20px;}
+.kmbox{background:var(--raised);border-left:3px solid var(--border-hi);padding:10px 13px;font-size:12px;line-height:1.6;color:var(--text-2);margin-bottom:10px;border-radius:7px;}
+.kmbox strong{display:block;font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--text-3);margin-bottom:4px;}
+.ktodo-section{border-top:1px solid var(--border);padding:14px 18px;}
+.ktodo-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.ktodo-title{font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--text-3);text-transform:uppercase;}
+.ktodo-progress{font-family:var(--fm);font-size:10px;color:var(--green-hi);}
+.todo-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.todo-item:last-child{border-bottom:none;}
+.todo-cb{width:16px;height:16px;border:1.5px solid var(--border-hi);background:transparent;cursor:pointer;flex-shrink:0;appearance:none;-webkit-appearance:none;position:relative;transition:all .15s;border-radius:4px;}
+.todo-cb:checked{background:var(--text-2);border-color:var(--text-2);}
+.todo-cb:checked::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--bg);font-weight:700;line-height:16px;text-align:center;}
+.todo-text{font-size:12px;flex:1;cursor:pointer;transition:color .15s;}
+.todo-text.done{color:var(--text-3);text-decoration:line-through;}
+.todo-del{background:none;border:none;color:var(--text-3);cursor:pointer;font-size:14px;padding:0 4px;transition:color .15s;}
+.todo-del:hover{color:var(--red);}
+.todo-add{display:flex;gap:8px;margin-top:10px;}
+.todo-input{flex:1;background:var(--raised);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none;border-radius:6px;}
+.todo-input:focus{border-color:var(--blue);}
+.kfoot{padding:11px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.lohnt-sel{background:var(--raised);border:1px solid var(--border);color:var(--text);font-family:var(--fm);font-size:10px;letter-spacing:.5px;padding:5px 10px;cursor:pointer;outline:none;border-radius:6px;}
+
+/* ── PROGRESS BAR ── */
+.progress-bar{height:5px;background:var(--overlay);border-radius:5px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:5px;transition:width .5s ease;background:var(--text-2)!important;}
+
+/* ── PROJ CARD ── */
+.proj-card{background:var(--surface);border:1px solid var(--border);padding:20px;transition:all .2s;cursor:pointer;border-radius:10px;}
+.proj-card:hover{border-color:rgba(47,111,237,.3);transform:translateY(-2px);}
+.proj-name{font-family:var(--fd);font-size:18px;letter-spacing:2px;margin-bottom:7px;}
+.proj-client{font-family:var(--fm);font-size:10px;color:var(--text-2);letter-spacing:.5px;margin-bottom:12px;display:flex;align-items:center;gap:5px;}
+.proj-footer{display:flex;gap:7px;align-items:center;margin-top:12px;}
+
+/* ── SOCIAL / CONTENT ── */
+.content-card{background:var(--surface);border:1px solid var(--border);padding:16px 18px;transition:border-color .2s;border-radius:10px;cursor:pointer;}
+.content-card:hover{border-color:rgba(47,111,237,.25);}
+.content-card .cc-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px;}
+.content-card .cc-meta{font-family:var(--fm);font-size:10px;color:var(--text-2);letter-spacing:.5px;margin-bottom:10px;}
+.content-card .cc-footer{display:flex;gap:7px;align-items:center;}
+
+/* ── STRIPE / PAYMENTS ── */
+.pay-item{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.pay-item:last-child{border-bottom:none;}
+
+/* ── OVERDUE BANNER ── */
+#overdueBar{display:none;background:rgba(231,76,60,.07);border:1px solid rgba(231,76,60,.2);border-left:4px solid var(--red);padding:14px 18px;margin-bottom:16px;border-radius:8px;}
+.ob-title{font-family:var(--fm);font-size:10px;color:var(--red);letter-spacing:1.5px;margin-bottom:8px;}
+
+/* ── CHART BARS ── */
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:8px;height:90px;padding:0 4px;}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.chart-bar{width:100%;background:rgba(47,111,237,.25);border-radius:3px 3px 0 0;transition:background .2s;cursor:pointer;}
+.chart-bar:hover{background:rgba(47,111,237,.5);}
+.chart-bar.current{background:var(--blue);}
+.chart-bar-label{font-family:var(--fm);font-size:8px;color:var(--muted);}
+
+/* ── KONTROLLE ── */
+.verd{margin-top:14px;padding:14px 18px;border:1px solid var(--border);display:none;border-radius:8px;}
+.verd.show{display:block;}
+.vl{font-family:var(--fd);font-size:20px;letter-spacing:3px;margin-bottom:6px;}
+.vs{font-size:12px;color:var(--text-2);}
+.topk-item{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);}
+.topk-item:last-child{border-bottom:none;}
+.topk-rank{font-family:var(--fd);font-size:18px;color:var(--text-3);width:22px;}
+.topk-name{font-size:13px;font-weight:600;flex:1;}
+.topk-val{font-family:var(--fm);font-size:11px;color:var(--text-2);}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap;}
+.cflt{font-family:var(--fm);font-size:10px;letter-spacing:.5px;padding:7px 13px;background:var(--raised);border:1px solid var(--border);color:var(--text-2);cursor:pointer;transition:all .18s;border-radius:20px;}
+.cflt:hover,.cflt.active{border-color:var(--border-hi);color:var(--text);background:rgba(255,255,255,.07);}
+.csearch{background:var(--raised);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:13px;padding:8px 14px;outline:none;flex:1;min-width:180px;border-radius:8px;}
+.csearch:focus{border-color:var(--blue);}
+
+/* ── SYNC LOG ── */
+.sync-log{background:var(--raised);border:1px solid var(--border);padding:10px 14px;max-height:300px;overflow-y:auto;font-family:var(--fm);font-size:10px;border-radius:8px;}
+.li{display:flex;gap:12px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.03);}
+.lt{color:var(--text-3);flex-shrink:0;}
+.lok{color:var(--green-hi);} .lerr{color:var(--red);} .lwarn{color:var(--yellow);}
+.surl{width:100%;background:var(--raised);border:1px solid var(--border);color:var(--text);font-family:var(--fm);font-size:11px;padding:8px 12px;outline:none;border-radius:6px;}
+.surl:focus{border-color:var(--green-hi);}
+
+/* ── NOTIF TOAST ── */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--surface);border:1px solid var(--border-hi);padding:11px 22px;font-family:var(--fm);font-size:11px;letter-spacing:1px;z-index:9000;pointer-events:none;opacity:0;transition:all .25s;white-space:nowrap;border-radius:8px;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── NOTIF BAR ── */
+#notifBar{position:fixed;bottom:24px;right:24px;z-index:8000;display:flex;flex-direction:column;gap:10px;max-width:320px;}
+.notif{background:var(--surface);border:1px solid var(--border-hi);border-left:3px solid var(--blue);padding:14px 16px 14px 14px;font-size:12px;border-radius:10px;animation:slideIn .3s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:translateX(0);}}
+.ntit{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--blue);margin-bottom:5px;}
+.ncl{position:absolute;top:10px;right:10px;background:none;border:none;color:var(--text-3);cursor:pointer;font-size:12px;}
+
+/* ── ACTIVITY TRACKER ── */
+.act-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.act-row:last-child{border-bottom:none;}
+.act-lbl{font-size:13px;}
+.act-controls{display:flex;align-items:center;gap:10px;}
+.act-input{background:var(--raised);border:1px solid var(--border);color:var(--text);font-family:var(--fm);font-size:13px;width:70px;padding:5px 8px;outline:none;text-align:right;border-radius:6px;}
+.act-input:focus{border-color:var(--blue);}
+.act-bar-wrap{width:90px;height:5px;background:var(--overlay);border-radius:5px;}
+.act-bar-fill{height:100%;background:var(--blue);transition:width .3s;border-radius:5px;}
+
+/* ── WOCHENPLAN ── */
+.wplan{display:grid;grid-template-columns:80px repeat(5,1fr);gap:0;border:1px solid var(--border);overflow:hidden;border-radius:10px;}
+.wph{font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--text-2);padding:10px 8px;background:var(--raised);border-bottom:1px solid var(--border);text-transform:uppercase;text-align:center;}
+.wph.day{color:var(--text);} .wph.today{color:var(--orange);font-weight:700;}
+.ws{padding:5px 6px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);min-height:38px;}
+.ws.tc{font-family:var(--fm);font-size:10px;color:var(--text-3);background:var(--raised);display:flex;align-items:center;justify-content:center;letter-spacing:.5px;}
+.wb{border-radius:4px;padding:4px 7px;font-size:10px;line-height:1.4;height:100%;display:flex;align-items:center;}
+.wb-r{background:rgba(31,174,106,.12);color:var(--green-hi);border-left:2px solid var(--green-hi);}
+.wb-o{background:rgba(47,111,237,.1);color:var(--blue);border-left:2px solid var(--blue);}
+.wb-k{background:rgba(233,129,40,.1);color:var(--orange);border-left:2px solid var(--orange);}
+.wb-d{background:rgba(255,255,255,.04);color:var(--text-3);border-left:2px solid var(--text-3);}
+
+/* ── SETTINGS ── */
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+.settings-row:last-child{border-bottom:none;}
+.settings-info h4{font-size:13px;font-weight:600;margin-bottom:4px;}
+.settings-info p{font-family:var(--fm);font-size:10px;color:var(--text-3);letter-spacing:.5px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  #sidebar{position:fixed;left:-220px;transition:left .25s ease;z-index:500;}
+  #sidebar.open{left:0;}
+  .g4{grid-template-columns:1fr 1fr!important;}
+  .g3{grid-template-columns:1fr 1fr!important;}
+  .g5{grid-template-columns:1fr 1fr!important;}
+  #mobileMenuBtn{display:flex!important;}
+}
+@media(max-width:580px){
+  .g2,.g3,.g4,.g5{grid-template-columns:1fr!important;}
+  #content-container{padding:12px!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 218 36" fill="none">
+        <g transform="translate(0, 0)">
+          <g fill="#ffffff">
+            <g transform="translate(0.599656, 23.539463) scale(0.88)"><path d="M 1.09375 0 L 11.59375 -20.984375 L 15.1875 -20.984375 L 25.71875 0 L 21.875 0 L 20.15625 -3.375 L 6.625 -3.375 L 4.90625 0 Z M 13.390625 -16.703125 L 8.1875 -6.46875 L 18.59375 -6.46875 Z"/></g>
+            <g transform="translate(33.538526, 23.539463) scale(0.88)"><path d="M 22.90625 -11.296875 L 22.90625 0 L 21.046875 0 L 20.21875 -2.015625 C 19.3125 -1.160156 18.253906 -0.515625 17.046875 -0.078125 C 15.847656 0.347656 14.597656 0.5625 13.296875 0.5625 C 11.960938 0.5625 10.613281 0.335938 9.25 -0.109375 C 7.894531 -0.566406 6.644531 -1.25 5.5 -2.15625 C 4.351562 -3.0625 3.4375 -4.195312 2.75 -5.5625 C 2.0625 -6.9375 1.71875 -8.53125 1.71875 -10.34375 C 1.71875 -12.15625 2.066406 -13.742188 2.765625 -15.109375 C 3.460938 -16.484375 4.378906 -17.625 5.515625 -18.53125 C 6.648438 -19.4375 7.898438 -20.113281 9.265625 -20.5625 C 10.640625 -21.019531 11.984375 -21.25 13.296875 -21.25 C 15.253906 -21.25 17.085938 -20.863281 18.796875 -20.09375 C 20.515625 -19.332031 21.925781 -18.234375 23.03125 -16.796875 L 20.1875 -14.484375 C 19.40625 -15.492188 18.390625 -16.285156 17.140625 -16.859375 C 15.898438 -17.441406 14.660156 -17.734375 13.421875 -17.734375 C 11.679688 -17.734375 10.222656 -17.375 9.046875 -16.65625 C 7.878906 -15.9375 7.003906 -15.015625 6.421875 -13.890625 C 5.847656 -12.765625 5.5625 -11.582031 5.5625 -10.34375 C 5.5625 -9.125 5.847656 -7.945312 6.421875 -6.8125 C 7.003906 -5.675781 7.878906 -4.75 9.046875 -4.03125 C 10.222656 -3.3125 11.679688 -2.953125 13.421875 -2.953125 C 14.703125 -2.953125 15.785156 -3.203125 16.671875 -3.703125 C 17.554688 -4.210938 18.226562 -4.882812 18.6875 -5.71875 C 19.15625 -6.5625 19.390625 -7.472656 19.390625 -8.453125 L 19.390625 -8.8125 L 14.09375 -8.8125 L 14.09375 -11.296875 Z"/></g>
+            <g transform="translate(64.141615, 23.539463) scale(0.88)"><path d="M 5.890625 -3.109375 L 20.71875 -3.109375 L 20.71875 0 L 2.28125 0 L 2.28125 -20.6875 L 20.546875 -20.6875 L 20.546875 -17.59375 L 5.890625 -17.59375 L 5.890625 -11.90625 L 18.53125 -11.90625 L 18.53125 -8.8125 L 5.890625 -8.8125 Z"/></g>
+            <g transform="translate(92.468049, 23.539463) scale(0.88)"><path d="M 2.28125 0 L 2.28125 -20.6875 L 14.421875 -20.6875 C 15.921875 -20.6875 17.164062 -20.382812 18.15625 -19.78125 C 19.15625 -19.1875 19.898438 -18.414062 20.390625 -17.46875 C 20.890625 -16.519531 21.140625 -15.523438 21.140625 -14.484375 C 21.140625 -13.640625 20.96875 -12.816406 20.625 -12.015625 C 20.289062 -11.210938 19.789062 -10.503906 19.125 -9.890625 C 18.457031 -9.285156 17.609375 -8.847656 16.578125 -8.578125 L 23.359375 0 L 18.796875 0 L 12.625 -8.3125 L 5.890625 -8.3125 L 5.890625 0 Z M 5.890625 -17.5625 L 5.890625 -11.4375 L 13.78125 -11.4375 C 14.976562 -11.4375 15.875 -11.75 16.46875 -12.375 C 17.070312 -13.007812 17.375 -13.710938 17.375 -14.484375 C 17.375 -15.253906 17.070312 -15.957031 16.46875 -16.59375 C 15.875 -17.238281 14.976562 -17.5625 13.78125 -17.5625 Z"/></g>
+            <g transform="translate(122.952874, 23.539463) scale(0.88)"><path d="M 2.28125 0 L 2.28125 -20.6875 L 5.890625 -20.6875 L 5.890625 0 Z"/></g>
+            <g transform="translate(137.235044, 23.539463) scale(0.88)"><path d="M 1.984375 -8.1875 L 1.984375 -20.6875 L 5.59375 -20.6875 L 5.59375 -8.1875 C 5.59375 -6.988281 5.910156 -5.988281 6.546875 -5.1875 C 7.191406 -4.382812 8.015625 -3.785156 9.015625 -3.390625 C 10.023438 -3.003906 11.070312 -2.8125 12.15625 -2.8125 C 13.257812 -2.8125 14.304688 -3.003906 15.296875 -3.390625 C 16.296875 -3.785156 17.113281 -4.382812 17.75 -5.1875 C 18.394531 -5.988281 18.71875 -6.988281 18.71875 -8.1875 L 18.71875 -20.6875 L 22.3125 -20.6875 L 22.3125 -8.1875 C 22.3125 -6.707031 22.023438 -5.40625 21.453125 -4.28125 C 20.890625 -3.15625 20.117188 -2.222656 19.140625 -1.484375 C 18.160156 -0.753906 17.070312 -0.203125 15.875 0.171875 C 14.675781 0.546875 13.4375 0.734375 12.15625 0.734375 C 10.894531 0.734375 9.65625 0.546875 8.4375 0.171875 C 7.226562 -0.203125 6.132812 -0.753906 5.15625 -1.484375 C 4.175781 -2.222656 3.398438 -3.15625 2.828125 -4.28125 C 2.265625 -5.40625 1.984375 -6.707031 1.984375 -8.1875 Z"/></g>
+            <g transform="translate(167.6903, 23.539463) scale(0.88)"><path d="M 2.28125 0 L 2.28125 -20.6875 L 5.890625 -20.6875 L 14.984375 -5.078125 L 24.0625 -20.6875 L 27.703125 -20.6875 L 27.703125 0 L 24.0625 0 L 24.0625 -14.421875 L 15.640625 0 L 14.3125 0 L 5.890625 -14.421875 L 5.890625 0 Z"/></g>
+          </g>
+          <line x1="0.5" y1="27" x2="72.5" y2="27" stroke="#2f6ed0" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="73" y1="27" x2="145" y2="27" stroke="#e98128" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="145.5" y1="27" x2="217.5" y2="27" stroke="#1fae6a" stroke-width="3.5" stroke-linecap="round"/>
+          <text x="109" y="35" font-family="'Montserrat',Arial,sans-serif" font-weight="600" font-size="5.5" fill="white" text-anchor="middle" letter-spacing="2" opacity="0.65">IT · SOCIALS · AI</text>
+        </g>
+      </svg>
+    </div>
+    <div class="lf"><label>Benutzer</label><select id="loginUser"></select></div>
+    <div class="lf"><label>PIN</label><input type="password" id="loginPin" placeholder="••••" maxlength="6" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="login-btn" onclick="doLogin()">EINLOGGEN</button>
+    <div class="login-err" id="loginErr">Falscher PIN. Erneut versuchen.</div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sb-brand">
+      <div>
+        <div class="sb-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 218 30" fill="none">
+            <g fill="#ffffff">
+              <g transform="translate(0.599656, 23.539463) scale(0.88)"><path d="M 1.09375 0 L 11.59375 -20.984375 L 15.1875 -20.984375 L 25.71875 0 L 21.875 0 L 20.15625 -3.375 L 6.625 -3.375 L 4.90625 0 Z M 13.390625 -16.703125 L 8.1875 -6.46875 L 18.59375 -6.46875 Z"/></g>
+              <g transform="translate(33.538526, 23.539463) scale(0.88)"><path d="M 22.90625 -11.296875 L 22.90625 0 L 21.046875 0 L 20.21875 -2.015625 C 19.3125 -1.160156 18.253906 -0.515625 17.046875 -0.078125 C 15.847656 0.347656 14.597656 0.5625 13.296875 0.5625 C 11.960938 0.5625 10.613281 0.335938 9.25 -0.109375 C 7.894531 -0.566406 6.644531 -1.25 5.5 -2.15625 C 4.351562 -3.0625 3.4375 -4.195312 2.75 -5.5625 C 2.0625 -6.9375 1.71875 -8.53125 1.71875 -10.34375 C 1.71875 -12.15625 2.066406 -13.742188 2.765625 -15.109375 C 3.460938 -16.484375 4.378906 -17.625 5.515625 -18.53125 C 6.648438 -19.4375 7.898438 -20.113281 9.265625 -20.5625 C 10.640625 -21.019531 11.984375 -21.25 13.296875 -21.25 C 15.253906 -21.25 17.085938 -20.863281 18.796875 -20.09375 C 20.515625 -19.332031 21.925781 -18.234375 23.03125 -16.796875 L 20.1875 -14.484375 C 19.40625 -15.492188 18.390625 -16.285156 17.140625 -16.859375 C 15.898438 -17.441406 14.660156 -17.734375 13.421875 -17.734375 C 11.679688 -17.734375 10.222656 -17.375 9.046875 -16.65625 C 7.878906 -15.9375 7.003906 -15.015625 6.421875 -13.890625 C 5.847656 -12.765625 5.5625 -11.582031 5.5625 -10.34375 C 5.5625 -9.125 5.847656 -7.945312 6.421875 -6.8125 C 7.003906 -5.675781 7.878906 -4.75 9.046875 -4.03125 C 10.222656 -3.3125 11.679688 -2.953125 13.421875 -2.953125 C 14.703125 -2.953125 15.785156 -3.203125 16.671875 -3.703125 C 17.554688 -4.210938 18.226562 -4.882812 18.6875 -5.71875 C 19.15625 -6.5625 19.390625 -7.472656 19.390625 -8.453125 L 19.390625 -8.8125 L 14.09375 -8.8125 L 14.09375 -11.296875 Z"/></g>
+              <g transform="translate(64.141615, 23.539463) scale(0.88)"><path d="M 5.890625 -3.109375 L 20.71875 -3.109375 L 20.71875 0 L 2.28125 0 L 2.28125 -20.6875 L 20.546875 -20.6875 L 20.546875 -17.59375 L 5.890625 -17.59375 L 5.890625 -11.90625 L 18.53125 -11.90625 L 18.53125 -8.8125 L 5.890625 -8.8125 Z"/></g>
+              <g transform="translate(92.468049, 23.539463) scale(0.88)"><path d="M 2.28125 0 L 2.28125 -20.6875 L 14.421875 -20.6875 C 15.921875 -20.6875 17.164062 -20.382812 18.15625 -19.78125 C 19.15625 -19.1875 19.898438 -18.414062 20.390625 -17.46875 C 20.890625 -16.519531 21.140625 -15.523438 21.140625 -14.484375 C 21.140625 -13.640625 20.96875 -12.816406 20.625 -12.015625 C 20.289062 -11.210938 19.789062 -10.503906 19.125 -9.890625 C 18.457031 -9.285156 17.609375 -8.847656 16.578125 -8.578125 L 23.359375 0 L 18.796875 0 L 12.625 -8.3125 L 5.890625 -8.3125 L 5.890625 0 Z M 5.890625 -17.5625 L 5.890625 -11.4375 L 13.78125 -11.4375 C 14.976562 -11.4375 15.875 -11.75 16.46875 -12.375 C 17.070312 -13.007812 17.375 -13.710938 17.375 -14.484375 C 17.375 -15.253906 17.070312 -15.957031 16.46875 -16.59375 C 15.875 -17.238281 14.976562 -17.5625 13.78125 -17.5625 Z"/></g>
+              <g transform="translate(122.952874, 23.539463) scale(0.88)"><path d="M 2.28125 0 L 2.28125 -20.6875 L 5.890625 -20.6875 L 5.890625 0 Z"/></g>
+              <g transform="translate(137.235044, 23.539463) scale(0.88)"><path d="M 1.984375 -8.1875 L 1.984375 -20.6875 L 5.59375 -20.6875 L 5.59375 -8.1875 C 5.59375 -6.988281 5.910156 -5.988281 6.546875 -5.1875 C 7.191406 -4.382812 8.015625 -3.785156 9.015625 -3.390625 C 10.023438 -3.003906 11.070312 -2.8125 12.15625 -2.8125 C 13.257812 -2.8125 14.304688 -3.003906 15.296875 -3.390625 C 16.296875 -3.785156 17.113281 -4.382812 17.75 -5.1875 C 18.394531 -5.988281 18.71875 -6.988281 18.71875 -8.1875 L 18.71875 -20.6875 L 22.3125 -20.6875 L 22.3125 -8.1875 C 22.3125 -6.707031 22.023438 -5.40625 21.453125 -4.28125 C 20.890625 -3.15625 20.117188 -2.222656 19.140625 -1.484375 C 18.160156 -0.753906 17.070312 -0.203125 15.875 0.171875 C 14.675781 0.546875 13.4375 0.734375 12.15625 0.734375 C 10.894531 0.734375 9.65625 0.546875 8.4375 0.171875 C 7.226562 -0.203125 6.132812 -0.753906 5.15625 -1.484375 C 4.175781 -2.222656 3.398438 -3.15625 2.828125 -4.28125 C 2.265625 -5.40625 1.984375 -6.707031 1.984375 -8.1875 Z"/></g>
+              <g transform="translate(167.6903, 23.539463) scale(0.88)"><path d="M 2.28125 0 L 2.28125 -20.6875 L 5.890625 -20.6875 L 14.984375 -5.078125 L 24.0625 -20.6875 L 27.703125 -20.6875 L 27.703125 0 L 24.0625 0 L 24.0625 -14.421875 L 15.640625 0 L 14.3125 0 L 5.890625 -14.421875 L 5.890625 0 Z"/></g>
+            </g>
+            <line x1="0.5" y1="27" x2="72.5" y2="27" stroke="#2f6ed0" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="73" y1="27" x2="145" y2="27" stroke="#e98128" stroke-width="3.5" stroke-linecap="round"/>
+            <line x1="145.5" y1="27" x2="217.5" y2="27" stroke="#1fae6a" stroke-width="3.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="sb-ver">CRM v5.2</div>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-section-lbl">Übersicht</div>
+      <div class="nav-item active" id="nav-cockpit" onclick="switchTab('cockpit')"><span class="mi">dashboard</span> Cockpit</div>
+      <div class="nav-item" id="nav-kontrolle" onclick="switchTab('kontrolle')"><span class="mi">analytics</span> Kontrolle <span class="nav-badge" id="reminderBadge" style="display:none">0</span></div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-section-lbl">Sales</div>
+      <div class="nav-item" id="nav-crm" onclick="switchTab('crm')"><span class="mi">track_changes</span> CRM Pipeline</div>
+      <div class="nav-item" id="nav-kunden" onclick="switchTab('kunden')"><span class="mi">people</span> Kunden</div>
+      <div class="nav-item" id="nav-projekte" onclick="switchTab('projekte')"><span class="mi">work</span> Projekte</div>
+    </div>
+
+    <div class="sb-section" id="sb-section-biz">
+      <div class="sb-section-lbl">Business</div>
+      <div class="nav-item" id="nav-finanzen" onclick="switchTab('finanzen')"><span class="mi">payments</span> Finanzen</div>
+      <div class="nav-item" id="nav-social" onclick="switchTab('social')"><span class="mi">trending_up</span> Social Media</div>
+      <div class="nav-item" id="nav-wochenplan" onclick="switchTab('wochenplan')"><span class="mi">calendar_month</span> Wochenplan</div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-section-lbl">System</div>
+      <div class="nav-item" id="nav-sheets" onclick="switchTab('sheets')"><span class="mi">sync</span> Google Sheets</div>
+      <div class="nav-item" id="nav-dokumente" onclick="switchTab('dokumente')"><span class="mi">description</span> Dokumente</div>
+      <div class="nav-item" id="nav-integrationen" onclick="switchTab('integrationen')"><span class="mi">hub</span> Integrationen</div>
+      <div class="nav-item" id="nav-settings" onclick="switchTab('settings')"><span class="mi">settings</span> Einstellungen</div>
+    </div>
+
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="sbAvatar" style="background:var(--blue)">SA</div>
+        <div>
+          <div class="sb-uname" id="sbName">Sonif Anwar</div>
+          <div class="sb-urole" id="sbRole">ADMIN</div>
+        </div>
+      </div>
+      <div class="sb-sync">
+        <div class="sdot" id="sdotSb"></div>
+        <span class="slbl" id="syncLbl">OFFLINE</span>
+      </div>
+      <button class="sb-logout" onclick="doLogout()">LOGOUT</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="topbar">
+      <button class="btn btn-icon" id="mobileMenuBtn" onclick="document.getElementById('sidebar').classList.toggle('open')" style="display:none"><span class="mi">menu</span></button>
+      <span class="tb-title" id="topbarTitle">COCKPIT</span>
+      <div class="tb-actions">
+        <button class="btn btn-b btn-sm" onclick="switchTab('crm');openLeadModal()"><span class="mi mi-sm">add</span> LEAD</button>
+        <button class="btn btn-g btn-sm" onclick="showReminders()"><span class="mi mi-sm">notifications</span></button>
+      </div>
+    </div>
+
+    <div id="content-container">
+      <div class="tab-content active" id="tab-cockpit"></div>
+      <div class="tab-content" id="tab-crm"></div>
+      <div class="tab-content" id="tab-kunden"></div>
+      <div class="tab-content" id="tab-projekte"></div>
+      <div class="tab-content" id="tab-finanzen"></div>
+      <div class="tab-content" id="tab-social"></div>
+      <div class="tab-content" id="tab-wochenplan"></div>
+      <div class="tab-content" id="tab-sheets"></div>
+      <div class="tab-content" id="tab-kontrolle"></div>
+      <div class="tab-content" id="tab-dokumente"></div>
+      <div class="tab-content" id="tab-integrationen"></div>
+      <div class="tab-content" id="tab-settings"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="mbg" id="leadModal">
+  <div class="modal">
+    <div class="mh"><div class="mt2" id="lmTitle">LEAD ANLEGEN</div><button class="mcl" onclick="closeLead()">✕</button></div>
+    <div class="mbody">
+      <div class="fgr">
+        <div class="fg"><label>Name *</label><input type="text" id="lm-name" placeholder="Max Mustermann"></div>
+        <div class="fg"><label>Firma</label><input type="text" id="lm-firma" placeholder="Mustermann GmbH"></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label>Telefon</label><input type="text" id="lm-tel"></div>
+        <div class="fg"><label>E-Mail</label><input type="email" id="lm-email"></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label>Stage</label>
+          <select id="lm-stage">
+            <option value="neu">Neu</option>
+            <option value="kontakt">Kontakt</option>
+            <option value="angebot">Angebot</option>
+            <option value="verhandlung">Verhandlung</option>
+            <option value="closed">Closed</option>
+            <option value="lost">Verloren</option>
+          </select>
+        </div>
+        <div class="fg"><label>Pillar</label>
+          <select id="lm-pillar">
+            <option value="it">IT (Websites)</option>
+            <option value="socials">Socials (Content/Ads)</option>
+            <option value="ai">AI / KI</option>
+          </select>
+        </div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label>Paket</label>
+          <select id="lm-paket" onchange="onLmPaket()">
+            <option value="">— Paket wählen —</option>
+            <optgroup label="Websites">
+              <option value="website-starter" data-wert="1188">Website Starter – 99 €/Mo</option>
+              <option value="website-strategie" data-wert="3588">Website Strategie – 299 €/Mo</option>
+              <option value="website-individual" data-wert="3500">Individualprojekt – ab 3.500 €</option>
+            </optgroup>
+            <optgroup label="SEO">
+              <option value="seo-basic" data-wert="4800">SEO Basic – 800 €/Mo</option>
+              <option value="seo-growth" data-wert="7200">SEO Growth – 1.200 €/Mo</option>
+            </optgroup>
+            <optgroup label="Ads">
+              <option value="ads-starter" data-wert="3000">ADS Starter – 500 €/Mo</option>
+              <option value="ads-performance" data-wert="0">ADS Performance – 10% Budget</option>
+            </optgroup>
+            <optgroup label="Video / Social">
+              <option value="video-content" data-wert="9000">VIDEO Content – 1.500 €/Mo</option>
+            </optgroup>
+            <optgroup label="KI / Automatisierung">
+              <option value="ki-starter" data-wert="997">KI Starter – 997 €</option>
+              <option value="ki-operations" data-wert="2490">KI Operations – 2.490 €</option>
+              <option value="ki-full" data-wert="4900">KI Full System – 4.900 €</option>
+              <option value="ki-chatbot" data-wert="1200">KI Chatbot – ab 1.200 €</option>
+            </optgroup>
+            <optgroup label="Pakete">
+              <option value="hw-wachstum" data-wert="8100">HW Wachstum – ~1.350 €/Mo</option>
+              <option value="vollpaket" data-wert="21000">Vollpaket – ~3.500 €/Mo</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="fg"><label>Wert (€)</label><input type="number" id="lm-wert" placeholder="2490"></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label>Quelle / Kanal</label>
+          <select id="lm-kanal">
+            <option value="agerium">AGERIUM Direkt</option>
+            <option value="meta-ads">Meta Ads</option>
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="empfehlung">Empfehlung</option>
+            <option value="kaltakquise">Kaltakquise</option>
+            <option value="website">Website</option>
+          </select>
+        </div>
+        <div class="fg"><label>Follow-up Datum</label><input type="date" id="lm-followup"></div>
+      </div>
+      <div class="fg"><label>Nächster Schritt</label><input type="text" id="lm-next" placeholder="z.B. Demo-Call buchen"></div>
+      <div class="fg"><label>Notiz</label><textarea id="lm-note" rows="2" placeholder="Wichtige Infos..."></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-r btn-sm" id="lmDelBtn" style="display:none;margin-right:auto;" onclick="deleteLead()">LÖSCHEN</button>
+      <button class="btn btn-g" onclick="closeLead()">ABBRECHEN</button>
+      <button class="btn btn-b" onclick="saveLead()">SPEICHERN</button>
+    </div>
+  </div>
+</div>
+
+<div class="mbg" id="kundeModal">
+  <div class="modal">
+    <div class="mh"><div class="mt2" id="kmTitle">KUNDE ANLEGEN</div><button class="mcl" onclick="closeKundeModal()">✕</button></div>
+    <div class="mbody">
+      <div class="fgr">
+        <div class="fg"><label>Kundenname *</label><input type="text" id="km-name"></div>
+        <div class="fg"><label>Branche</label><input type="text" id="km-branche" placeholder="z.B. Handwerk, PKV"></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label>Priorität</label>
+          <select id="km-prio">
+            <option value="1">1 – Hoch (45 Min/Woche)</option>
+            <option value="2">2 – Mittel (15 Min/Woche)</option>
+            <option value="3">3 – Niedrig</option>
+          </select>
+        </div>
+        <div class="fg"><label>Montag-Uhrzeit</label><input type="time" id="km-time" value="09:00"></div>
+      </div>
+      <div class="fg"><label>Abrechnungsmodell</label>
+        <div class="radio-group">
+          <div class="radio-opt active" id="ropt-pct" onclick="setAbrech('pct')">% BETEILIGUNG</div>
+          <div class="radio-opt" id="ropt-fix" onclick="setAbrech('fix')">FIX-PREIS</div>
+        </div>
+      </div>
+      <div id="abrech-pct"><div class="fg"><label>Mein Anteil (%)</label><input type="number" id="km-pct" value="50" min="1" max="100"></div></div>
+      <div id="abrech-fix" style="display:none">
+        <div class="fgr">
+          <div class="fg"><label>Paket</label>
+            <select id="km-paket" onchange="onKmPaket()">
+              <option value="">— wählen —</option>
+              <option value="website-starter" data-wert="1188" data-laufzeit="12 Monate">Website Starter – 99 €/Mo</option>
+              <option value="website-strategie" data-wert="3588" data-laufzeit="12 Monate">Website Strategie – 299 €/Mo</option>
+              <option value="website-individual" data-wert="3500" data-laufzeit="Einmalig">Individualprojekt – 3.500 €</option>
+              <option value="seo-basic" data-wert="4800" data-laufzeit="6 Mo">SEO Basic – 800 €/Mo</option>
+              <option value="seo-growth" data-wert="7200" data-laufzeit="6 Mo">SEO Growth – 1.200 €/Mo</option>
+              <option value="ads-starter" data-wert="3000" data-laufzeit="6 Mo">ADS Starter – 500 €/Mo</option>
+              <option value="video-content" data-wert="9000" data-laufzeit="6 Mo">VIDEO Content – 1.500 €/Mo</option>
+              <option value="ki-starter" data-wert="997" data-laufzeit="Einmalig">KI Starter – 997 €</option>
+              <option value="ki-operations" data-wert="2490" data-laufzeit="Retainer">KI Operations – 2.490 €</option>
+              <option value="ki-full" data-wert="4900" data-laufzeit="Retainer">KI Full System – 4.900 €</option>
+              <option value="hw-wachstum" data-wert="8100" data-laufzeit="6–12 Mo">HW Wachstum – 1.350 €/Mo</option>
+              <option value="vollpaket" data-wert="21000" data-laufzeit="12 Mo">Vollpaket – 3.500 €/Mo</option>
+            </select>
+          </div>
+          <div class="fg"><label>Preis (€)</label><input type="number" id="km-preis"></div>
+        </div>
+        <div class="fgr">
+          <div class="fg"><label>Abrechnung</label>
+            <select id="km-abrart"><option value="monatlich">Monatlich</option><option value="einmalig">Einmalig</option></select>
+          </div>
+          <div class="fg"><label>Laufzeit</label><input type="text" id="km-laufzeit" placeholder="z.B. 12 Monate"></div>
+        </div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label>Start</label><input type="date" id="km-start"></div>
+        <div class="fg"><label>Deadline</label><input type="date" id="km-deadline"></div>
+      </div>
+      <div class="fg"><label>Fortschritt: <span id="km-progress-val">0%</span></label>
+        <input type="range" id="km-progress" min="0" max="100" value="0" oninput="document.getElementById('km-progress-val').textContent=this.value+'%'" style="width:100%;accent-color:var(--blue)">
+      </div>
+      <div class="fg"><label>Nächste Maßnahme</label><textarea id="km-massnahme" rows="2"></textarea></div>
+      <div class="fg"><label>Engpass</label>
+        <select id="km-engpass">
+          <option value="lead">Lead-Generierung</option>
+          <option value="setting">Setting / Termine</option>
+          <option value="closing">Closing / Abschluss</option>
+          <option value="lieferung">Lieferung / Umsetzung</option>
+          <option value="ok">Alles OK</option>
+        </select>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-r btn-sm" id="kmDeleteBtn" style="display:none;margin-right:auto;" onclick="deleteKunde()">LÖSCHEN</button>
+      <button class="btn btn-g" onclick="closeKundeModal()">ABBRECHEN</button>
+      <button class="btn btn-b" onclick="saveKunde()">SPEICHERN</button>
+    </div>
+  </div>
+</div>
+
+<div class="mbg" id="contentModal">
+  <div class="modal">
+    <div class="mh"><div class="mt2" id="cmTitle">CONTENT ANLEGEN</div><button class="mcl" onclick="closeContentModal()">✕</button></div>
+    <div class="mbody">
+      <div class="fg"><label>Titel / Hook *</label><input type="text" id="cm-title" placeholder="KI für Handwerker – Folge 1"></div>
+      <div class="fgr">
+        <div class="fg"><label>Plattform</label>
+          <select id="cm-plattform">
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">TikTok</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="youtube">YouTube</option>
+            <option value="facebook">Facebook</option>
+          </select>
+        </div>
+        <div class="fg"><label>Format</label>
+          <select id="cm-format">
+            <option value="reel">Reel</option>
+            <option value="post">Post</option>
+            <option value="carousel">Carousel</option>
+            <option value="story">Story</option>
+            <option value="video">Video</option>
+          </select>
+        </div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label>Status</label>
+          <select id="cm-status">
+            <option value="geplant">Geplant</option>
+            <option value="in-produktion">In Produktion</option>
+            <option value="fertig">Fertig</option>
+            <option value="gepostet">Gepostet</option>
+          </select>
+        </div>
+        <div class="fg"><label>Datum</label><input type="date" id="cm-datum"></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label>Person</label><input type="text" id="cm-person" value="Sonif"></div>
+        <div class="fg"><label>Pillar</label>
+          <select id="cm-pillar">
+            <option value="ai">AI / KI</option>
+            <option value="it">IT / Websites</option>
+            <option value="socials">Socials</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Beschreibung</label><textarea id="cm-desc" rows="2"></textarea></div>
+      <div class="fg"><label>Für Kunde</label><input type="text" id="cm-kunde" ></div>
+      <div class="fg"><label>Reach / Views</label><input type="number" id="cm-reach" value="0"></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-r btn-sm" id="cmDelBtn" style="display:none;margin-right:auto;" onclick="deleteContent()">LÖSCHEN</button>
+      <button class="btn btn-g" onclick="closeContentModal()">ABBRECHEN</button>
+      <button class="btn btn-b" onclick="saveContent()">SPEICHERN</button>
+    </div>
+  </div>
+</div>
+
+<!-- TODOBAR -->
+<div id="todoBar" style="position:fixed;bottom:0;left:var(--sidebar-w);right:0;height:40px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:200;">
+  <span class="mi mi-sm" style="color:var(--text-3)">checklist</span>
+  <div id="todoBarItems" style="display:flex;gap:6px;overflow-x:auto;flex:1;"></div>
+  <span id="todoBarCount" class="nav-badge" style="display:none">0</span>
+  <input id="todoBarInput" type="text" placeholder="Quick-Todo..." onkeydown="if(event.key==='Enter')addGlobalTodo(this.value,this)" style="background:var(--raised);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:11px;padding:5px 10px;width:180px;outline:none;border-radius:20px;">
+</div>
+
+<!-- TOAST + NOTIF -->
+<div id="toast"></div>
+<div id="notifBar"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  CONSTANTS & PAKETE
+// ══════════════════════════════════════════════════════
+const STORE_KEY = 'agerium_crm_v5';       // shared: syncs via Sheets
+const SESSION_KEY = 'agerium_sess_v5';
+// Personal store: per-user, per-device, never synced to Sheets
+// key = 'agerium_personal_' + userId
+function personalKey(){ return 'agerium_personal_'+(SESSION?.id||'guest'); }
+function loadPersonal(){
+  try{ return JSON.parse(localStorage.getItem(personalKey()))||defaultPersonal(); }catch(e){ return defaultPersonal(); }
+}
+function savePersonal(){
+  localStorage.setItem(personalKey(), JSON.stringify(PERSONAL));
+}
+function defaultPersonal(){
+  return {
+    calUrl: '',          // eigene Kalender-URL
+    wochenNotizen: {},   // Mo/Di/Mi/Do/Fr freetext
+    outreach: 0,         // Wochenaktivität
+    calls: 0,
+    followups: 0,
+    abschluesse: 0,
+    drehTermine: [],     // eigene Dreh-Termine
+    persToDoLists: {},   // private ToDos (key=listName)
+  };
+}
+let PERSONAL = {};
+const API_URL = 'https://script.google.com/macros/s/AKfycbxZD1itCKWfREy8V5_l86klQQIM5PhTQaTE8PY4B4TAceKjxJqJtKytLZaoHrSGGrcD/exec';
+
+const PAKETE_INFO = {
+  'website-starter':   {label:'Website Starter',    preis:'99 €/Mo',     wert:1188,  laufzeit:'12 Monate'},
+  'website-strategie': {label:'Website Strategie',  preis:'299 €/Mo',    wert:3588,  laufzeit:'12 Monate'},
+  'website-individual':{label:'Individualprojekt',  preis:'ab 3.500 €',  wert:3500,  laufzeit:'Einmalig'},
+  'seo-basic':         {label:'SEO Basic',           preis:'800 €/Mo',    wert:4800,  laufzeit:'6 Mo Min.'},
+  'seo-growth':        {label:'SEO Growth',          preis:'1.200 €/Mo',  wert:7200,  laufzeit:'6 Mo Min.'},
+  'ads-starter':       {label:'ADS Starter',         preis:'500 €/Mo',    wert:3000,  laufzeit:'6 Mo Min.'},
+  'ads-performance':   {label:'ADS Performance',     preis:'10% Budget',  wert:0,     laufzeit:'6 Mo Min.'},
+  'video-content':     {label:'VIDEO Content',       preis:'1.500 €/Mo',  wert:9000,  laufzeit:'6 Mo Min.'},
+  'ki-starter':        {label:'KI Starter',          preis:'997 €',       wert:997,   laufzeit:'Einmalig'},
+  'ki-operations':     {label:'KI Operations',       preis:'2.490 €',     wert:2490,  laufzeit:'+ Retainer'},
+  'ki-full':           {label:'KI Full System',      preis:'4.900 €',     wert:4900,  laufzeit:'+ Retainer'},
+  'ki-chatbot':        {label:'KI Chatbot',          preis:'ab 1.200 €',  wert:1200,  laufzeit:'Einmalig'},
+  'automatisierung':   {label:'Automatisierung',     preis:'ab 1.500 €',  wert:1500,  laufzeit:'Einmalig'},
+  'hw-wachstum':       {label:'HW Wachstum',         preis:'~1.350 €/Mo', wert:8100,  laufzeit:'6–12 Mo'},
+  'vollpaket':         {label:'Vollpaket',           preis:'~3.500 €/Mo', wert:21000, laufzeit:'6–12 Mo'},
+};
+
+const ROLES = {
+  admin:      {label:'ADMIN',      tabs:['cockpit','crm','kunden','projekte','finanzen','social','wochenplan','sheets','dokumente','integrationen','kontrolle','settings']},
+  partner:    {label:'PARTNER',    tabs:['cockpit','crm','kunden','projekte','finanzen','social','wochenplan','dokumente','integrationen','kontrolle']},
+  mitarbeiter:{label:'MITARBEITER',tabs:['cockpit','crm','kunden','projekte','social']},
+};
+
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let DB, SESSION;
+let editLeadId = null, editKundeId = null, editContentId = null;
+let viewMode = 'kanban', stageFilter = 'all', sField = 'datum', sDir = 1;
+let abrechMode = 'pct';
+let syncTimer = null, syncCount = 0, impCount = 0, dupCount = 0;
+let contentFilter = 'all';
+let _isFreshBrowser = false;   // true when localStorage was empty on start
+let _initialPullDone = false;  // true after first successful pull from Sheets
+let _pushQueue = [];            // queued pushes until first pull completes
+
+// ══════════════════════════════════════════════════════
+//  DATABASE
+// ══════════════════════════════════════════════════════
+function ic(name,cls=''){return `<span class="mi ${cls}">${name}</span>`;}
+function uid(){ return Date.now().toString(36)+'_'+Math.random().toString(36).substr(2,6); }
+function today(){ return new Date().toISOString().split('T')[0]; }
+function fmtDate(d){ if(!d)return'—'; try{ return new Date(d).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}); }catch(e){return'—';} }
+function fmtEur(n){ return new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n||0); }
+function fmtEurK(n){ if((n||0)>=1000) return (n/1000).toFixed(1).replace('.',',')+' k€'; return fmtEur(n); }
+
+function defaultDB(){
+  return {
+    users:[
+      {id:'u1',name:'Sonif Anwar', role:'admin',   pin:'0000',color:'#2F6FED',initials:'SA'},
+      {id:'u2',name:'Hakan Kaynak', role:'partner',  pin:'1234',color:'#1FAE6A',initials:'HK'},
+    ],
+    leads:[],
+    kunden:[],
+    projekte:[],
+    finanzen:[],
+    contentItems:[],
+    payments:[],
+    settings:{
+      appsScriptUrl: API_URL,
+      spreadsheetId:'1DYu-pgwlOLCv-9OlyggfQAvgMC7ZBcw_z5d-_LYFeXY',
+      firma:'AGERIUM GbR',
+      partner1:'Sonif Anwar',
+      partner2:'Hakan Kaynak',
+      adresse:'Ruhrgebiet, NRW',
+      zielUmsatz:20000,
+      syncAll: true,
+      integrations:{
+        stripeKey:'',
+        stripePricingTableId:'',
+        lexwareUrl:'https://app.lexware.de',
+        zoomLink:'',
+        qontoUrl:'https://app.qonto.com',
+        metaAccountId:'',
+        googleCalendarId:'',
+      }
+    }
+  };
+}
+function loadDB(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(!raw){ _isFreshBrowser=true; return defaultDB(); }
+    const d=JSON.parse(raw);
+    if(!d||!d.users){ _isFreshBrowser=true; return defaultDB(); }
+    return d;
+  }catch(e){ _isFreshBrowser=true; return defaultDB(); }
+}
+function saveDB(){
+  localStorage.setItem(STORE_KEY,JSON.stringify(DB));
+  const t=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  const el=document.getElementById('syncLbl');
+  if(el) el.textContent=t+' GESPEICHERT';
+}
+function loadSession(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY))||null; }catch(e){ return null; } }
+function saveSession(u){ localStorage.setItem(SESSION_KEY,JSON.stringify(u)); }
+
+// ══════════════════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════════════════
+function initLogin(){
+  const sel=document.getElementById('loginUser');
+  if(!sel) return;
+  sel.innerHTML='';
+  const users=DB?.users||[];
+  if(users.length===0){ DB=defaultDB(); saveDB(); }
+  (DB.users||[]).forEach(u=>{
+    const o=document.createElement('option');
+    o.value=u.id;
+    const roleLabel=ROLES[u.role]?.label||u.role||'USER';
+    o.textContent=u.name+' ('+roleLabel+')';
+    sel.appendChild(o);
+  });
+}
+
+function migrateDB(){
+  let changed=false;
+  const nameFixes={'Hakan Kanak':'Hakan Kaynak'};
+  DB.users.forEach(u=>{
+    if(nameFixes[u.name]){u.name=nameFixes[u.name];changed=true;}
+  });
+  ['leads','kunden'].forEach(arr=>{
+    (DB[arr]||[]).forEach(item=>{
+      if(item.ersteller&&nameFixes[item.ersteller]){item.ersteller=nameFixes[item.ersteller];changed=true;}
+    });
+  });
+  if(changed) saveDB();
+}
+
+function doLogin(){
+  const uid=document.getElementById('loginUser').value;
+  const pin=document.getElementById('loginPin').value;
+  const user=DB.users.find(u=>u.id===uid);
+  if(!user||user.pin!==pin){
+    document.getElementById('loginErr').style.display='block';
+    document.getElementById('loginPin').value='';
+    return;
+  }
+  SESSION=user;
+  saveSession(user);
+  startApp();
+}
+
+function doLogout(){
+  if(syncTimer){ clearInterval(syncTimer); syncTimer=null; }
+  localStorage.removeItem(SESSION_KEY);
+  SESSION=null;
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('loginPin').value='';
+  document.getElementById('loginErr').style.display='none';
+  initLogin();
+}
+
+function startApp(){
+  PERSONAL = loadPersonal();
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('sbName').textContent=SESSION.name;
+  document.getElementById('sbRole').textContent=ROLES[SESSION.role]?.label||SESSION.role;
+  document.getElementById('sbAvatar').textContent=SESSION.initials||SESSION.name.split(' ').map(n=>n[0]).join('').substr(0,2).toUpperCase();
+  document.getElementById('sbAvatar').style.background=SESSION.color||'var(--blue)';
+  applyRoleNav();
+  // Start API sync
+  const url=DB.settings?.appsScriptUrl||API_URL;
+  if(url) startSync(url);
+  highlightToday();
+  checkReminders();
+  setInterval(checkReminders,300000);
+  switchTab('cockpit');
+}
+
+function applyRoleNav(){
+  const allowed=ROLES[SESSION.role]?.tabs||[];
+  ['cockpit','crm','kunden','projekte','finanzen','social','wochenplan','sheets','dokumente','integrationen','kontrolle','settings'].forEach(t=>{
+    const el=document.getElementById('nav-'+t);
+    if(el) el.style.display=allowed.includes(t)?'flex':'none';
+  });
+  if(SESSION.role==='mitarbeiter'){
+    document.getElementById('sb-section-biz').style.display='none';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  TAB ROUTER
+// ══════════════════════════════════════════════════════
+const TAB_TITLES={cockpit:'COCKPIT',crm:'CRM PIPELINE',kunden:'KUNDEN',projekte:'PROJEKTE',finanzen:'FINANZEN',social:'SOCIAL MEDIA',wochenplan:'WOCHENPLAN',sheets:'GOOGLE SHEETS',dokumente:'DOKUMENTE',integrationen:'INTEGRATIONEN',kontrolle:'KONTROLLE',settings:'EINSTELLUNGEN'};
+
+function switchTab(id){
+  const allowed=ROLES[SESSION.role]?.tabs||[];
+  if(!allowed.includes(id)) return;
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const tc=document.getElementById('tab-'+id);
+  const ni=document.getElementById('nav-'+id);
+  if(tc) tc.classList.add('active');
+  if(ni) ni.classList.add('active');
+  document.getElementById('topbarTitle').textContent=TAB_TITLES[id]||id.toUpperCase();
+  const fns={cockpit:renderCockpit,crm:renderCRM,kunden:renderKunden,projekte:renderProjekte,finanzen:renderFinanzen,social:renderSocial,wochenplan:renderWochenplan,sheets:renderSheets,dokumente:renderDokumente,integrationen:renderIntegrationen,kontrolle:renderKontrolle,settings:renderSettings};
+  if(fns[id]) fns[id]();
+  if(window.innerWidth<=860) document.getElementById('sidebar').classList.remove('open');
+}
+
+// ══════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+
+function pillarTag(p){
+  const m={it:'IT',socials:'SOCIALS',ai:'AI'};
+  const c={it:'pillar-it',socials:'pillar-socials',ai:'pillar-ai'};
+  return `<span class="${c[p]||'tag-gray'}">${m[p]||p||'—'}</span>`;
+}
+
+function stageSpan(s){
+  const c={neu:'s-neu',kontakt:'s-kontakt',angebot:'s-angebot',verhandlung:'s-verhandlung',closed:'s-closed',lost:'s-lost'};
+  const l={neu:'NEU',kontakt:'KONTAKT',angebot:'ANGEBOT',verhandlung:'VERHANDL.',closed:'✓ CLOSED',lost:'✗ LOST'};
+  return `<span class="sp ${c[s]||'s-neu'}">${l[s]||s}</span>`;
+}
+
+function getOverdueLeads(){
+  const t=new Date(); t.setHours(0,0,0,0);
+  return DB.leads.filter(l=>{
+    if(!l.followup) return false;
+    const fd=new Date(l.followup); fd.setHours(0,0,0,0);
+    return fd<=t&&l.stage!=='closed'&&l.stage!=='lost';
+  }).sort((a,b)=>new Date(a.followup)-new Date(b.followup));
+}
+
+function highlightToday(){
+  const d=['so','mo','di','mi','do','fr','sa'][new Date().getDay()];
+  const el=document.getElementById('wh-'+d); if(el) el.classList.add('today');
+}
+
+// ══════════════════════════════════════════════════════
+//  COCKPIT
+// ══════════════════════════════════════════════════════
+function renderCockpit(){
+  const el=document.getElementById('tab-cockpit');
+  const activeLeads=DB.leads.filter(l=>l.stage!=='lost'&&l.stage!=='closed').length;
+  const pipelineWert=DB.leads.filter(l=>l.stage!=='lost').reduce((s,l)=>s+(l.wert||0),0);
+  const closedWert=DB.leads.filter(l=>l.stage==='closed').reduce((s,l)=>s+(l.wert||0),0);
+  const monthRev=DB.finanzen.length?DB.finanzen[DB.finanzen.length-1].einnahmen:0;
+  const aktiveProjekte=DB.projekte.filter(p=>p.status==='Aktiv').length;
+
+  // Kunden Gesamtanteil
+  let kundenAnteil=0;
+  DB.kunden.forEach(k=>{
+    const u=k.stats?.umsatz||0;
+    if(k.abrech==='pct') kundenAnteil+=u*(k.pct/100); else kundenAnteil+=u;
+  });
+
+  // Revenue chart
+  const months=['Jan','Feb','Mrz','Apr','Mai','Jun'];
+  const revData=Array(6).fill(0);
+  DB.finanzen.forEach(f=>{const m=parseInt(f.monat.split('-')[1])-1; if(m>=0&&m<6) revData[m]=f.einnahmen;});
+  const maxRev=Math.max(...revData,1);
+  let chartBars='';
+  revData.forEach((v,i)=>{
+    const h=Math.round((v/maxRev)*76)+4;
+    const cur=i===new Date().getMonth();
+    chartBars+=`<div class="chart-bar-col"><div class="chart-bar${cur?' current':''}" style="height:${h}px" title="${fmtEur(v)}"></div><span class="chart-bar-label">${months[i]}</span></div>`;
+  });
+
+  // Top Kunden
+  const sortedK=[...DB.kunden].sort((a,b)=>{
+    const ea=a.abrech==='pct'?(a.stats?.umsatz||0)*(a.pct/100):(a.stats?.umsatz||0);
+    const eb=b.abrech==='pct'?(b.stats?.umsatz||0)*(b.pct/100):(b.stats?.umsatz||0);
+    return eb-ea;
+  }).slice(0,5);
+
+  const topKHtml=sortedK.length===0
+    ?'<div style="font-size:10px;color:var(--muted);padding:8px 0">Noch keine Umsätze eingetragen</div>'
+    :sortedK.map((k,i)=>{
+      const ant=k.abrech==='pct'?(k.stats?.umsatz||0)*(k.pct/100):(k.stats?.umsatz||0);
+      return `<div class="topk-item"><span class="topk-rank">${i+1}</span><span class="topk-name">${k.name}</span><span class="topk-val">${fmtEurK(ant)}</span></div>`;
+    }).join('');
+
+  // Overdue
+  const overdue=getOverdueLeads();
+  const overdueHtml=overdue.length>0?`
+  <div id="overdueBar" style="display:block">
+    <div class="ob-title">⚠ ÜBERFÄLLIGE FOLLOW-UPS (${overdue.length})</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">${overdue.slice(0,4).map(l=>`<span onclick="switchTab('crm');openLeadModal(${JSON.stringify(l.id)})" style="cursor:pointer;font-family:var(--fm);font-size:9px;padding:3px 11px;background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.2);color:var(--s-red-hi);border-radius:20px">${l.name||l.firm} · ${new Date(l.followup).toLocaleDateString('de',{day:'2-digit',month:'2-digit'})}</span>`).join('')}</div>
+  </div>`:'';
+
+  el.innerHTML=`
+  ${overdueHtml}
+  <div class="page-header">
+    <div><h1>COCKPIT</h1><p>${new Date().toLocaleDateString('de-DE',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}).toUpperCase()} · ${SESSION.name.toUpperCase()}</p></div>
+    <div class="page-actions"><button class="btn btn-b btn-sm" onclick="switchTab('kontrolle')"><span class="mi mi-sm">analytics</span> KONTROLLE</button></div>
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;padding:11px 16px;background:var(--raised);border:1px solid var(--border);border-radius:8px">
+    <span style="font-family:var(--fm);font-size:10px;color:var(--text-3);letter-spacing:1px;align-self:center;margin-right:4px">TOOLS</span>
+    <button onclick="window.open('https://dashboard.stripe.com/payment-links','_blank')" style="background:var(--raised);border:1px solid var(--border-hi);color:var(--text);font-family:var(--fm);font-size:9px;padding:6px 13px;cursor:pointer;border-radius:5px">💳 Stripe</button>
+    <button onclick="openLexware('')" style="background:var(--raised);border:1px solid var(--border-hi);color:var(--text);font-family:var(--fm);font-size:9px;padding:6px 13px;cursor:pointer;border-radius:5px">📋 Lexware</button>
+    <button onclick="window.open('https://calendar.google.com','_blank')" style="background:var(--raised);border:1px solid var(--border-hi);color:var(--text);font-family:var(--fm);font-size:9px;padding:6px 13px;cursor:pointer;border-radius:5px">📅 Kalender</button>
+    <button onclick="openZoom()" style="background:var(--raised);border:1px solid var(--border-hi);color:var(--text);font-family:var(--fm);font-size:9px;padding:6px 13px;cursor:pointer;border-radius:5px">🎥 Zoom</button>
+    <button onclick="openQonto()" style="background:var(--raised);border:1px solid var(--border-hi);color:var(--text);font-family:var(--fm);font-size:9px;padding:6px 13px;cursor:pointer;border-radius:5px">🏦 Qonto</button>
+    <button onclick="openMeta()" style="background:var(--raised);border:1px solid var(--border-hi);color:var(--text);font-family:var(--fm);font-size:9px;padding:6px 13px;cursor:pointer;border-radius:5px">📣 Meta Ads</button>
+    <button onclick="switchTab('integrationen')" style="background:var(--overlay);border:1px solid var(--border-hi);color:var(--text-2);font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:5px 12px;cursor:pointer;border-radius:5px">⚙ KONFIGURIEREN</button>
+  </div>
+  <div class="g5 gap">
+    <div class="kpi"><div class="kpi-icon">track_changes</div><div class="kpi-label">PIPELINE WERT</div><div class="kpi-value">${fmtEurK(pipelineWert)}</div><div class="kpi-sub">${activeLeads} aktive Leads</div></div>
+    <div class="kpi"><div class="kpi-icon">payments</div><div class="kpi-label">UMSATZ MONAT</div><div class="kpi-value">${fmtEurK(monthRev)}</div><div class="kpi-sub">${DB.finanzen.length ? DB.finanzen[DB.finanzen.length-1].monat : "—"}</div></div>
+    <div class="kpi"><div class="kpi-icon">check_circle</div><div class="kpi-label">CLOSED</div><div class="kpi-value">${fmtEurK(closedWert)}</div><div class="kpi-sub">${DB.leads.filter(l=>l.stage==='closed').length} Abschlüsse</div></div>
+    <div class="kpi"><div class="kpi-icon">people</div><div class="kpi-label">KUNDEN ANTEIL</div><div class="kpi-value">${fmtEurK(kundenAnteil)}</div><div class="kpi-sub">${DB.kunden.length} aktiv</div></div>
+    <div class="kpi"><div class="kpi-icon">work</div><div class="kpi-label">PROJEKTE</div><div class="kpi-value">${aktiveProjekte}</div><div class="kpi-sub">aktiv · ${DB.projekte.filter(p=>p.status==='Abgeschlossen').length} done</div></div>
+  </div>
+  <div class="g2 gap">
+    <div class="card">
+      <div class="ch">UMSATZVERLAUF 2026</div>
+      <div class="chart-bar-wrap">${chartBars}</div>
+    </div>
+    <div class="card">
+      <div class="ch">TOP KUNDEN NACH ERTRAG</div>
+      ${topKHtml}
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch">AKTUELLE LEADS</div>
+      ${[...DB.leads].filter(l=>l.stage!=='lost').slice(0,5).map(l=>`
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="switchTab('crm');openLeadModal('${l.id}')">
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:700;color:var(--text)">${l.name||l.firm}</div>
+            <div style="font-family:var(--fm);font-size:8px;color:var(--muted)">${l.firm||''} · ${l.paketLabel||'—'}</div>
+          </div>
+          <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap">${stageSpan(l.stage)} ${pillarTag(l.pillar)}</div>
+          <div style="font-family:var(--fd);font-size:14px;color:var(--green2)">${fmtEurK(l.wert)}</div>
+        </div>`).join('')||'<div style="font-size:10px;color:var(--muted);padding:10px 0">Keine Leads</div>'}
+    </div>
+    <div class="card">
+      <div class="ch">AKTIVE PROJEKTE</div>
+      ${DB.projekte.filter(p=>p.status==='Aktiv').slice(0,4).map(p=>`
+        <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:12px;font-weight:700;color:var(--text)">${p.name}</span>
+            <span style="font-family:var(--fm);font-size:9px;color:var(--green2)">${p.progress}%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%;background:var(--text-2)"></div></div>
+          <div style="margin-top:5px">${pillarTag(p.pillar)}</div>
+        </div>`).join('')||'<div style="font-size:10px;color:var(--muted);padding:10px 0">Keine aktiven Projekte</div>'}
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  CRM PIPELINE
+// ══════════════════════════════════════════════════════
+function renderCRM(){
+  const el=document.getElementById('tab-crm');
+  const q=(document.getElementById('crmSearch')?.value||'').toLowerCase();
+  const fil=DB.leads.filter(l=>{
+    const ms=stageFilter==='all'||l.stage===stageFilter;
+    const mq=!q||(l.name+(l.firm||l.firma||'')+(l.paketLabel||'')).toLowerCase().includes(q);
+    return ms&&mq;
+  });
+
+  const overdue=getOverdueLeads();
+  const overdueHtml=overdue.length>0?`<div id="overdueBar" style="display:block"><div class="ob-title">⚠ ÜBERFÄLLIGE FOLLOW-UPS</div><div style="display:flex;gap:6px;flex-wrap:wrap">${overdue.slice(0,5).map(l=>`<span onclick="openLeadModal('${l.id}')" style="cursor:pointer;font-family:var(--fm);font-size:9px;padding:3px 11px;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.2);color:var(--s-red-hi);border-radius:20px">${l.name||l.firm} · ${new Date(l.followup).toLocaleDateString('de',{day:'2-digit',month:'2-digit'})}</span>`).join('')}</div></div>`:'';
+
+  const stages=['neu','kontakt','angebot','verhandlung','closed'];
+  const stageColors={neu:'var(--text-3)',kontakt:'var(--text-2)',angebot:'var(--text-2)',verhandlung:'var(--text)',closed:'var(--text)'};
+  const stagePillars={neu:'IT',kontakt:'KONTAKT',angebot:'ANGEBOT',verhandlung:'VERHANDL.',closed:'CLOSED'};
+
+  let kanbanHtml='<div class="kanban-wrap">';
+  stages.forEach(s=>{
+    const cards=fil.filter(l=>l.stage===s);
+    const stageTotal=cards.reduce((acc,l)=>acc+(l.wert||0),0);
+    let cardHtml='';
+    cards.forEach(l=>{
+      const today=new Date(); today.setHours(0,0,0,0);
+      const fuDate=l.followup?new Date(l.followup):null;
+      const isOverdue=fuDate&&fuDate<today;
+      const fuStr=fuDate?fuDate.toLocaleDateString('de',{day:'2-digit',month:'2-digit'}):'';
+      const pillarColor=l.pillar==='ai'?'var(--green2)':l.pillar==='socials'?'var(--orange)':'var(--blue)';
+      cardHtml+=`<div class="cc${l.isNew?' new-lead':''}" style="border-left-color:${pillarColor}">
+        <div class="ccn" onclick="openLeadModal('${l.id}')" style="cursor:pointer">${l.name||l.firm||'—'}</div>
+        <div class="ccs" onclick="openLeadModal('${l.id}')" style="cursor:pointer">${l.firm||l.firma||''}</div>
+        ${l.paketLabel?`<div style="font-family:var(--fm);font-size:7px;color:var(--orange);margin-bottom:2px;letter-spacing:1px">${l.paketLabel}</div>`:''}
+        <div class="ccv" onclick="openLeadModal('${l.id}')" style="cursor:pointer">${l.wert?fmtEurK(l.wert):''}</div>
+        <div class="ccm" onclick="openLeadModal('${l.id}')" style="cursor:pointer">
+          <span class="cct" style="background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border)">${l.kanal||l.quelle||'—'}</span>
+          ${l.next?`<span class="cct" style="background:rgba(255,255,255,.04);color:var(--text-2);border:1px solid var(--border)">${l.next}</span>`:''}
+          ${fuStr?`<span class="cct" style="background:${isOverdue?'rgba(231,76,60,.15)':'rgba(255,255,255,.05)'};color:${isOverdue?'var(--s-red-hi)':'var(--text-2)'};border:1px solid ${isOverdue?'rgba(231,76,60,.3)':'var(--border)'}">${isOverdue?'⚠ ':'📅 '}${fuStr}</span>`:''}
+        </div>
+        ${l.stage==='closed'||l.stage==='verhandlung'?`<div style="display:flex;gap:4px;margin-top:6px;border-top:1px solid var(--border);padding-top:5px">
+          <button title="Stripe Zahlung" onclick="event.stopPropagation();openStripeForLead('${l.id}')" style="flex:1;background:var(--overlay);border:1px solid var(--border-hi);color:var(--text-2);font-size:9px;padding:4px 0;cursor:pointer;border-radius:4px">💳</button>
+          <button title="Lexware Rechnung" onclick="event.stopPropagation();openLexware('${l.name||l.firm||''}')" style="flex:1;background:var(--overlay);border:1px solid var(--border-hi);color:var(--text-2);font-size:9px;padding:4px 0;cursor:pointer;border-radius:4px">📋</button>
+          <button title="Zoom Call" onclick="event.stopPropagation();openZoom()" style="flex:1;background:var(--overlay);border:1px solid var(--border-hi);color:var(--text-2);font-size:9px;padding:4px 0;cursor:pointer;border-radius:4px">🎥</button>
+        </div>`:''}
+      </div>`;
+      if(l.isNew) setTimeout(()=>{l.isNew=false;saveDB();},3000);
+    });
+    kanbanHtml+=`<div class="kcol">
+      <div class="kcol-h">
+        <span class="kcol-t" style="color:${stageColors[s]}">${s.toUpperCase()}</span>
+        <div style="display:flex;gap:5px;align-items:center">
+          <span style="font-family:var(--fm);font-size:8px;color:var(--muted)">${fmtEurK(stageTotal)}</span>
+          <span class="kcol-n">${cards.length}</span>
+        </div>
+      </div>
+      <div class="kcol-b">${cardHtml}<button class="kanban-add" onclick="openLeadModal(null,'${s}')">+ HINZUFÜGEN</button></div>
+    </div>`;
+  });
+  kanbanHtml+='</div>';
+
+  // Lost leads list
+  const lost=DB.leads.filter(l=>l.stage==='lost');
+  const lostHtml=lost.length?`<div class="card" style="margin-top:14px">
+    <div class="ch">VERLOREN (${lost.length})</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Name</th><th>Firma</th><th>Paket</th><th>Wert</th><th></th></tr></thead><tbody>
+    ${lost.map(l=>`<tr><td class="td-main">${l.name||l.firm||'—'}</td><td>${l.firm||l.firma||'—'}</td><td style="color:var(--text-2);font-size:10px">${l.paketLabel||'—'}</td><td style="font-family:var(--fd)">${fmtEur(l.wert)}</td><td><button class="btn btn-g btn-sm" onclick="openLeadModal('${l.id}')">✎</button></td></tr>`).join('')}
+    </tbody></table></div>
+  </div>`:'';
+
+  el.innerHTML=`
+  ${overdueHtml}
+  <div class="page-header">
+    <div><h1>CRM PIPELINE</h1><p>${DB.leads.filter(l=>l.stage!=='lost').length} AKTIVE LEADS · ${fmtEur(DB.leads.filter(l=>l.stage!=='lost').reduce((s,l)=>s+(l.wert||0),0))} PIPELINE-WERT</p></div>
+    <div class="page-actions">
+      <button class="btn btn-g btn-sm" onclick="toggleView(this)">☰ LISTE</button>
+      <button class="btn btn-b btn-sm" onclick="openLeadModal()">+ LEAD</button>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <input class="csearch" type="text" placeholder="Name, Firma, Angebot..." oninput="renderCRM()" id="crmSearch">
+    <button class="cflt active" onclick="fStage('all',this)">ALLE</button>
+    <button class="cflt" onclick="fStage('neu',this)">NEU</button>
+    <button class="cflt" onclick="fStage('kontakt',this)">KONTAKT</button>
+    <button class="cflt" onclick="fStage('angebot',this)">ANGEBOT</button>
+    <button class="cflt" onclick="fStage('verhandlung',this)">VERHANDLUNG</button>
+    <button class="cflt" onclick="fStage('closed',this)">CLOSED</button>
+    <button class="cflt" onclick="fStage('lost',this)">LOST</button>
+  </div>
+  <div id="kanbanView">${kanbanHtml}</div>
+  <div id="listView" style="display:none">
+    <div class="tbl-wrap"><table><thead><tr>
+      <th onclick="sortC('name')">NAME</th><th onclick="sortC('firm')">FIRMA</th>
+      <th>PAKET</th><th onclick="sortC('wert')">WERT</th>
+      <th onclick="sortC('stage')">STATUS</th><th>PILLAR</th><th>QUELLE</th><th>NÄCHSTER SCHRITT</th><th></th>
+    </tr></thead><tbody id="crmTbody"></tbody></table></div>
+  </div>
+  <div class="g4" style="margin-top:12px">
+    <div class="stat"><div class="sv">${fmtEurK(DB.leads.filter(l=>l.stage!=='lost').reduce((s,l)=>s+(l.wert||0),0))}</div><div class="sl">PIPELINE GESAMT</div></div>
+    <div class="stat"><div class="sv">${fmtEurK(DB.leads.filter(l=>l.stage==='verhandlung').reduce((s,l)=>s+(l.wert||0),0))}</div><div class="sl">VERHANDLUNG</div></div>
+    <div class="stat"><div class="sv">${fmtEurK(DB.leads.filter(l=>l.stage==='closed').reduce((s,l)=>s+(l.wert||0),0))}</div><div class="sl">CLOSED</div></div>
+    <div class="stat"><div class="sv">${DB.leads.filter(l=>!['closed','lost'].includes(l.stage)).length}</div><div class="sl">AKTIVE LEADS</div></div>
+  </div>
+  ${lostHtml}`;
+
+  // Render list view tbody
+  const tbody=document.getElementById('crmTbody');
+  if(tbody){
+    const sorted=[...fil].sort((a,b)=>{
+      let va=sField==='wert'?a.wert||0:a[sField]||'';
+      let vb=sField==='wert'?b.wert||0:b[sField]||'';
+      return va>vb?sDir:va<vb?-sDir:0;
+    });
+    tbody.innerHTML=sorted.map(l=>`<tr>
+      <td class="td-main">${l.name||'–'}</td><td>${l.firm||l.firma||'–'}</td>
+      <td style="font-family:var(--fm);font-size:10px;color:var(--text-2)">${l.paketLabel||'–'}</td>
+      <td style="font-family:var(--fd)">${l.wert?fmtEurK(l.wert):'–'}</td>
+      <td>${stageSpan(l.stage)}</td>
+      <td>${pillarTag(l.pillar)}</td>
+      <td style="font-family:var(--fm);font-size:10px;color:var(--text-2)">${l.kanal||l.quelle||'—'}</td>
+      <td style="color:var(--text-2);font-size:11px">${l.next||'–'}</td>
+      <td><button class="btn btn-g btn-sm" onclick="openLeadModal('${l.id}')">✎</button></td>
+    </tr>`).join('');
+  }
+}
+
+function fStage(s,el){ stageFilter=s; document.querySelectorAll('.cflt').forEach(b=>b.classList.remove('active')); el.classList.add('active'); renderCRM(); }
+function sortC(f){ if(sField===f)sDir*=-1;else{sField=f;sDir=1;} renderCRM(); }
+function toggleView(btn){ viewMode=viewMode==='kanban'?'list':'kanban'; document.getElementById('kanbanView').style.display=viewMode==='kanban'?'block':'none'; document.getElementById('listView').style.display=viewMode==='list'?'block':'none'; btn.textContent=viewMode==='kanban'?'☰ LISTE':'⊞ KANBAN'; }
+
+// ── LEAD MODAL ──
+function openLeadModal(id=null,defaultStage='neu'){
+  editLeadId=id;
+  const l=id?DB.leads.find(x=>x.id==id):null;
+  document.getElementById('lmTitle').textContent=l?'LEAD BEARBEITEN':'LEAD ANLEGEN';
+  document.getElementById('lmDelBtn').style.display=l?'':'none';
+  if(l){
+    document.getElementById('lm-name').value=l.name||'';
+    document.getElementById('lm-firma').value=l.firm||l.firma||'';
+    document.getElementById('lm-tel').value=l.telefon||'';
+    document.getElementById('lm-email').value=l.email||'';
+    document.getElementById('lm-kanal').value=l.kanal||'agerium';
+    document.getElementById('lm-stage').value=l.stage||'neu';
+    document.getElementById('lm-pillar').value=l.pillar||'it';
+    document.getElementById('lm-paket').value=l.paket||'';
+    document.getElementById('lm-wert').value=l.wert||'';
+    document.getElementById('lm-next').value=l.next||'';
+    document.getElementById('lm-followup').value=l.followup||'';
+    document.getElementById('lm-note').value='';
+  } else {
+    ['lm-name','lm-firma','lm-tel','lm-email','lm-next','lm-note','lm-followup'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+    document.getElementById('lm-wert').value='';
+    document.getElementById('lm-kanal').value='agerium';
+    document.getElementById('lm-stage').value=defaultStage;
+    document.getElementById('lm-pillar').value='it';
+    document.getElementById('lm-paket').value='';
+  }
+  document.getElementById('leadModal').classList.add('open');
+}
+
+function closeLead(){ document.getElementById('leadModal').classList.remove('open'); editLeadId=null; }
+
+function onLmPaket(){
+  const sel=document.getElementById('lm-paket');
+  const opt=sel.options[sel.selectedIndex];
+  if(opt.dataset.wert) document.getElementById('lm-wert').value=opt.dataset.wert;
+}
+
+function saveLead(){
+  const name=document.getElementById('lm-name').value.trim();
+  const firma=document.getElementById('lm-firma').value.trim();
+  if(!name&&!firma){ toast('Name oder Firma eingeben!'); return; }
+  const pv=document.getElementById('lm-paket').value;
+  const pi=PAKETE_INFO[pv]||{};
+  const note=document.getElementById('lm-note').value.trim();
+  const data={
+    id:editLeadId||(uid()),
+    name,firm:firma,
+    telefon:document.getElementById('lm-tel').value.trim(),
+    email:document.getElementById('lm-email').value.trim(),
+    kanal:document.getElementById('lm-kanal').value,
+    stage:document.getElementById('lm-stage').value,
+    pillar:document.getElementById('lm-pillar').value,
+    paket:pv,paketLabel:pi.label||pv,
+    wert:parseFloat(document.getElementById('lm-wert').value)||pi.wert||0,
+    followup:document.getElementById('lm-followup').value||'',
+    next:document.getElementById('lm-next').value.trim(),
+    notizen:note?[{date:new Date().toLocaleDateString('de'),text:note}]:[],
+    datum:editLeadId?(DB.leads.find(x=>x.id==editLeadId)?.datum||new Date().toISOString()):new Date().toISOString(),
+    quelle:document.getElementById('lm-kanal').value,
+  };
+  if(editLeadId){
+    const idx=DB.leads.findIndex(x=>x.id==editLeadId);
+    if(idx>=0){data.notizen=[...(DB.leads[idx].notizen||[]),...data.notizen];DB.leads[idx]=data;}
+  } else {
+    DB.leads.push(data);
+  }
+  saveDB(); renderCRM(); closeLead(); toast(editLeadId?'LEAD AKTUALISIERT':'LEAD GESPEICHERT');
+  writeToSheet(data);
+}
+
+function deleteLead(){
+  if(!editLeadId||!confirm('Lead löschen?')) return;
+  const delId=editLeadId;
+  DB.leads=DB.leads.filter(l=>l.id!=editLeadId);
+  saveDB(); renderCRM(); closeLead(); toast('GELÖSCHT');
+  deleteFromSheet(delId);
+}
+
+// ══════════════════════════════════════════════════════
+//  KUNDEN
+// ══════════════════════════════════════════════════════
+function renderKunden(){
+  const el=document.getElementById('tab-kunden');
+  let html=`
+  <div class="page-header">
+    <div><h1>KUNDEN</h1><p>${DB.kunden.length} KUNDEN · ${DB.kunden.filter(k=>(k.stats?.umsatz||0)>0).length} MIT UMSATZ</p></div>
+    <div class="page-actions">
+      <button class="btn btn-g btn-sm" onclick="setKundenSort('prio')">↓ PRIO</button>
+      <button class="btn btn-g btn-sm" onclick="setKundenSort('umsatz')">↓ UMSATZ</button>
+      <button class="btn btn-g btn-sm" onclick="setKundenSort('progress')">↓ FORTSCHRITT</button>
+      <button class="btn btn-b btn-sm" onclick="openKundeModal()">+ KUNDE</button>
+    </div>
+  </div>
+  <div id="kundenList">`;
+
+  const sorted=[...DB.kunden].sort((a,b)=>{
+    if(kundenSortField==='umsatz'){
+      const ua=a.abrech==='pct'?(a.stats?.umsatz||0)*(a.pct/100):(a.stats?.umsatz||0);
+      const ub=b.abrech==='pct'?(b.stats?.umsatz||0)*(b.pct/100):(b.stats?.umsatz||0);
+      return ub-ua;
+    }
+    if(kundenSortField==='progress') return (b.progress||0)-(a.progress||0);
+    return a.prio-b.prio||(a.time||'').localeCompare(b.time||'');
+  });
+  let lastPrio=0;
+  sorted.forEach(k=>{
+    if(k.prio!==lastPrio){
+      const lbl={1:'PRIORITÄT 1 — WÖCHENTLICH 45 MIN',2:'PRIORITÄT 2 — WÖCHENTLICH 15 MIN',3:'PRIORITÄT 3 — GELEGENHEIT'}[k.prio]||'';
+      html+=`<div class="sec">${lbl}</div>`;
+      lastPrio=k.prio;
+    }
+    html+=renderKundeCard(k);
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+function renderKundeCard(k){
+  const s=k.stats||{};
+  const prog=Math.max(0,Math.min(100,k.progress||0));
+  const progColor=prog>=80?'var(--green2)':prog>=40?'var(--orange)':'var(--blue)';
+  const now=new Date(); now.setHours(0,0,0,0);
+  const startStr=k.start?new Date(k.start).toLocaleDateString('de'):'—';
+  let deadlineStr='—', deadlineClass='';
+  if(k.deadline){ const dl=new Date(k.deadline); dl.setHours(0,0,0,0); deadlineStr=dl.toLocaleDateString('de'); if(dl<now)deadlineClass='overdue'; }
+
+  let billHtml='';
+  if(k.abrech==='pct'){
+    const anteil=(s.umsatz||0)*(k.pct/100);
+    billHtml=`<div class="kbill"><span class="kbill-lbl">BETEILIGUNG</span><span class="kbill-val">${k.pct}% Anteil</span><span class="kbill-anteil">${fmtEurK(anteil)}</span></div>`;
+  } else {
+    const pi=PAKETE_INFO[k.paket]||{};
+    billHtml=`<div class="kbill" style="border-left-color:var(--blue)"><span class="kbill-lbl">FIX-PREIS</span><span class="kbill-val">${k.preis?fmtEur(k.preis):pi.preis||'—'} ${k.abrart==='monatlich'?'/Mo':''}</span>${k.laufzeit?`<span style="font-family:var(--fm);font-size:7px;color:var(--muted);margin-left:auto">${k.laufzeit}</span>`:''}</div>`;
+  }
+  const paketInfo=PAKETE_INFO[k.paket];
+  const paketTag=paketInfo?`<div class="kpaket">${paketInfo.label} · ${paketInfo.preis}</div>`:'';
+  const todos=k.todos||[];
+  const doneTodos=todos.filter(t=>t.done).length;
+  const todoHTML=todos.map((t,i)=>`
+    <div class="todo-item">
+      <input type="checkbox" class="todo-cb" ${t.done?'checked':''} onchange="toggleTodo('${k.id}',${i},this.checked)">
+      <span class="todo-text ${t.done?'done':''}" onclick="toggleTodo('${k.id}',${i},!${t.done})">${t.text}</span>
+      <button class="todo-del" onclick="deleteTodo('${k.id}',${i})">✕</button>
+    </div>`).join('');
+  const lohntVal=k.lohnt||'check';
+  const engpassMap={lead:'LEAD',setting:'SETTING',closing:'CLOSING',lieferung:'LIEFERUNG',ok:'✓ OK'};
+
+  return `<div class="kcard kprio-${k.prio}" id="kc-${k.id}">
+    <div class="kprio-bar"></div>
+    <div class="kh">
+      <div class="kh-left">
+        <div class="kname">${k.name}</div>
+        <div class="kmeta">${k.branche||'—'} · MO ${k.time||'--:--'} · PRIO ${k.prio}</div>
+      </div>
+      <div class="kh-right">
+        <span class="kbadge ${k.abrech==='pct'?'kbadge-pct':'kbadge-fix'}">${k.abrech==='pct'?k.pct+'%':'FIX'}</span>
+        ${k.engpass&&k.engpass!=='ok'?`<span style="font-family:var(--fm);font-size:9px;letter-spacing:.5px;padding:2px 9px;background:rgba(255,255,255,.05);color:var(--text-2);border:1px solid var(--border-hi);border-radius:20px">${engpassMap[k.engpass]||''}</span>`:''}
+        <button class="btn btn-g btn-sm" onclick="editKunde('${k.id}')">✎</button>
+      </div>
+    </div>
+    <div class="kprog-wrap">
+      <div class="kprog-row"><span class="kprog-lbl">PROJEKTFORTSCHRITT</span><span class="kprog-pct" style="color:${progColor}">${prog}%</span></div>
+      <div class="kprog-track"><div class="kprog-fill" style="width:${prog}%;background:linear-gradient(90deg,var(--blue),${progColor})"></div></div>
+      <div class="kdates">
+        <div class="kdate"><span class="kdate-lbl">START</span><span class="kdate-val">${startStr}</span></div>
+        <div class="kdate"><span class="kdate-lbl">DEADLINE</span><span class="kdate-val ${deadlineClass}">${deadlineStr}</span></div>
+      </div>
+    </div>
+    <div class="kbody">
+      <div class="kstats">
+        <div class="ks"><div class="ks-l">LEADS</div><input type="number" value="${s.leads||0}" oninput="updateStat('${k.id}','leads',this.value)"></div>
+        <div class="ks"><div class="ks-l">GESPRÄCHE</div><input type="number" value="${s.gespraeche||0}" oninput="updateStat('${k.id}','gespraeche',this.value)"></div>
+        <div class="ks"><div class="ks-l">ABSCHLÜSSE</div><input type="number" value="${s.abschluesse||0}" oninput="updateStat('${k.id}','abschluesse',this.value)"></div>
+        <div class="ks"><div class="ks-l">UMSATZ €</div><input type="number" value="${s.umsatz||0}" oninput="updateStat('${k.id}','umsatz',this.value)"></div>
+      </div>
+      ${billHtml}${paketTag}
+      ${k.massnahme?`<div class="kmbox"><strong>→ NÄCHSTE MASSNAHME</strong>${k.massnahme}</div>`:''}
+    </div>
+    <div class="ktodo-section">
+      <div class="ktodo-head">
+        <span class="ktodo-title">TO-DOs (${doneTodos}/${todos.length})</span>
+        ${todos.length>0?`<span class="ktodo-progress">${Math.round(doneTodos/todos.length*100)}% done</span>`:''}
+      </div>
+      ${todoHTML}
+      <div class="todo-add">
+        <input class="todo-input" type="text" placeholder="To-do hinzufügen..." id="ti-${k.id}" onkeydown="if(event.key==='Enter')addTodo('${k.id}')">
+        <button class="btn btn-b btn-sm" onclick="addTodo('${k.id}')">+</button>
+      </div>
+    </div>
+    <div class="kfoot">
+      <select class="lohnt-sel" onchange="setLohnt('${k.id}',this.value)">
+        <option value="ja" ${lohntVal==='ja'?'selected':''}>LOHNT SICH</option>
+        <option value="check" ${lohntVal==='check'?'selected':''}>PRÜFEN</option>
+        <option value="nein" ${lohntVal==='nein'?'selected':''}>WENIG FOKUS</option>
+      </select>
+      <div style="display:flex;gap:5px;align-items:center">
+        <button title="Stripe Zahlung" onclick="openStripeLink('${k.name}',${k.abrech==='fix'?(k.preis||0):0})" style="background:var(--overlay);border:1px solid var(--border-hi);color:var(--text-2);font-family:var(--fm);font-size:10px;padding:5px 10px;cursor:pointer;border-radius:5px" title="Stripe">💳</button>
+        <button title="Lexware Rechnung" onclick="openLexware('${k.name}')" style="background:var(--overlay);border:1px solid var(--border-hi);color:var(--text-2);font-family:var(--fm);font-size:10px;padding:5px 10px;cursor:pointer;border-radius:5px" title="Lexware">📋</button>
+        <button title="Google Kalender Termin" onclick="openGoogleCalEvent('${k.name}','${k.time||''}')" style="background:var(--overlay);border:1px solid var(--border-hi);color:var(--text-2);font-family:var(--fm);font-size:10px;padding:5px 10px;cursor:pointer;border-radius:5px" title="Kalender">📅</button>
+        <button title="Zoom Link kopieren" onclick="openZoom()" style="background:var(--overlay);border:1px solid var(--border-hi);color:var(--text-2);font-family:var(--fm);font-size:10px;padding:5px 10px;cursor:pointer;border-radius:5px" title="Zoom">🎥</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+let kundenSortField='prio';
+function setKundenSort(f){ kundenSortField=f; renderKunden(); }
+function setLohnt(id,val){ const k=DB.kunden.find(x=>x.id==id); if(!k)return; k.lohnt=val; saveDB(); pushRecord('kunden',k); const card=document.getElementById('kc-'+id); if(card)card.outerHTML=renderKundeCard(k); }
+const _statTimers={};
+function updateStat(id,field,val){ const k=DB.kunden.find(x=>x.id==id); if(!k)return; if(!k.stats)k.stats={}; k.stats[field]=parseFloat(val)||0; saveDB(); clearTimeout(_statTimers[id]); _statTimers[id]=setTimeout(()=>pushRecord('kunden',k),1500); }
+function addTodo(id){ const inp=document.getElementById('ti-'+id); const text=inp.value.trim(); if(!text)return; const k=DB.kunden.find(x=>x.id==id); if(!k)return; if(!k.todos)k.todos=[]; k.todos.push({text,done:false,addedBy:SESSION?.name||''}); inp.value=''; saveDB(); pushRecord('kunden',k); const card=document.getElementById('kc-'+id); if(card)card.outerHTML=renderKundeCard(k); }
+function toggleTodo(id,idx,val){ const k=DB.kunden.find(x=>x.id==id); if(!k)return; k.todos[idx].done=val; const done=k.todos.filter(t=>t.done).length; if(k.todos.length>0)k.progress=Math.round(done/k.todos.length*100); saveDB(); pushRecord('kunden',k); const card=document.getElementById('kc-'+id); if(card)card.outerHTML=renderKundeCard(k); }
+function deleteTodo(id,idx){ const k=DB.kunden.find(x=>x.id==id); if(!k)return; k.todos.splice(idx,1); saveDB(); pushRecord('kunden',k); const card=document.getElementById('kc-'+id); if(card)card.outerHTML=renderKundeCard(k); }
+
+// ── KUNDE MODAL ──
+function openKundeModal(id=null){
+  editKundeId=id;
+  const k=id?DB.kunden.find(x=>x.id==id):null;
+  document.getElementById('kmTitle').textContent=k?'KUNDE BEARBEITEN':'KUNDE ANLEGEN';
+  document.getElementById('kmDeleteBtn').style.display=k?'':'none';
+  if(k){
+    document.getElementById('km-name').value=k.name||'';
+    document.getElementById('km-branche').value=k.branche||'';
+    document.getElementById('km-prio').value=k.prio||1;
+    document.getElementById('km-time').value=k.time||'09:00';
+    document.getElementById('km-start').value=k.start||'';
+    document.getElementById('km-deadline').value=k.deadline||'';
+    document.getElementById('km-progress').value=k.progress||0;
+    document.getElementById('km-progress-val').textContent=(k.progress||0)+'%';
+    document.getElementById('km-massnahme').value=k.massnahme||'';
+    document.getElementById('km-engpass').value=k.engpass||'lead';
+    setAbrech(k.abrech||'pct');
+    document.getElementById('km-pct').value=k.pct||50;
+    document.getElementById('km-paket').value=k.paket||'';
+    document.getElementById('km-preis').value=k.preis||'';
+    document.getElementById('km-abrart').value=k.abrart||'einmalig';
+    document.getElementById('km-laufzeit').value=k.laufzeit||'';
+  } else {
+    document.getElementById('km-name').value='';
+    document.getElementById('km-branche').value='';
+    document.getElementById('km-prio').value=1;
+    document.getElementById('km-time').value='09:00';
+    document.getElementById('km-start').value=today();
+    document.getElementById('km-deadline').value='';
+    document.getElementById('km-progress').value=0;
+    document.getElementById('km-progress-val').textContent='0%';
+    document.getElementById('km-massnahme').value='';
+    document.getElementById('km-engpass').value='lead';
+    setAbrech('pct');
+    document.getElementById('km-pct').value=50;
+    document.getElementById('km-paket').value='';
+    document.getElementById('km-preis').value='';
+    document.getElementById('km-abrart').value='einmalig';
+    document.getElementById('km-laufzeit').value='';
+  }
+  document.getElementById('kundeModal').classList.add('open');
+}
+
+function editKunde(id){ openKundeModal(id); }
+function closeKundeModal(){ document.getElementById('kundeModal').classList.remove('open'); editKundeId=null; }
+function setAbrech(mode){ abrechMode=mode; document.getElementById('ropt-pct').classList.toggle('active',mode==='pct'); document.getElementById('ropt-fix').classList.toggle('active',mode==='fix'); document.getElementById('abrech-pct').style.display=mode==='pct'?'':'none'; document.getElementById('abrech-fix').style.display=mode==='fix'?'':'none'; }
+function onKmPaket(){ const sel=document.getElementById('km-paket'); const opt=sel.options[sel.selectedIndex]; if(opt.dataset.wert)document.getElementById('km-preis').value=opt.dataset.wert; if(opt.dataset.laufzeit)document.getElementById('km-laufzeit').value=opt.dataset.laufzeit; }
+
+function saveKunde(){
+  const name=document.getElementById('km-name').value.trim();
+  if(!name){ toast('Name eingeben!'); return; }
+  const data={
+    id:editKundeId||(uid()),
+    name,
+    branche:document.getElementById('km-branche').value.trim(),
+    prio:parseInt(document.getElementById('km-prio').value)||1,
+    time:document.getElementById('km-time').value,
+    abrech:abrechMode,
+    pct:parseFloat(document.getElementById('km-pct').value)||50,
+    paket:document.getElementById('km-paket').value,
+    preis:parseFloat(document.getElementById('km-preis').value)||0,
+    abrart:document.getElementById('km-abrart').value,
+    laufzeit:document.getElementById('km-laufzeit').value.trim(),
+    start:document.getElementById('km-start').value,
+    deadline:document.getElementById('km-deadline').value,
+    progress:parseInt(document.getElementById('km-progress').value)||0,
+    massnahme:document.getElementById('km-massnahme').value.trim(),
+    engpass:document.getElementById('km-engpass').value,
+  };
+  if(editKundeId){
+    const idx=DB.kunden.findIndex(x=>x.id==editKundeId);
+    if(idx>=0){ data.todos=DB.kunden[idx].todos||[]; data.stats=DB.kunden[idx].stats||{}; data.lohnt=DB.kunden[idx].lohnt||'check'; data.createdAt=DB.kunden[idx].createdAt; DB.kunden[idx]=data; }
+  } else {
+    data.todos=[]; data.stats={leads:0,gespraeche:0,abschluesse:0,umsatz:0}; data.lohnt='check'; data.createdAt=Date.now();
+    DB.kunden.push(data);
+  }
+  saveDB(); pushRecord('kunden', data); renderKunden(); closeKundeModal(); toast(editKundeId?'KUNDE AKTUALISIERT':'KUNDE ANGELEGT');
+}
+
+function deleteKunde(){
+  if(!editKundeId||!confirm('Kunden löschen?')) return;
+  const _dkid=editKundeId; DB.kunden=DB.kunden.filter(x=>x.id!=_dkid);
+  saveDB(); pushDelete('kunden',_dkid); renderKunden(); closeKundeModal(); toast('GELÖSCHT');
+}
+
+// ══════════════════════════════════════════════════════
+//  PROJEKTE
+// ══════════════════════════════════════════════════════
+function renderProjekte(){
+  const el=document.getElementById('tab-projekte');
+  const statusColors={'Aktiv':'tag-green','Abgeschlossen':'tag-blue','Pausiert':'tag-orange','In Planung':'tag-gray'};
+  el.innerHTML=`
+  <div class="page-header">
+    <div><h1>PROJEKTE</h1><p>${DB.projekte.filter(p=>p.status==='Aktiv').length} AKTIV · ${DB.projekte.filter(p=>p.status==='Abgeschlossen').length} ABGESCHLOSSEN</p></div>
+    <div class="page-actions"><button class="btn btn-b btn-sm" onclick="openProjektModal()">+ PROJEKT</button></div>
+  </div>
+  <div class="g3">${DB.projekte.map(p=>`
+    <div class="proj-card" onclick="openProjektModal('${p.id}')">
+      <div class="proj-name">${p.name}</div>
+      <div class="proj-client"><span class="mi mi-sm">person</span> ${p.client}</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%;background:var(--text-2)"></div></div>
+      <div class="proj-footer">
+        ${pillarTag(p.pillar)}
+        <span class="tag ${statusColors[p.status]||'tag-gray'}">${p.status}</span>
+        <span style="margin-left:auto;font-family:var(--fm);font-size:9px;color:var(--green2)">${p.progress}%</span>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function openProjektModal(editId=null){
+  const p=editId?DB.projekte.find(x=>x.id===editId):{};
+  const pillarOpts=['it','socials','ai'].map(pl=>`<option value="${pl}"${p.pillar===pl?' selected':''}>${{it:'IT',socials:'Socials',ai:'AI'}[pl]}</option>`).join('');
+  const statusOpts=['Aktiv','Abgeschlossen','Pausiert','In Planung'].map(s=>`<option value="${s}"${p.status===s?' selected':''}>${s}</option>`).join('');
+  const modal=document.createElement('div');
+  modal.className='mbg open';
+  modal.innerHTML=`<div class="modal">
+    <div class="mh"><div class="mt2">${editId?'PROJEKT BEARBEITEN':'NEUES PROJEKT'}</div><button class="mcl" onclick="this.closest('.mbg').remove()">✕</button></div>
+    <div class="mbody">
+      <div class="fg"><label>Projektname *</label><input id="pf-name" class="pf" value="${p.name||''}" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+      <div class="fgr">
+        <div class="fg"><label>Kunde/Client</label><input id="pf-client" class="pf" value="${p.client||''}" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+        <div class="fg"><label>Pillar</label><select id="pf-pillar" class="pf" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none">${pillarOpts}</select></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label>Status</label><select id="pf-status" class="pf" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none">${statusOpts}</select></div>
+        <div class="fg"><label>Budget (€)</label><input id="pf-budget" type="number" class="pf" value="${p.budget||''}" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label>Start</label><input id="pf-start" type="date" class="pf" value="${p.start||today()}" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+        <div class="fg"><label>Ende</label><input id="pf-end" type="date" class="pf" value="${p.end||''}" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+      </div>
+      <div class="fg"><label>Fortschritt: <span id="pf-pct-lbl">${p.progress||0}%</span></label>
+        <input type="range" id="pf-progress" min="0" max="100" value="${p.progress||0}" oninput="document.getElementById('pf-pct-lbl').textContent=this.value+'%'" style="width:100%;accent-color:var(--blue)"></div>
+      <div class="fg"><label>Notiz</label><textarea id="pf-notiz" rows="2" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none;resize:vertical">${p.notiz||''}</textarea></div>
+    </div>
+    <div class="mf">
+      ${editId?`<button class="btn btn-r btn-sm" style="margin-right:auto" onclick="deleteProjekt('${editId}',this)">LÖSCHEN</button>`:''}
+      <button class="btn btn-g" onclick="this.closest('.mbg').remove()">ABBRECHEN</button>
+      <button class="btn btn-b" onclick="saveProjekt('${editId||''}',this)">SPEICHERN</button>
+    </div>
+  </div>`;
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+  document.body.appendChild(modal);
+}
+
+function saveProjekt(editId,btn){
+  const modal=btn.closest('.mbg');
+  const name=modal.querySelector('#pf-name').value.trim();
+  if(!name){toast('Name eingeben!');return;}
+  const data={id:editId||uid(),name,client:modal.querySelector('#pf-client').value.trim(),pillar:modal.querySelector('#pf-pillar').value,status:modal.querySelector('#pf-status').value,budget:parseFloat(modal.querySelector('#pf-budget').value)||0,start:modal.querySelector('#pf-start').value,end:modal.querySelector('#pf-end').value,progress:parseInt(modal.querySelector('#pf-progress').value)||0,notiz:modal.querySelector('#pf-notiz').value.trim()};
+  if(editId){const i=DB.projekte.findIndex(p=>p.id===editId);if(i>=0)DB.projekte[i]=data;}
+  else DB.projekte.push(data);
+  saveDB(); pushRecord('projekte', data); modal.remove(); renderProjekte(); toast('PROJEKT GESPEICHERT');
+}
+function deleteProjekt(id,btn){if(!confirm('Projekt löschen?'))return;DB.projekte=DB.projekte.filter(p=>p.id!==id); saveDB(); pushDelete('projekte',id); btn.closest('.mbg').remove(); renderProjekte(); toast('GELÖSCHT');}
+
+// ══════════════════════════════════════════════════════
+//  FINANZEN
+// ══════════════════════════════════════════════════════
+function renderFinanzen(){
+  const el=document.getElementById('tab-finanzen');
+  const totalEin=DB.finanzen.reduce((s,f)=>s+f.einnahmen,0);
+  const totalAus=DB.finanzen.reduce((s,f)=>s+f.ausgaben,0);
+  const totalGewinn=totalEin-totalAus;
+  const lastM=DB.finanzen[DB.finanzen.length-1]||{einnahmen:0,ausgaben:0};
+  const marge=totalEin>0?Math.round((totalGewinn/totalEin)*100):0;
+
+  // Payments
+  const offen=DB.payments.filter(p=>p.status!=='bezahlt').reduce((s,p)=>s+p.betrag,0);
+  const bezahlt=DB.payments.filter(p=>p.status==='bezahlt').reduce((s,p)=>s+p.betrag,0);
+  const smap={offen:'var(--yellow)',bezahlt:'var(--green2)',überfällig:'var(--red)'};
+
+  el.innerHTML=`
+  <div class="page-header">
+    <div><h1>FINANZEN</h1><p>AGERIUM GBR – UMSATZ & KOSTEN</p></div>
+    <div class="page-actions"><button class="btn btn-b btn-sm" onclick="openFinanzModal()">+ MONAT</button></div>
+  </div>
+  <div class="g4 gap">
+    <div class="kpi"><div class="kpi-icon">trending_up</div><div class="kpi-label">GESAMTUMSATZ</div><div class="kpi-value">${fmtEurK(totalEin)}</div><div class="kpi-sub">${DB.finanzen.length} Monate</div></div>
+    <div class="kpi"><div class="kpi-icon">trending_down</div><div class="kpi-label">AUSGABEN</div><div class="kpi-value">${fmtEurK(totalAus)}</div></div>
+    <div class="kpi"><div class="kpi-icon">account_balance</div><div class="kpi-label">NETTOGEWINN</div><div class="kpi-value">${fmtEurK(totalGewinn)}</div><div class="kpi-delta up">${marge}% MARGE</div></div>
+    <div class="kpi"><div class="kpi-icon">calendar_month</div><div class="kpi-label">LETZTER MONAT</div><div class="kpi-value">${fmtEurK(lastM.einnahmen)}</div><div class="kpi-sub">Gewinn: ${fmtEurK(lastM.einnahmen-lastM.ausgaben)}</div></div>
+  </div>
+  <div class="g2">
+    <div>
+      <div class="card">
+        <div class="ch">MONATLICHE ÜBERSICHT</div>
+        <div class="tbl-wrap"><table><thead><tr><th>MONAT</th><th>EINNAHMEN</th><th>AUSGABEN</th><th>GEWINN</th><th>NOTIZ</th><th></th></tr></thead><tbody>
+        ${[...DB.finanzen].reverse().map(f=>{const g=f.einnahmen-f.ausgaben;return`<tr>
+          <td class="td-main">${f.monat}</td>
+          <td style="color:var(--green2);font-weight:700">${fmtEur(f.einnahmen)}</td>
+          <td style="color:var(--red2)">${fmtEur(f.ausgaben)}</td>
+          <td style="color:${g>=0?'var(--green2)':'var(--red2)'};font-weight:700">${fmtEur(g)}</td>
+          <td style="color:var(--muted)">${f.notiz||'—'}</td>
+          <td><button class="btn btn-g btn-sm" onclick="openFinanzModal('${f.id}')">✎</button></td>
+        </tr>`;}).join('')}
+        </tbody></table></div>
+      </div>
+    </div>
+    <div>
+      <div class="card gap">
+        <div class="ch">ZAHLUNGEN ERFASSEN</div>
+        <div class="fg"><label>Kunde</label><input type="text" id="pay-kunde" placeholder="Kundenname" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+        <div class="fgr">
+          <div class="fg"><label>Betrag (€)</label><input type="number" id="pay-betrag" placeholder="0" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+          <div class="fg"><label>Status</label>
+            <select id="pay-status" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none">
+              <option value="offen">Offen</option>
+              <option value="bezahlt">Bezahlt</option>
+              <option value="überfällig">Überfällig</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg"><label>Beschreibung</label><input type="text" id="pay-desc" placeholder="Website Starter Monat 1" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+        <button class="btn btn-b" style="width:100%" onclick="savePayment()">ZAHLUNG SPEICHERN</button>
+      </div>
+      <div class="card" style="padding:0">
+        <div class="ch" style="padding:12px 14px;border-bottom:1px solid var(--border)">ZAHLUNGSÜBERSICHT</div>
+        <div id="paymentList" style="max-height:280px;overflow-y:auto">
+          ${DB.payments.length===0?'<div style="padding:20px;text-align:center;color:var(--muted);font-family:var(--fm);font-size:9px">NOCH KEINE ZAHLUNGEN</div>':
+            [...DB.payments].reverse().map(p=>`<div class="pay-item">
+              <div style="flex:1"><div style="font-size:12px;font-weight:600">${p.kunde}</div><div style="font-family:var(--fm);font-size:8px;color:var(--muted)">${p.desc}</div></div>
+              <div style="font-family:var(--fd);font-size:18px;color:${smap[p.status]||'var(--muted)'}">${p.betrag.toLocaleString('de')} €</div>
+              <span style="font-family:var(--fm);font-size:7px;padding:2px 6px;border:1px solid ${smap[p.status]||'var(--border)'};color:${smap[p.status]||'var(--muted)'}">${p.status.toUpperCase()}</span>
+              <button onclick="deletePayment('${p.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px">✕</button>
+            </div>`).join('')}
+        </div>
+        <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;justify-content:space-between">
+          <span style="font-family:var(--fm);font-size:9px;color:var(--muted)">OFFEN</span>
+          <span style="font-family:var(--fd);font-size:18px;color:var(--red)">${fmtEur(offen)}</span>
+        </div>
+        <div style="padding:0 14px 10px;display:flex;justify-content:space-between">
+          <span style="font-family:var(--fm);font-size:9px;color:var(--muted)">BEZAHLT</span>
+          <span style="font-family:var(--fd);font-size:18px;color:var(--green2)">${fmtEur(bezahlt)}</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openFinanzModal(editId=null){
+  const f=editId?DB.finanzen.find(x=>x.id===editId):{};
+  const modal=document.createElement('div');
+  modal.className='mbg open';
+  modal.innerHTML=`<div class="modal">
+    <div class="mh"><div class="mt2">${editId?'MONAT BEARBEITEN':'MONAT ERFASSEN'}</div><button class="mcl" onclick="this.closest('.mbg').remove()">✕</button></div>
+    <div class="mbody">
+      <div class="fg"><label>Monat (YYYY-MM) *</label><input id="ff-monat" value="${f.monat||''}" placeholder="2026-04" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+      <div class="fgr">
+        <div class="fg"><label>Einnahmen (€)</label><input id="ff-ein" type="number" value="${f.einnahmen||''}" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+        <div class="fg"><label>Ausgaben (€)</label><input id="ff-aus" type="number" value="${f.ausgaben||''}" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+      </div>
+      <div class="fg"><label>Notiz</label><input id="ff-notiz" value="${f.notiz||''}" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+    </div>
+    <div class="mf">
+      ${editId?`<button class="btn btn-r btn-sm" style="margin-right:auto" onclick="deleteFinanz('${editId}',this)">LÖSCHEN</button>`:''}
+      <button class="btn btn-g" onclick="this.closest('.mbg').remove()">ABBRECHEN</button>
+      <button class="btn btn-b" onclick="saveFinanz('${editId||''}',this)">SPEICHERN</button>
+    </div>
+  </div>`;
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+  document.body.appendChild(modal);
+}
+function saveFinanz(editId,btn){
+  const modal=btn.closest('.mbg');
+  const monat=modal.querySelector('#ff-monat').value.trim();
+  if(!monat){toast('Monat eingeben!');return;}
+  const data={id:editId||uid(),monat,einnahmen:parseFloat(modal.querySelector('#ff-ein').value)||0,ausgaben:parseFloat(modal.querySelector('#ff-aus').value)||0,notiz:modal.querySelector('#ff-notiz').value.trim()};
+  if(editId){const i=DB.finanzen.findIndex(f=>f.id===editId);if(i>=0)DB.finanzen[i]=data;}else DB.finanzen.push(data);
+  saveDB(); pushRecord('finanzen', data); modal.remove(); renderFinanzen(); toast('GESPEICHERT');
+}
+function deleteFinanz(id,btn){if(!confirm('Löschen?'))return;DB.finanzen=DB.finanzen.filter(f=>f.id!==id);saveDB();pushDelete('finanzen',id);btn.closest('.mbg').remove();renderFinanzen();toast('GELÖSCHT');}
+function savePayment(){
+  const kunde=document.getElementById('pay-kunde').value.trim();
+  if(!kunde){toast('Kunde eingeben!');return;}
+  const p={id:uid(),kunde,betrag:parseFloat(document.getElementById('pay-betrag').value)||0,status:document.getElementById('pay-status').value,desc:document.getElementById('pay-desc').value.trim()};
+  DB.payments.push(p); saveDB(); pushRecord('payments', p); renderFinanzen(); toast('ZAHLUNG GESPEICHERT');
+}
+function deletePayment(id){ if(!confirm('Zahlung löschen?'))return; DB.payments=DB.payments.filter(p=>p.id!==id); saveDB(); pushDelete('payments',id); renderFinanzen(); }
+
+// ══════════════════════════════════════════════════════
+//  SOCIAL MEDIA
+// ══════════════════════════════════════════════════════
+function renderSocial(){
+  const el=document.getElementById('tab-social');
+  const plIcons={instagram:'photo_camera',tiktok:'music_note',linkedin:'business_center',youtube:'play_circle',facebook:'thumb_up'};
+  const stColors={geplant:'tag-gray','in-produktion':'tag-gray',fertig:'tag-gray',gepostet:'tag-gray'};
+  const totalReach=DB.contentItems.reduce((s,p)=>s+(p.reach||0),0);
+  const live=DB.contentItems.filter(p=>p.status==='gepostet').length;
+
+  const filtered=contentFilter==='all'?DB.contentItems:DB.contentItems.filter(p=>p.plattform===contentFilter||p.pillar===contentFilter);
+
+  const platStats=['instagram','tiktok','linkedin','youtube'].map(pl=>{
+    const cnt=DB.contentItems.filter(p=>p.plattform===pl).length;
+    const reach=DB.contentItems.filter(p=>p.plattform===pl).reduce((s,p)=>s+(p.reach||0),0);
+    return `<div class="kpi"><div class="kpi-icon">${plIcons[pl]||'share'}</div><div class="kpi-label">${pl.toUpperCase()}</div><div class="kpi-value">${cnt}</div><div class="kpi-sub">${reach>0?reach.toLocaleString('de')+' REACH':'—'}</div></div>`;
+  }).join('');
+
+  el.innerHTML=`
+  <div class="page-header">
+    <div><h1>SOCIAL MEDIA</h1><p>${live} GEPOSTET · ${totalReach.toLocaleString('de')} TOTAL REACH</p></div>
+    <div class="page-actions"><button class="btn btn-b btn-sm" onclick="openContentModal()">+ CONTENT</button></div>
+  </div>
+  <div class="g4 gap">${platStats}</div>
+  <div class="filter-bar">
+    <button class="cflt active" onclick="setSocialFilter('all',this)">ALLE</button>
+    <button class="cflt" onclick="setSocialFilter('instagram',this)">INSTAGRAM</button>
+    <button class="cflt" onclick="setSocialFilter('tiktok',this)">TIKTOK</button>
+    <button class="cflt" onclick="setSocialFilter('linkedin',this)">LINKEDIN</button>
+    <button class="cflt" onclick="setSocialFilter('ai',this)">AI</button>
+    <button class="cflt" onclick="setSocialFilter('it',this)">IT</button>
+    <button class="cflt" onclick="setSocialFilter('socials',this)">SOCIALS</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px">
+    ${filtered.map(p=>`
+      <div class="content-card" onclick="openContentModal('${p.id}')">
+        <div class="cc-title">${p.title}</div>
+        <div class="cc-meta">${(p.plattform||'—').toUpperCase()} · ${(p.format||'').toUpperCase()} · ${fmtDate(p.datum)}</div>
+        <div class="cc-footer">
+          ${pillarTag(p.pillar)}
+          <span class="tag ${stColors[p.status]||'tag-gray'}">${p.status}</span>
+          ${p.reach>0?`<span style="margin-left:auto;font-family:var(--fm);font-size:8px;color:var(--green2)">👁 ${p.reach.toLocaleString('de')}</span>`:''}
+        </div>
+      </div>`).join('')||'<div style="padding:40px;text-align:center;color:var(--muted);font-family:var(--fm);font-size:9px;grid-column:1/-1">NOCH KEIN CONTENT GEPLANT</div>'}
+  </div>`;
+}
+
+function setSocialFilter(f,btn){contentFilter=f;document.querySelectorAll('.cflt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderSocial();}
+
+function openContentModal(id=null){
+  editContentId=id;
+  const item=id?DB.contentItems.find(x=>x.id===id):null;
+  document.getElementById('cmTitle').textContent=item?'CONTENT BEARBEITEN':'CONTENT ANLEGEN';
+  document.getElementById('cmDelBtn').style.display=item?'':'none';
+  if(item){
+    document.getElementById('cm-title').value=item.title||'';
+    document.getElementById('cm-plattform').value=item.plattform||'instagram';
+    document.getElementById('cm-format').value=item.format||'reel';
+    document.getElementById('cm-status').value=item.status||'geplant';
+    document.getElementById('cm-datum').value=item.datum||'';
+    document.getElementById('cm-person').value=item.person||'Sonif';
+    document.getElementById('cm-pillar').value=item.pillar||'ai';
+    document.getElementById('cm-desc').value=item.desc||'';
+    document.getElementById('cm-kunde').value=item.kunde||'';
+    document.getElementById('cm-reach').value=item.reach||0;
+  } else {
+    ['cm-title','cm-desc','cm-kunde'].forEach(i=>{document.getElementById(i).value='';});
+    document.getElementById('cm-plattform').value='instagram';
+    document.getElementById('cm-format').value='reel';
+    document.getElementById('cm-status').value='geplant';
+    document.getElementById('cm-datum').value='';
+    document.getElementById('cm-person').value='Sonif';
+    document.getElementById('cm-pillar').value='ai';
+    document.getElementById('cm-reach').value=0;
+  }
+  document.getElementById('contentModal').classList.add('open');
+}
+function closeContentModal(){ document.getElementById('contentModal').classList.remove('open'); editContentId=null; }
+function saveContent(){
+  const title=document.getElementById('cm-title').value.trim();
+  if(!title){toast('Titel eingeben!');return;}
+  const item={
+    id:editContentId||uid(),title,
+    plattform:document.getElementById('cm-plattform').value,
+    format:document.getElementById('cm-format').value,
+    status:document.getElementById('cm-status').value,
+    datum:document.getElementById('cm-datum').value,
+    person:document.getElementById('cm-person').value,
+    pillar:document.getElementById('cm-pillar').value,
+    desc:document.getElementById('cm-desc').value.trim(),
+    kunde:document.getElementById('cm-kunde').value.trim(),
+    reach:parseInt(document.getElementById('cm-reach').value)||0,
+    createdAt:Date.now()
+  };
+  if(editContentId){const idx=DB.contentItems.findIndex(x=>x.id===editContentId);if(idx>=0)DB.contentItems[idx]=item;}
+  else DB.contentItems.push(item);
+  saveDB(); pushRecord('contentItems', item); closeContentModal(); renderSocial(); toast(editContentId?'AKTUALISIERT':'CONTENT ANGELEGT');
+  checkReminders();
+}
+function deleteContent(){if(!editContentId||!confirm('Content löschen?'))return;const _dcid=editContentId; DB.contentItems=DB.contentItems.filter(x=>x.id!==_dcid); saveDB(); pushDelete('contentItems',_dcid); closeContentModal(); renderSocial(); toast('GELÖSCHT');}
+
+// ══════════════════════════════════════════════════════
+//  WOCHENPLAN
+// ══════════════════════════════════════════════════════
+function renderWochenplan(){
+  const el=document.getElementById('tab-wochenplan');
+  const saved=PERSONAL.calUrl||'';
+
+  const DAYS=['MO','DI','MI','DO','FR'];
+  const HOURS=['08:00','09:00','10:00','11:00','14:00','15:00'];
+  const grid={};
+  HOURS.forEach(h=>{grid[h]={};DAYS.forEach(d=>{grid[h][d]=null;});});
+
+  function slot(hour,day,label,type){ if(!grid[hour]||!grid[hour][day]===undefined) return; if(!grid[hour][day]) grid[hour][day]={label,type}; }
+
+  // 1. Kunden-Calls nach Prio + Uhrzeit
+  const byPrio=(p)=>(DB.kunden||[]).filter(k=>k.prio===p);
+  byPrio(1).forEach((k,i)=>{
+    const h=HOURS.includes(k.time)?k.time:(parseInt(k.time||9)<12?'09:00':'14:00');
+    slot(h,['MO','MI'][i%2],k.name+' · Call','kunde');
+  });
+  byPrio(2).forEach((k,i)=>{
+    const h=HOURS.includes(k.time)?k.time:(parseInt(k.time||10)<12?'10:00':'14:00');
+    slot(h,['DI','DO'][i%2],k.name+' · Check-in','kunde');
+  });
+  byPrio(3).forEach((k,i)=>{
+    slot(HOURS[i%3],'FR',k.name+' · Quick','kunde');
+  });
+
+  // 2. Aktive Projekte → nachmittags
+  (DB.projekte||[]).filter(p=>p.status==='Aktiv').forEach((p,i)=>{
+    slot(['14:00','15:00'][i%2],DAYS[i%5],p.name,'projekt');
+  });
+
+  // 3. Heiße Leads → Sales Calls
+  (DB.leads||[]).filter(l=>['verhandlung','angebot'].includes(l.stage)).slice(0,3).forEach((l,i)=>{
+    slot('10:00',['DI','MI','DO'][i],(l.name||l.firm||'Lead')+' · Closing','lead');
+  });
+
+  // 4. Content diese Woche
+  const heute=new Date(); heute.setHours(0,0,0,0);
+  const wEnd=new Date(heute); wEnd.setDate(heute.getDate()+(4-heute.getDay()>0?4-heute.getDay():4));
+  (DB.contentItems||[]).filter(c=>{
+    if(!c.datum||c.status==='gepostet') return false;
+    const d=new Date(c.datum); d.setHours(0,0,0,0);
+    return d>=heute&&d<=wEnd;
+  }).slice(0,3).forEach((c,i)=>{
+    const slts=[['09:00','DI'],['09:00','DO'],['08:00','MI']];
+    const [h,d]=slts[i]||['11:00','FR'];
+    slot(h,d,(c.title||'Content').substring(0,28)+(c.title&&c.title.length>28?'…':''),'content');
+  });
+
+  // 5. Overdue Follow-ups
+  getOverdueLeads().slice(0,2).forEach((l,i)=>{
+    slot('08:00',i===0?'MO':'DI',(l.name||l.firm||'Lead')+' · Follow-up ⚠','followup');
+  });
+
+  // 6. Fixtermine (nur wenn Slot frei)
+  slot('08:00','MO','Woche planen + Prio','fix');
+  slot('08:00','FR','Woche auswerten','fix');
+  slot('15:00','MO','Hakan Sync','fix');
+  slot('11:00','MI','CRM + Follow-ups','fix');
+
+  // Render
+  const sty={
+    kunde:   'background:rgba(255,255,255,.06);border-left:2px solid var(--text-2)',
+    projekt: 'background:rgba(47,111,237,.08);border-left:2px solid var(--accent)',
+    lead:    'background:rgba(31,174,106,.08);border-left:2px solid var(--s-green)',
+    content: 'background:rgba(233,129,40,.08);border-left:2px solid var(--s-orange)',
+    followup:'background:rgba(231,76,60,.1);border-left:2px solid var(--s-red)',
+    fix:     'background:rgba(255,255,255,.03);border-left:2px solid var(--border-hi)',
+  };
+
+  let gHtml='<div class="wph">UHRZEIT</div>';
+  DAYS.forEach(d=>{ gHtml+=`<div class="wph day" id="wh-${d.toLowerCase()}">${d}</div>`; });
+  HOURS.forEach(h=>{
+    gHtml+=`<div class="ws tc">${h}</div>`;
+    DAYS.forEach(d=>{
+      const c=grid[h][d];
+      gHtml+=c
+        ?`<div class="ws"><div style="${sty[c.type]};padding:4px 7px;font-size:10px;line-height:1.4;height:100%;display:flex;align-items:center;border-radius:3px">${c.label}</div></div>`
+        :`<div class="ws"></div>`;
+    });
+  });
+
+  const legItems=[['kunde','Kunden-Call'],['projekt','Projekt'],['lead','Sales/Closing'],['content','Content'],['followup','Follow-up ⚠'],['fix','Fixtermin']];
+  const legHtml=legItems.map(([t,l])=>`<div style="display:flex;align-items:center;gap:6px"><div style="width:10px;height:10px;border-radius:2px;${sty[t]}"></div><span style="font-family:var(--fm);font-size:9px;color:var(--text-2)">${l}</span></div>`).join('');
+
+  const emptyNote=DB.kunden.length===0&&DB.projekte.length===0
+    ?`<div style="padding:20px;text-align:center;color:var(--text-3);font-family:var(--fm);font-size:10px;border:1px dashed var(--border);border-radius:8px;margin-bottom:16px">Noch keine Daten. Kunden und Projekte anlegen — der Plan füllt sich automatisch.</div>`:'';
+
+  const kundenCallsHtml=DB.kunden.length===0
+    ?'<div style="color:var(--text-3);font-size:12px">Noch keine Kunden angelegt.</div>'
+    :[...DB.kunden].sort((a,b)=>a.prio-b.prio||(a.time||'').localeCompare(b.time||'')).map(k=>`
+      <div style="display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="font-family:var(--fm);font-size:11px;color:var(--text-3);width:46px;flex-shrink:0">${k.time||'—'}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:700">${k.name}</div><div style="font-family:var(--fm);font-size:9px;color:var(--text-3);margin-top:2px">${k.branche||'—'} · Prio ${k.prio}</div></div>
+        <div style="display:flex;gap:6px">
+          <button onclick="openGoogleCalEvent('${k.name}','${k.time||''}')" style="background:var(--raised);border:1px solid var(--border-hi);color:var(--text-2);font-family:var(--fm);font-size:9px;padding:4px 10px;cursor:pointer;border-radius:5px">📅 Termin</button>
+          <button onclick="openZoom()" style="background:var(--raised);border:1px solid var(--border-hi);color:var(--text-2);font-family:var(--fm);font-size:9px;padding:4px 10px;cursor:pointer;border-radius:5px">🎥 Zoom</button>
+        </div>
+      </div>`).join('');
+
+  el.innerHTML=`
+  <div class="page-header">
+    <div><h1>WOCHENPLAN</h1><p>AUTOMATISCH AUS KUNDEN · PROJEKTEN · LEADS · CONTENT</p></div>
+    <div class="page-actions"><button class="btn btn-g btn-sm" onclick="renderWochenplan()"><span class="mi mi-sm">refresh</span> AKTUALISIEREN</button></div>
+  </div>
+  ${emptyNote}
+  <div class="card gap">
+    <div class="ch">KW ${getKW()} — ${new Date().toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'})}</div>
+    <div class="wplan">${gHtml}</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">${legHtml}</div>
+  </div>
+  <div class="sec">KUNDEN-CALLS</div>
+  <div class="card gap">${kundenCallsHtml}</div>
+  <div class="sec">GOOGLE KALENDER</div>
+  <div class="card gap">
+    <div class="ch">KALENDER EINBETTEN</div>
+    <div style="font-size:12px;color:var(--text-2);line-height:1.8;margin-bottom:12px">Google Kalender → Einstellungen → Kalender → Einbettungscode → <strong style="color:var(--text)">src=""</strong> URL kopieren.</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <input class="surl" type="url" id="calUrl" value="${saved}" placeholder="https://calendar.google.com/calendar/embed?src=...">
+      <button class="btn btn-b btn-sm" onclick="saveCalUrl()">SPEICHERN</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <a href="https://calendar.google.com" target="_blank" class="btn btn-b btn-sm">📅 KALENDER ÖFFNEN</a>
+      <a href="https://calendly.com" target="_blank" class="btn btn-g btn-sm">🔗 CALENDLY</a>
+    </div>
+  </div>
+  <div id="calEmbedWrap" style="margin-top:16px">${saved?`<iframe src="${saved}" style="border:0;width:100%;height:560px;border-radius:10px" frameborder="0" scrolling="no"></iframe>`:'<div style="padding:30px;text-align:center;color:var(--text-3);font-family:var(--fm);font-size:10px;border:1px dashed var(--border);border-radius:10px">Kalender-URL oben eingeben</div>'}</div>`;
+  highlightToday();
+}
+
+function getKW(){
+  const d=new Date(); const jan4=new Date(d.getFullYear(),0,4);
+  return Math.ceil(((d-jan4)/86400000+jan4.getDay()+1)/7);
+}
+
+function saveCalUrl(){
+  const url=document.getElementById('calUrl')?.value.trim();
+  if(!url){toast('URL eingeben!');return;}
+  PERSONAL.calUrl=url; savePersonal();
+  const embed=document.getElementById('calEmbedWrap');
+  if(embed) embed.innerHTML=`<iframe src="${url}" style="border:0;width:100%;height:580px" frameborder="0" scrolling="no"></iframe>`;
+  toast('KALENDER GESPEICHERT');
+}
+
+// ══════════════════════════════════════════════════════
+//  KONTROLLE
+// ══════════════════════════════════════════════════════
+function renderKontrolle(){
+  const el=document.getElementById('tab-kontrolle');
+  // Auto-fill from CRM
+  const wStart=new Date(); wStart.setHours(0,0,0,0); wStart.setDate(wStart.getDate()-wStart.getDay());
+  const gespraeche=DB.leads.filter(l=>l.stage!=='neu').length;
+  const abschluesse=DB.leads.filter(l=>l.stage==='closed'&&new Date(l.datum)>=wStart).length;
+  const wUmsatz=DB.leads.filter(l=>l.stage==='closed'&&new Date(l.datum)>=wStart).reduce((s,l)=>s+(l.wert||0),0);
+  const outreach=parseInt(PERSONAL.outreach)||0;
+
+  const cvr=gespraeche>0?Math.round(DB.leads.filter(l=>l.stage==='closed').length/gespraeche*100):0;
+  const forecast=DB.leads.filter(l=>['verhandlung','angebot'].includes(l.stage)).reduce((s,l)=>s+(l.wert||0),0);
+  const closedTotal=DB.leads.filter(l=>l.stage==='closed').reduce((s,l)=>s+(l.wert||0),0);
+  const ziel=DB.settings?.zielUmsatz||20000;
+
+  el.innerHTML=`
+  <div class="page-header"><div><h1>KONTROLLE</h1><p>WÖCHENTLICHE AUSWERTUNG + KUNDEN-BEWERTUNG</p></div></div>
+  <div class="g2">
+    <div>
+      <div class="card gap">
+        <div class="ch">A) AGERIUM WOCHE — AUSWERTUNG</div>
+        <div style="font-size:12px">
+          <div class="act-row"><span class="act-lbl">Outreach (Ziel: 100)</span><div class="act-controls"><input type="number" class="act-input" id="wk-out" value="${outreach}"><div class="act-bar-wrap"><div class="act-bar-fill" style="width:${Math.min(100,outreach)}%"></div></div></div></div>
+          <div class="act-row"><span class="act-lbl">Gespräche (Ziel: 10) <span style="font-family:var(--fm);font-size:8px;color:var(--blue)">← aus CRM</span></span><div class="act-controls"><input type="number" class="act-input" id="wk-g" value="${gespraeche}"><div class="act-bar-wrap"><div class="act-bar-fill" style="width:${Math.min(100,gespraeche/10*100)}%"></div></div></div></div>
+          <div class="act-row"><span class="act-lbl">Abschlüsse (Ziel: 2) <span style="font-family:var(--fm);font-size:8px;color:var(--green2)">← aus CRM</span></span><div class="act-controls"><input type="number" class="act-input" id="wk-a" value="${abschluesse}"><div class="act-bar-wrap"><div class="act-bar-fill" style="width:${Math.min(100,abschluesse/2*100)}%;background:var(--green2)"></div></div></div></div>
+          <div class="act-row"><span class="act-lbl">Umsatz (Ziel: 3.300 €) <span style="font-family:var(--fm);font-size:8px;color:var(--green2)">← aus CRM</span></span><div class="act-controls"><input type="number" class="act-input" id="wk-u" value="${wUmsatz}" style="width:85px"><div class="act-bar-wrap"><div class="act-bar-fill" style="width:${Math.min(100,wUmsatz/3300*100)}%;background:var(--green2)"></div></div></div></div>
+        </div>
+        <div style="display:flex;gap:7px;margin-top:8px">
+          <button class="btn btn-g btn-sm" style="flex:1" onclick="saveActivity()">AKTIVITÄTEN SPEICHERN</button>
+          <button class="btn btn-b" style="flex:1" onclick="calcKontrolle()">AUSWERTEN</button>
+        </div>
+        <div class="verd" id="vbox"><div class="vl" id="vl"></div><div class="vs" id="vs"></div></div>
+      </div>
+      <div class="card">
+        <div class="ch">PIPELINE KENNZAHLEN</div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span style="font-size:12px">Conversion Rate</span><span style="font-family:var(--fm);font-size:11px;color:var(--green2)">${cvr}%</span></div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span style="font-size:12px">30-Tage Forecast</span><span style="font-family:var(--fm);font-size:11px;color:var(--orange)">${fmtEurK(forecast)}</span></div>
+        <div style="padding:6px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span style="font-size:12px">Closed Gesamt</span><span style="font-family:var(--fm);font-size:11px;color:var(--blue)">${fmtEurK(closedTotal)}</span></div>
+        <div style="padding:6px 0;display:flex;justify-content:space-between"><span style="font-size:12px">Ziel Noch offen</span><span style="font-family:var(--fm);font-size:11px;color:var(--red2)">${fmtEurK(Math.max(0,ziel-closedTotal))}</span></div>
+        <div class="progress-bar" style="margin-top:10px"><div class="progress-fill" style="width:${Math.min(100,(closedTotal/ziel)*100)}%;background:var(--green2)"></div></div>
+        <div style="font-family:var(--fm);font-size:8px;color:var(--muted);margin-top:4px;text-align:right">${Math.round((closedTotal/ziel)*100)}% VON ZIEL ${fmtEurK(ziel)}</div>
+      </div>
+    </div>
+    <div>
+      <div class="card gap">
+        <div class="ch">B) KUNDEN — BEWERTUNG</div>
+        <div id="k-bewertung">${renderKundenBewertung()}</div>
+      </div>
+      <div class="card">
+        <div class="ch">6-WOCHEN ENTSCHEIDUNG</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px">
+          <div style="padding:10px;border:1px solid var(--border-hi);background:var(--raised);text-align:center"><div style="font-family:var(--fd);font-size:13px;letter-spacing:2px;color:var(--s-green-hi);margin-bottom:3px">VOLLZEIT</div><div style="font-family:var(--fm);font-size:7px;color:var(--muted)">≥ 20.000 €</div></div>
+          <div style="padding:10px;border:1px solid var(--border);background:var(--raised);text-align:center"><div style="font-family:var(--fd);font-size:13px;letter-spacing:2px;color:var(--text-2);margin-bottom:3px">STABILISIEREN</div><div style="font-family:var(--fm);font-size:7px;color:var(--muted)">12k–20k €</div></div>
+          <div style="padding:10px;border:1px solid var(--border);background:var(--raised);text-align:center"><div style="font-family:var(--fd);font-size:13px;letter-spacing:2px;color:var(--text-3);margin-bottom:3px">JOB SUCHEN</div><div style="font-family:var(--fm);font-size:7px;color:var(--muted)">< 12.000 €</div></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderKundenBewertung(){
+  return DB.kunden.map(k=>{
+    const ant=k.abrech==='pct'?(k.stats?.umsatz||0)*(k.pct/100):(k.stats?.umsatz||0);
+    const v=ant>500?['SKALIEREN','var(--s-green-hi)']:ant>0?['BEOBACHTEN','var(--text-2)']:['PRÜFEN','var(--text-3)'];
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)"><span style="font-size:11px;font-weight:600">${k.name}</span><span style="font-family:var(--fm);font-size:10px;color:var(--green2)">${fmtEurK(ant)}</span><span style="font-family:var(--fm);font-size:7px;letter-spacing:1px;padding:2px 7px;border:1px solid ${v[1]};color:${v[1]};background:${v[1]}22">${v[0]}</span></div>`;
+  }).join('');
+}
+
+function calcKontrolle(){
+  const out=parseInt(document.getElementById('wk-out').value)||0;
+  const g=parseInt(document.getElementById('wk-g').value)||0;
+  const a=parseInt(document.getElementById('wk-a').value)||0;
+  const u=parseFloat(document.getElementById('wk-u').value)||0;
+  const cvr=g>0?Math.round(a/g*100):0;
+  const box=document.getElementById('vbox'),vl=document.getElementById('vl'),vs=document.getElementById('vs');
+  box.classList.add('show');
+  if(u>=3300&&out>=100){box.style.cssText='border:1px solid var(--green2);background:rgba(31,174,106,.05)';vl.style.color='var(--green2)';vl.textContent='✓ AUF KURS';vs.textContent=`${u.toLocaleString('de')} € · ${cvr}% CVR · ${out} Outreach.`;}
+  else if(u>=1500){box.style.cssText='border:1px solid var(--yellow);background:rgba(241,196,15,.04)';vl.style.color='var(--yellow)';vl.textContent='⚠ AUSBAUFÄHIG';vs.textContent=`${u.toLocaleString('de')} €. ${out<100?'Outreach erhöhen. ':''}${cvr<20?'Closing verbessern.':''}`;}
+  else{box.style.cssText='border:1px solid var(--red);background:rgba(231,76,60,.05)';vl.style.color='var(--red)';vl.textContent='✗ NICHT GELIEFERT';vs.textContent=out<50?'Outreach zu niedrig.':'Gespräche ohne Abschlüsse.';}
+}
+
+function saveActivity(){
+  const out=document.getElementById('wk-out');
+  if(out){ PERSONAL.outreach=parseInt(out.value)||0; savePersonal(); }
+  toast('AKTIVITÄTEN GESPEICHERT');
+}
+
+// ══════════════════════════════════════════════════════
+//  GOOGLE SHEETS SYNC
+// ══════════════════════════════════════════════════════
+function renderSheets(){
+  const el=document.getElementById('tab-sheets');
+  const savedUrl=DB.settings?.appsScriptUrl||API_URL;
+  el.innerHTML=`
+  <div class="page-header"><div><h1>GOOGLE SHEETS</h1><p>BIDIREKTIONALE SYNCHRONISATION</p></div></div>
+  <div class="g2">
+    <div>
+      <div class="card gap">
+        <div class="ch">VERBINDUNG</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.8;margin-bottom:10px">
+          Verbinde dein Google Apps Script als Web-App.<br>
+          Synct automatisch: <strong style="color:var(--text)">Leads · Kunden · Projekte · Finanzen · Content · Zahlungen</strong><br>Gerätespezifisch (nie synchronisiert): Kalender-URL · Wochenplanung · Aktivitätszähler<br>
+          Pull alle 60s · Push bei jeder Änderung · Alle Geräte synchron.
+        </div>
+        <input class="surl" id="sheetsUrl" type="url" value="${savedUrl}" placeholder="https://script.google.com/macros/s/.../exec" style="margin-bottom:8px">
+        <div style="display:flex;gap:7px">
+          <button class="btn btn-b btn-sm" onclick="startSync(document.getElementById('sheetsUrl').value)" id="btnSync">SYNC STARTEN</button>
+          <button class="btn btn-g btn-sm" onclick="stopSync()">STOP</button>
+          <button class="btn btn-g btn-sm" onclick="manualSync()">JETZT SYNC</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);margin-top:10px">
+          <div class="sdot" id="sdotPage"></div>
+          <span style="font-family:var(--fm);font-size:10px;letter-spacing:1px" id="slblPage">NICHT VERBUNDEN</span>
+          <span style="font-family:var(--fm);font-size:9px;color:var(--muted);margin-left:auto">Letzter Sync: <span id="lastSyncTime">—</span></span>
+        </div>
+        <div id="apiErrorBox" style="display:none;padding:9px 12px;background:rgba(231,76,60,.08);border-left:3px solid var(--red);font-family:var(--fm);font-size:9px;color:var(--red);line-height:1.7;margin-top:8px;word-break:break-all"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+          <span style="font-size:11px">Browser-Benachrichtigungen</span>
+          <button class="btn btn-b btn-sm" onclick="reqNotif()" id="notifBtn">ERLAUBEN</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch">SPREADSHEET ID</div>
+        <input class="surl" id="sheetId" value="${DB.settings?.spreadsheetId||''}" placeholder="1DYu-pgwlOLCv-9OlyggfQAvgMC7ZBcw_z5d-_LYFeXY" style="margin-bottom:8px">
+        <button class="btn btn-b btn-sm" onclick="saveSheetSettings()">SPEICHERN</button>
+      </div>
+      <div class="card gap">
+        <div class="ch">DATENSICHERUNG</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.8;margin-bottom:8px">
+          Exportiere alle CRM-Daten als JSON-Backup oder stelle aus einem Backup wieder her.<br>
+          Das Backup enthält: <strong style="color:var(--text)">Leads · Kunden · Projekte · Finanzen · Content · Zahlungen · Dokumente · Todos</strong>
+        </div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <button class="btn btn-b btn-sm" onclick="exportBackup()">${ic('download','mi-sm')} JSON BACKUP</button>
+          <button class="btn btn-b btn-sm" onclick="pushAllToSheets()" style="background:var(--green)">${ic('cloud_upload','mi-sm')} ALLES → SHEET PUSHEN</button>
+          <label class="btn btn-g btn-sm" style="cursor:pointer">${ic('upload','mi-sm')} BACKUP LADEN
+            <input type="file" accept=".json" onchange="importBackup(event)" style="display:none">
+          </label>
+        </div>
+        <div id="backupStatus" style="display:none;padding:8px 12px;margin-top:8px;border-radius:6px;font-family:var(--fm);font-size:10px"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card gap">
+        <div class="ch">SYNC-LOG</div>
+        <div class="g3" style="margin-bottom:8px">
+          <div class="stat"><div class="sv" style="font-size:20px" id="sh-imp">0</div><div class="sl">IMPORTIERT</div></div>
+          <div class="stat"><div class="sv" style="font-size:20px" id="sh-dup">0</div><div class="sl">DUPLIKATE</div></div>
+          <div class="stat"><div class="sv" style="font-size:20px" id="sh-syn">${syncCount}</div><div class="sl">SYNC-LÄUFE</div></div>
+        </div>
+        <div class="sync-log" id="syncLog">
+          <div class="li"><span class="lt">--:--</span><span class="lok">System bereit. Sync wird gestartet...</span></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  checkNotif();
+}
+
+function saveSheetSettings(){
+  DB.settings.appsScriptUrl=document.getElementById('sheetsUrl').value.trim();
+  DB.settings.spreadsheetId=document.getElementById('sheetId').value.trim();
+  saveDB(); toast('VERBINDUNG GESPEICHERT');
+}
+
+// ══════════════════════════════════════════════════════
+//  SYNC HELPERS — Logging, Status Dot, Error Display
+// ══════════════════════════════════════════════════════
+function addLog(msg, type){
+  const log=document.getElementById('syncLog');
+  if(!log) return;
+  const t=new Date().toLocaleTimeString('de',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const cls = type==='err'?'color:var(--red)': type==='warn'?'color:#F0AD4E':'color:var(--green)';
+  const entry=document.createElement('div');
+  entry.className='li';
+  entry.innerHTML=`<span class="lt">${t}</span><span style="${cls}">${msg}</span>`;
+  log.prepend(entry);
+  // Keep max 50 entries
+  while(log.children.length>50) log.lastChild.remove();
+}
+
+function setSyncDot(connected, error){
+  const dot=document.getElementById('sdotPage');
+  const lbl=document.getElementById('slblPage');
+  if(dot){
+    dot.style.background=error?'var(--red)':connected?'var(--green)':'var(--muted)';
+    dot.style.boxShadow=connected&&!error?'0 0 6px var(--green)':'none';
+  }
+  if(lbl) lbl.textContent=error?'FEHLER':connected?'VERBUNDEN':'NICHT VERBUNDEN';
+}
+
+function setApiError(msg){
+  const box=document.getElementById('apiErrorBox');
+  if(!box) return;
+  if(msg){ box.style.display='block'; box.textContent='Fehler: '+msg; }
+  else { box.style.display='none'; box.textContent=''; }
+}
+
+// ══════════════════════════════════════════════════════
+//  SYNC ENGINE — Google Sheets as central DB
+//  All collections sync bidirectionally.
+//  Each device pulls every 60s. Writes push immediately.
+//  Sheet tabs: leads | kunden | projekte | finanzen | content | payments
+// ══════════════════════════════════════════════════════
+const COLLECTIONS = ['leads','kunden','projekte','finanzen','contentItems','payments'];
+
+async function startSync(url){
+  if(!url) url=DB.settings?.appsScriptUrl||API_URL;
+  if(!url){ addLog('Keine URL','err'); return; }
+  DB.settings.appsScriptUrl=url;
+  saveLocal();
+  if(syncTimer) clearInterval(syncTimer);
+
+  // ── PULL-FIRST: Always load from Sheets before any push ──
+  // Prevents empty localStorage from overwriting Sheet data
+  addLog('Erstlade Daten vom Server...','ok');
+  await pullAll(url);
+  _initialPullDone=true;
+
+  // Flush any pushes that were queued during the initial pull
+  if(_pushQueue.length>0){
+    addLog(_pushQueue.length+' gepufferte Änderungen werden gepusht...','ok');
+    for(const job of _pushQueue){
+      if(job.type==='upsert') await _doPush(job.collection, job.record);
+      else if(job.type==='delete') await _doDelete(job.collection, job.id);
+    }
+    _pushQueue=[];
+  }
+
+  syncTimer=setInterval(()=>pullAll(url), 60000);
+  setSyncDot(true);
+}
+
+function stopSync(){
+  if(syncTimer){ clearInterval(syncTimer); syncTimer=null; }
+  setSyncDot(false,false);
+  addLog('Sync gestoppt','warn');
+}
+
+function manualSync(){
+  const url=DB.settings?.appsScriptUrl||API_URL;
+  pullAll(url);
+}
+
+// ── PULL: Sheets → CRM (all collections) ──
+async function pullAll(url){
+  if(!url) return;
+  syncCount++;
+  const synEl=document.getElementById('sh-syn');
+  if(synEl) synEl.textContent=syncCount;
+  try{
+    const resp=await fetch(url+'?action=getAll',{cache:'no-store'});
+    const data=await resp.json();
+    if(!data.ok) throw new Error(data.error||'API Fehler');
+
+    const t=new Date().toLocaleTimeString('de',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    const ltEl=document.getElementById('lastSyncTime');
+    if(ltEl) ltEl.textContent=t;
+    setSyncDot(true);
+
+    let changed=false;
+
+    // ── FRESH BROWSER: Replace local defaults with remote data ──
+    // This prevents empty default data from overwriting real Sheet data
+    if(_isFreshBrowser && !_initialPullDone){
+      addLog('Frischer Browser erkannt — lade alle Daten vom Sheet','ok');
+      if(data.leads && data.leads.length>0)    { DB.leads=data.leads.map(r=>mergeLead(null,r));    changed=true; }
+      if(data.kunden && data.kunden.length>0)  { DB.kunden=data.kunden.map(r=>mergeKunde(null,r)); changed=true; }
+      if(data.projekte && data.projekte.length>0){ DB.projekte=data.projekte;  changed=true; }
+      if(data.finanzen && data.finanzen.length>0){ DB.finanzen=data.finanzen;  changed=true; }
+      if(data.content && data.content.length>0)  { DB.contentItems=data.content; changed=true; }
+      if(data.payments && data.payments.length>0){ DB.payments=data.payments;  changed=true; }
+      _isFreshBrowser=false; // Only do this once
+    } else {
+      // Normal merge — remote wins for new/updated records
+      if(data.leads)     { mergeCollection('leads',     data.leads,     mergeLead);    changed=true; }
+      if(data.kunden)    { mergeCollection('kunden',    data.kunden,    mergeKunde);   changed=true; }
+      if(data.projekte)  { mergeCollection('projekte',  data.projekte,  mergeGeneric); changed=true; }
+      if(data.finanzen)  { mergeCollection('finanzen',  data.finanzen,  mergeGeneric); changed=true; }
+      if(data.content)   { mergeCollection('contentItems', data.content, mergeGeneric); changed=true; }
+      if(data.payments)  { mergeCollection('payments',  data.payments,  mergeGeneric); changed=true; }
+    }
+
+    if(changed){
+      saveLocal();
+      refreshCurrentTab();
+    }
+    addLog('Sync OK · '+new Date().toLocaleTimeString('de'),'ok');
+  }catch(e){
+    setSyncDot(false,true);
+    setApiError(e.message);
+    addLog('Sync Fehler: '+e.message,'err');
+  }
+}
+
+// Merge strategy: remote record wins unless local has newer updatedAt
+function mergeCollection(key, remoteArr, mergeFn){
+  if(!Array.isArray(remoteArr)) return;
+  let localArr = DB[key]||[];
+  let newCount = 0;
+
+  remoteArr.forEach(remote=>{
+    const idx = localArr.findIndex(l=>String(l.id)===String(remote.id));
+    if(idx>=0){
+      // Update if remote is newer or same age
+      const remoteTs = remote.updatedAt||remote.createdAt||0;
+      const localTs  = localArr[idx].updatedAt||localArr[idx].createdAt||0;
+      if(remoteTs >= localTs){
+        localArr[idx] = mergeFn(localArr[idx], remote);
+      }
+    } else {
+      // New record from remote
+      localArr.push(mergeFn(null, remote));
+      newCount++;
+      if(key==='leads') {
+        showInAppNotif(remote);
+        sendBrowserNotif(remote);
+      }
+    }
+  });
+
+  DB[key] = localArr;
+  if(newCount>0) impCount+=newCount;
+  const ie=document.getElementById('sh-imp'); if(ie)ie.textContent=impCount;
+}
+
+function mergeLead(local, remote){
+  const stage = normalizeStage(String(remote.stage||'neu'));
+  return {
+    id:       String(remote.id),
+    name:     remote.name||local?.name||'',
+    firm:     remote.firma||remote.firm||local?.firm||'',
+    firma:    remote.firma||remote.firm||local?.firma||'',
+    telefon:  remote.telefon||local?.telefon||'',
+    email:    remote.email||local?.email||'',
+    kanal:    remote.quelle||remote.kanal||local?.kanal||'API',
+    quelle:   remote.quelle||remote.kanal||local?.quelle||'API',
+    stage,
+    pillar:   remote.pillar||local?.pillar||'it',
+    paket:    remote.paket||local?.paket||'',
+    paketLabel: remote.angebot||remote.paketLabel||local?.paketLabel||'',
+    wert:     parseFloat(remote.wert||remote.value||local?.wert||0)||0,
+    next:     remote.next||local?.next||'',
+    followup: remote.followup||local?.followup||'',
+    notizen:  local?.notizen||[],
+    datum:    remote.datum||remote.date||local?.datum||new Date().toISOString(),
+    updatedAt: remote.updatedAt||Date.now(),
+    isNew:    !local,
+    _fromApi: true
+  };
+}
+
+function mergeKunde(local, remote){
+  // Prefer local for rich fields (todos, stats, massnahme)
+  // Prefer remote for basic identity fields
+  if(!local) return {
+    id:       String(remote.id),
+    name:     remote.name||'',
+    branche:  remote.branche||'',
+    prio:     parseInt(remote.prio)||2,
+    time:     remote.time||'10:00',
+    abrech:   remote.abrech||'fix',
+    pct:      parseFloat(remote.pct)||0,
+    paket:    remote.paket||'',
+    preis:    parseFloat(remote.preis)||0,
+    abrart:   remote.abrart||'einmalig',
+    laufzeit: remote.laufzeit||'',
+    start:    remote.start||'',
+    deadline: remote.deadline||'',
+    progress: parseInt(remote.progress)||0,
+    massnahme:remote.massnahme||'',
+    engpass:  remote.engpass||'lead',
+    lohnt:    remote.lohnt||'check',
+    todos:    [],
+    stats:    {leads:0,gespraeche:0,abschluesse:0,umsatz:0},
+    createdAt:Date.now(),
+    updatedAt:remote.updatedAt||Date.now()
+  };
+  // Merge todos: combine both, deduplicate by text
+  const remoteTodos = remote.todos ? (typeof remote.todos==='string' ? JSON.parse(remote.todos||'[]') : remote.todos) : [];
+  const localTodos  = local.todos||[];
+  const mergedTodos = [...localTodos];
+  remoteTodos.forEach(rt=>{
+    if(!mergedTodos.some(lt=>lt.text===rt.text)) mergedTodos.push(rt);
+  });
+  // Stats: take max values (optimistic merge)
+  const rs = remote.stats ? (typeof remote.stats==='string' ? JSON.parse(remote.stats||'{}') : remote.stats) : {};
+  const ls = local.stats||{};
+  const mergedStats = {
+    leads:      Math.max(parseInt(rs.leads)||0, ls.leads||0),
+    gespraeche: Math.max(parseInt(rs.gespraeche)||0, ls.gespraeche||0),
+    abschluesse:Math.max(parseInt(rs.abschluesse)||0, ls.abschluesse||0),
+    umsatz:     Math.max(parseFloat(rs.umsatz)||0, ls.umsatz||0),
+  };
+  return {
+    ...local,
+    name:     remote.name||local.name,
+    branche:  remote.branche||local.branche,
+    prio:     parseInt(remote.prio)||local.prio,
+    massnahme:remote.massnahme||local.massnahme,
+    progress: parseInt(remote.progress)||local.progress,
+    engpass:  remote.engpass||local.engpass,
+    lohnt:    remote.lohnt||local.lohnt,
+    todos:    mergedTodos,
+    stats:    mergedStats,
+    updatedAt:remote.updatedAt||Date.now()
+  };
+}
+
+function mergeGeneric(local, remote){
+  return { ...( local||{} ), ...remote, id: String(remote.id||local?.id||uid()) };
+}
+
+function normalizeStage(s){
+  s=s.toLowerCase().trim();
+  if(s.includes('closed')||s.includes('abgeschlossen')||s==='won')return'closed';
+  if(s.includes('lost')||s.includes('verloren'))return'lost';
+  if(s.includes('verhand')||s.includes('negotiat'))return'verhandlung';
+  if(s.includes('angebot')||s.includes('offer')||s.includes('proposal'))return'angebot';
+  if(s.includes('kontakt')||s.includes('contact'))return'kontakt';
+  return'neu';
+}
+
+// ── PUSH: CRM → Sheets (single record) ──
+// Queues pushes until first pull is done (prevents overwriting Sheet data)
+async function pushRecord(collection, record){
+  if(!_initialPullDone){
+    _pushQueue.push({type:'upsert', collection, record});
+    return;
+  }
+  await _doPush(collection, record);
+}
+
+async function _doPush(collection, record){
+  const url=DB.settings?.appsScriptUrl||API_URL;
+  if(!url) return;
+  record.updatedAt = Date.now();
+  try{
+    await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ action:'upsert', collection, record })
+    });
+  }catch(e){ addLog('Push Fehler: '+e.message,'err'); }
+}
+
+// ── PUSH DELETE ──
+async function pushDelete(collection, id){
+  if(!_initialPullDone){
+    _pushQueue.push({type:'delete', collection, id});
+    return;
+  }
+  await _doDelete(collection, id);
+}
+
+async function _doDelete(collection, id){
+  const url=DB.settings?.appsScriptUrl||API_URL;
+  if(!url) return;
+  try{
+    await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ action:'delete', collection, id:String(id) })
+    });
+  }catch(e){}
+}
+
+// Legacy aliases so existing saveLead/saveKunde calls still work
+function writeToSheet(lead){ pushRecord('leads', lead); }
+function deleteFromSheet(id){ pushDelete('leads', id); }
+
+// ── REFRESH current tab after pull ──
+function refreshCurrentTab(){
+  const active=document.querySelector('.nav-item.active');
+  if(!active) return;
+  const onclick=active.getAttribute('onclick')||'';
+  const match=onclick.match(/'(\w+)'/);
+  if(match){
+    const fns={cockpit:renderCockpit,crm:renderCRM,kunden:renderKunden,projekte:renderProjekte,
+               finanzen:renderFinanzen,social:renderSocial,kontrolle:renderKontrolle};
+    if(fns[match[1]]) fns[match[1]]();
+  }
+}
+
+// ── LOCAL STORAGE (device cache only) ──
+function saveLocal(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }catch(e){}
+  const t=new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  const el=document.getElementById('syncLbl');
+  if(el) el.textContent=t+' SYNC';
+}
+
+// Override saveDB to also push to Sheets
+function saveDB(){ saveLocal(); }
+
+
+// ── BACKUP / RESTORE / PUSH-ALL ──
+function exportBackup(){
+  const backup={
+    _meta:{ version:5, exportedAt:new Date().toISOString(), exportedBy:SESSION?.name||'unknown' },
+    leads:DB.leads||[], kunden:DB.kunden||[], projekte:DB.projekte||[],
+    finanzen:DB.finanzen||[], contentItems:DB.contentItems||[], payments:DB.payments||[],
+    dokumente:DB.dokumente||[], globalTodos:DB.globalTodos||[], settings:DB.settings
+  };
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='agerium-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(a.href);
+  showBackupStatus('Backup exportiert — '+new Date().toLocaleTimeString('de'),true);
+  toast('BACKUP EXPORTIERT');
+}
+
+function importBackup(ev){
+  const file=ev.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.kunden && !data.leads){ toast('Ungültiges Backup!'); return; }
+      // Merge: don't overwrite, add missing records
+      let added=0;
+      ['leads','kunden','projekte','finanzen','contentItems','payments','dokumente','globalTodos'].forEach(key=>{
+        if(!data[key]||!Array.isArray(data[key])) return;
+        if(!DB[key]) DB[key]=[];
+        data[key].forEach(rec=>{
+          if(!DB[key].some(local=>String(local.id)===String(rec.id))){
+            DB[key].push(rec); added++;
+          }
+        });
+      });
+      saveLocal();
+      refreshCurrentTab();
+      showBackupStatus(added+' neue Datensätze importiert',true);
+      toast(added+' DATENSÄTZE IMPORTIERT');
+    }catch(err){ toast('Fehler beim Import: '+err.message); }
+  };
+  reader.readAsText(file);
+  ev.target.value=''; // Reset input
+}
+
+async function pushAllToSheets(){
+  const url=DB.settings?.appsScriptUrl||API_URL;
+  if(!url){ toast('Keine API-URL konfiguriert!'); return; }
+  if(!confirm('Alle lokalen Daten ans Google Sheet senden? Bestehende Einträge werden aktualisiert.')) return;
+  showBackupStatus('Push läuft...',false);
+  let count=0;
+  const collections={leads:DB.leads||[], kunden:DB.kunden||[]};
+  for(const [key,arr] of Object.entries(collections)){
+    for(const rec of arr){
+      try{
+        await fetch(url,{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ action:'upsert', collection:key, record:rec })
+        });
+        count++;
+      }catch(e){ addLog('Push-All Fehler bei '+key+': '+e.message,'err'); }
+    }
+  }
+  showBackupStatus(count+' Datensätze an Sheet gepusht',true);
+  addLog('Push-All: '+count+' Datensätze gesendet','ok');
+  toast(count+' DATENSÄTZE GEPUSHT');
+}
+
+function showBackupStatus(msg,ok){
+  const el=document.getElementById('backupStatus');
+  if(!el) return;
+  el.style.display='block';
+  el.style.background=ok?'rgba(31,174,106,0.08)':'rgba(47,111,237,0.08)';
+  el.style.borderLeft=ok?'3px solid #1FAE6A':'3px solid #2F6FED';
+  el.style.color=ok?'#1FAE6A':'#2F6FED';
+  el.textContent=msg;
+  setTimeout(()=>{ el.style.display='none'; },8000);
+}
+
+// ── NOTIFICATIONS ──
+function checkNotif(){ const btn=document.getElementById('notifBtn'); if(!btn)return; if(Notification.permission==='granted'){btn.textContent='✓ AKTIV';btn.className='btn btn-g btn-sm';}else if(Notification.permission==='denied'){btn.textContent='✗ BLOCKIERT';} }
+function reqNotif(){ Notification.requestPermission().then(()=>checkNotif()); }
+function sendBrowserNotif(l){ if(Notification.permission!=='granted')return; new Notification('🔔 Neuer AGERIUM Lead!',{body:`${l.name||l.firm||'Unbekannt'} — ${l.paketLabel||'Paket offen'}`}); }
+function showInAppNotif(l){ const bar=document.getElementById('notifBar'); if(!bar)return; const n=document.createElement('div'); n.className='notif'; n.innerHTML=`<div class="ntit">🔔 NEUER LEAD</div><div class="nbod" style="font-size:11px"><strong>${l.name||l.firm||'Unbekannt'}</strong><br>${l.paketLabel||'Kein Paket'}</div><button class="ncl" onclick="this.parentElement.remove()" style="position:absolute;top:6px;right:8px;background:none;border:none;color:var(--muted);cursor:pointer">✕</button>`; bar.appendChild(n); setTimeout(()=>n.remove(),8000); }
+
+// ══════════════════════════════════════════════════════
+//  REMINDERS
+// ══════════════════════════════════════════════════════
+function checkReminders(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const alerts=[];
+  const overdueLeads=getOverdueLeads();
+  overdueLeads.forEach(l=>alerts.push({type:'lead',label:`Follow-up überfällig: ${l.name||l.firm}`,urgent:true}));
+  DB.contentItems.filter(i=>i.datum&&new Date(i.datum)<today&&i.status!=='gepostet').forEach(i=>alerts.push({type:'content',label:`Content überfällig: ${i.title}`}));
+  DB.kunden.forEach(k=>{const open=(k.todos||[]).filter(t=>!t.done);if(open.length>0)alerts.push({type:'todo',label:`${k.name}: ${open.length} offene To-dos`});});
+  const badge=document.getElementById('reminderBadge');
+  if(badge){ if(alerts.length>0){badge.style.display='flex';badge.textContent=alerts.length;}else{badge.style.display='none';} }
+  if(alerts.filter(a=>a.urgent).length>0&&Notification.permission==='granted'){
+    new Notification('⚠ AGERIUM CRM Alert',{body:`${alerts.filter(a=>a.urgent).length} überfällige Follow-ups`});
+  }
+  return alerts;
+}
+
+function showReminders(){
+  const alerts=checkReminders();
+  if(alerts.length===0){toast('✓ KEINE OFFENEN ERINNERUNGEN');return;}
+  alert('⚠ OFFENE ERINNERUNGEN\n\n'+alerts.slice(0,8).map(a=>'• '+a.label).join('\n')+(alerts.length>8?`\n...+${alerts.length-8} weitere`:''));
+}
+
+// ══════════════════════════════════════════════════════
+//  SETTINGS
+// ══════════════════════════════════════════════════════
+function renderSettings(){
+  const el=document.getElementById('tab-settings');
+  el.innerHTML=`
+  <div class="page-header"><div><h1>EINSTELLUNGEN</h1><p>SYSTEM-KONFIGURATION & DATENVERWALTUNG</p></div></div>
+  ${DB.leads.length===0&&DB.kunden.length===0?`
+  <div style="background:var(--raised);border:1px solid var(--border-hi);border-left:3px solid var(--accent);padding:16px 20px;margin-bottom:20px;border-radius:8px">
+    <div style="font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--text-3);margin-bottom:8px">ERSTE SCHRITTE</div>
+    <div style="font-size:13px;line-height:1.8;color:var(--text)">
+      <strong>1.</strong> Google Apps Script deployen (Code im Sheets-Tab) → URL eintragen → <strong>Sync starten</strong><br>
+      <strong>2.</strong> Calendly ist bereits mit Sheets verbunden → Leads kommen automatisch rein<br>
+      <strong>3.</strong> Kunden und Projekte im CRM direkt anlegen → automatisch zu Sheets synchronisiert<br>
+      <strong>4.</strong> Hakan öffnet dieselbe URL → meldet sich an → sieht live dieselben Daten
+    </div>
+  </div>`:``}
+  <div class="g2">
+    <div>
+      <div class="card gap">
+        <div class="ch">FIRMA</div>
+        <div class="settings-row"><div class="settings-info"><h4>Firmenname</h4><p>${DB.settings.firma}</p></div><span class="tag tag-blue">GBR</span></div>
+        <div class="settings-row"><div class="settings-info"><h4>Partner 1</h4><p>${DB.settings.partner1}</p></div><span class="tag tag-green">ADMIN</span></div>
+        <div class="settings-row"><div class="settings-info"><h4>Partner 2</h4><p>${DB.settings.partner2}</p></div><span class="tag tag-green">PARTNER</span></div>
+        <div class="settings-row"><div class="settings-info"><h4>Standort</h4><p>${DB.settings.adresse}</p></div></div>
+        <div class="settings-row"><div class="settings-info"><h4>Monatsziel (€)</h4><p>Aktuell: ${fmtEurK(DB.settings.zielUmsatz)}</p></div>
+          <input type="number" id="st-ziel" value="${DB.settings.zielUmsatz||20000}" style="width:100px;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fm);font-size:12px;padding:4px 8px;outline:none">
+        </div>
+        <button class="btn btn-b btn-sm" onclick="saveZiel()">ZIEL SPEICHERN</button>
+      </div>
+      <div class="card">
+        <div class="ch">BENUTZERVERWALTUNG</div>
+        ${DB.users.map(u=>`<div class="settings-row">
+          <div class="settings-info"><h4>${u.name}</h4><p>PIN: ${u.pin} · ${ROLES[u.role]?.label||u.role}</p></div>
+          <div style="width:24px;height:24px;border-radius:6px;background:${u.color||'var(--blue)'}"></div>
+        </div>`).join('')}
+        <button class="btn btn-b btn-sm" style="margin-top:8px" onclick="openUserModal()">+ BENUTZER</button>
+      </div>
+    </div>
+    <div>
+      <div class="card gap">
+        <div class="ch">DATENVERWALTUNG</div>
+        <div class="settings-row"><div class="settings-info"><h4>Export</h4><p>Vollständiges JSON-Backup</p></div><button class="btn btn-g btn-sm" onclick="exportData()">EXPORT</button></div>
+        <div class="settings-row"><div class="settings-info"><h4>Import</h4><p>JSON-Backup wiederherstellen</p></div><label class="btn btn-g btn-sm" style="cursor:pointer">IMPORT<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label></div>
+        <div class="settings-row"><div class="settings-info"><h4>⚠ Reset</h4><p>Alle Daten zurücksetzen</p></div><button class="btn btn-r btn-sm" onclick="resetData()">RESET</button></div>
+      </div>
+      <div class="card">
+        <div class="ch">SYSTEM INFO</div>
+        <div class="settings-row"><div class="settings-info"><h4>Version</h4></div><span class="tag tag-blue">v5.0</span></div>
+        <div class="settings-row"><div class="settings-info"><h4>Leads gesamt</h4></div><span style="font-family:var(--fm);font-size:11px">${DB.leads.length}</span></div>
+        <div class="settings-row"><div class="settings-info"><h4>Kunden gesamt</h4></div><span style="font-family:var(--fm);font-size:11px">${DB.kunden.length}</span></div>
+        <div class="settings-row"><div class="settings-info"><h4>Projekte gesamt</h4></div><span style="font-family:var(--fm);font-size:11px">${DB.projekte.length}</span></div>
+        <div class="settings-row"><div class="settings-info"><h4>Storage genutzt</h4></div><span style="font-family:var(--fm);font-size:11px">${(JSON.stringify(DB).length/1024).toFixed(1)} KB</span></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function saveZiel(){ DB.settings.zielUmsatz=parseInt(document.getElementById('st-ziel').value)||20000; saveDB(); toast('ZIEL GESPEICHERT'); renderSettings(); }
+function exportData(){ const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`agerium_crm_v5_backup_${today()}.json`; a.click(); toast('EXPORT ERFOLGREICH'); }
+function importData(e){ const file=e.target.files[0]; if(!file)return; const reader=new FileReader(); reader.onload=ev=>{try{const d=JSON.parse(ev.target.result); if(!d.users||!d.leads){toast('UNGÜLTIGE BACKUP-DATEI');return;} if(!confirm('Alle Daten überschreiben?'))return; DB=d;saveDB();switchTab('cockpit');toast('IMPORT ERFOLGREICH');}catch(err){toast('FEHLER BEIM IMPORT');}}; reader.readAsText(file); }
+function resetData(){ if(!confirm('WIRKLICH alle Daten zurücksetzen?'))return; DB=defaultDB();saveDB();switchTab('cockpit');toast('RESET ABGESCHLOSSEN'); }
+
+function openUserModal(){
+  const modal=document.createElement('div');
+  modal.className='mbg open';
+  modal.innerHTML=`<div class="modal">
+    <div class="mh"><div class="mt2">BENUTZER ANLEGEN</div><button class="mcl" onclick="this.closest('.mbg').remove()">✕</button></div>
+    <div class="mbody">
+      <div class="fgr">
+        <div class="fg"><label>Name *</label><input id="uf-name" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+        <div class="fg"><label>Rolle</label><select id="uf-role" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"><option value="admin">Admin</option><option value="partner">Partner</option><option value="mitarbeiter">Mitarbeiter</option></select></div>
+      </div>
+      <div class="fgr">
+        <div class="fg"><label>PIN (4–6 Stellen)</label><input id="uf-pin" type="password" maxlength="6" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fb);font-size:12px;padding:7px 10px;outline:none"></div>
+        <div class="fg"><label>Farbe</label><input id="uf-color" type="color" value="#2F6FED" style="width:100%;height:36px;background:var(--bg3);border:1px solid var(--border);padding:2px 4px;outline:none;cursor:pointer"></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="this.closest('.mbg').remove()">ABBRECHEN</button>
+      <button class="btn btn-b" onclick="saveUser(this)">SPEICHERN</button>
+    </div>
+  </div>`;
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+  document.body.appendChild(modal);
+}
+function saveUser(btn){
+  const modal=btn.closest('.mbg');
+  const name=modal.querySelector('#uf-name').value.trim();
+  if(!name){toast('Name eingeben!');return;}
+  const color=modal.querySelector('#uf-color').value;
+  const u={id:uid(),name,role:modal.querySelector('#uf-role').value,pin:modal.querySelector('#uf-pin').value||'0000',color,initials:name.split(' ').map(n=>n[0]).join('').substr(0,2).toUpperCase()};
+  DB.users.push(u);
+  saveDB();modal.remove();renderSettings();toast('BENUTZER ANGELEGT');
+}
+
+// ══════════════════════════════════════════════════════
+//  INTEGRATIONEN
+// ══════════════════════════════════════════════════════
+function ig(){ return DB.settings.integrations||{}; }
+function saveIntegrations(){
+  if(!DB.settings.integrations) DB.settings.integrations={};
+  const fields=['stripeKey','stripePricingTableId','lexwareUrl','zoomLink','qontoUrl','metaAccountId','googleCalendarId'];
+  fields.forEach(f=>{
+    const el=document.getElementById('int-'+f);
+    if(el) DB.settings.integrations[f]=el.value.trim();
+  });
+  saveDB(); toast('INTEGRATIONEN GESPEICHERT'); renderIntegrationen();
+}
+
+function openStripeLink(kundenName, betrag){
+  const key=ig().stripeKey||'';
+  if(!key){ toast('Stripe Key in Integrationen hinterlegen!'); switchTab('integrationen'); return; }
+  // Open Stripe payment link creation with prefilled amount
+  const params=new URLSearchParams({
+    amount: Math.round((betrag||0)*100),
+    currency:'eur',
+    description: encodeURIComponent('AGERIUM – '+kundenName)
+  });
+  window.open('https://dashboard.stripe.com/payment-links/create?'+params.toString(),'_blank');
+}
+
+function openStripeForLead(leadId){
+  const l=DB.leads.find(x=>x.id==leadId);
+  if(!l){ toast('Lead nicht gefunden'); return; }
+  openStripeLink(l.name||l.firm||'Lead', l.wert||0);
+}
+
+function openLexware(kundenName){
+  const base=ig().lexwareUrl||'https://app.lexware.de';
+  window.open(base,'_blank');
+  if(kundenName) { setTimeout(()=>{ navigator.clipboard.writeText(kundenName).catch(()=>{}); toast('Kundenname kopiert: '+kundenName); },400); }
+}
+
+function openZoom(){
+  const link=ig().zoomLink||'';
+  if(!link){ toast('Zoom-Link in Integrationen hinterlegen!'); switchTab('integrationen'); return; }
+  navigator.clipboard.writeText(link).then(()=>toast('Zoom-Link kopiert!')).catch(()=>window.open(link,'_blank'));
+}
+
+function openQonto(){
+  window.open(ig().qontoUrl||'https://app.qonto.com','_blank');
+}
+
+function openMeta(){
+  const accId=ig().metaAccountId||'';
+  const url=accId
+    ? `https://business.facebook.com/adsmanager/manage/campaigns?act=${accId}`
+    : 'https://business.facebook.com/adsmanager';
+  window.open(url,'_blank');
+}
+
+function openGoogleCalEvent(kundenName, uhrzeit){
+  const now=new Date();
+  const dateStr=now.toISOString().replace(/-|:|\.\d{3}/g,'').substr(0,15)+'00Z';
+  const endStr=new Date(now.getTime()+3600000).toISOString().replace(/-|:|\.\d{3}/g,'').substr(0,15)+'00Z';
+  const title=encodeURIComponent('AGERIUM · '+kundenName+(uhrzeit?' · '+uhrzeit:''));
+  window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dateStr}/${endStr}`,'_blank');
+}
+
+function renderIntegrationen(){
+  const el=document.getElementById('tab-integrationen');
+  const i=ig();
+
+  const intCard=(title,icon,color,desc,fields,actions)=>`
+  <div class="card gap" style="border-left:3px solid ${color}">
+    <div class="ch" style="--blue:${color}">${icon} ${title}</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px">${desc}</div>
+    ${fields.map(f=>`
+      <div style="margin-bottom:8px">
+        <div style="font-family:var(--fm);font-size:7px;color:var(--muted);letter-spacing:2px;margin-bottom:4px">${f.label}</div>
+        <input id="int-${f.key}" type="${f.type||'text'}" value="${i[f.key]||''}" placeholder="${f.placeholder||''}"
+          style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fm);font-size:11px;padding:6px 10px;outline:none">
+      </div>`).join('')}
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:6px">
+      ${actions}
+    </div>
+  </div>`;
+
+  el.innerHTML=`
+  <div class="page-header">
+    <div><h1>INTEGRATIONEN</h1><p>EXTERNE TOOLS — KONFIGURATION & ABSPRÜNGE</p></div>
+    <div class="page-actions"><button class="btn btn-b btn-sm" onclick="saveIntegrations()">ALLE SPEICHERN</button></div>
+  </div>
+  <div class="g2">
+    <div>
+      ${intCard('Stripe','💳','#635BFF','Zahlungslinks direkt aus Kunden- oder Lead-Karte starten.',[
+        {key:'stripeKey',label:'STRIPE PUBLISHABLE KEY (Optional — nur für Anzeige)',placeholder:'pk_live_...'},
+      ],`
+        <button class="btn btn-b btn-sm" onclick="window.open('https://dashboard.stripe.com/payment-links','_blank')">PAYMENT LINKS ÖFFNEN</button>
+        <button class="btn btn-g btn-sm" onclick="window.open('https://dashboard.stripe.com','_blank')">DASHBOARD</button>
+      `)}
+
+      ${intCard('Lexware','📋','#0062FF','Rechnungen erstellen — Kundennamen wird in Clipboard kopiert.',[
+        {key:'lexwareUrl',label:'LEXWARE URL',placeholder:'https://app.lexware.de'},
+      ],`
+        <button class="btn btn-b btn-sm" onclick="openLexware('')">LEXWARE ÖFFNEN</button>
+      `)}
+
+      ${intCard('Google Kalender','📅','#4285F4','Termine anlegen mit Kundennamen vorausgefüllt.',[
+        {key:'googleCalendarId',label:'KALENDER-EMBED URL (optional)',placeholder:'https://calendar.google.com/calendar/embed?src=...'},
+      ],`
+        <button class="btn btn-b btn-sm" onclick="openGoogleCalEvent('AGERIUM Call','')">TEST-TERMIN ERSTELLEN</button>
+        <button class="btn btn-g btn-sm" onclick="window.open('https://calendar.google.com','_blank')">KALENDER ÖFFNEN</button>
+      `)}
+    </div>
+    <div>
+      ${intCard('Zoom','🎥','#2D8CFF','Meeting-Link hinterlegen — per Klick in Clipboard kopieren.',[
+        {key:'zoomLink',label:'EUER FESTER ZOOM-LINK',placeholder:'https://us05web.zoom.us/j/...'},
+      ],`
+        <button class="btn btn-b btn-sm" onclick="openZoom()">LINK KOPIEREN</button>
+        <button class="btn btn-g btn-sm" onclick="window.open('https://zoom.us/meeting','_blank')">ZOOM ÖFFNEN</button>
+      `)}
+
+      ${intCard('Qonto','🏦','#FF4B4B','Direktsprung zum Geschäftskonto Dashboard.',[
+        {key:'qontoUrl',label:'QONTO URL',placeholder:'https://app.qonto.com'},
+      ],`
+        <button class="btn btn-b btn-sm" onclick="openQonto()">QONTO ÖFFNEN</button>
+        <button class="btn btn-g btn-sm" onclick="window.open('https://app.qonto.com/transactions','_blank')">TRANSAKTIONEN</button>
+      `)}
+
+      ${intCard('Meta Ads','📣','#1877F2','Direktsprung zum Ads Manager mit Account-ID.',[
+        {key:'metaAccountId',label:'META AD ACCOUNT ID',placeholder:'1234567890'},
+      ],`
+        <button class="btn btn-b btn-sm" onclick="openMeta()">ADS MANAGER ÖFFNEN</button>
+        <button class="btn btn-g btn-sm" onclick="window.open('https://business.facebook.com','_blank')">META BUSINESS</button>
+      `)}
+    </div>
+  </div>
+
+  <div class="sec">SCHNELLZUGRIFF — ALLE TOOLS</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-b" onclick="window.open('https://dashboard.stripe.com/payment-links','_blank')" style="background:#635BFF">💳 Stripe</button>
+    <button class="btn btn-b" onclick="openLexware('')" style="background:#0062FF">📋 Lexware</button>
+    <button class="btn btn-b" onclick="window.open('https://calendar.google.com','_blank')" style="background:#4285F4">📅 Google Kalender</button>
+    <button class="btn btn-b" onclick="openZoom()" style="background:#2D8CFF">🎥 Zoom</button>
+    <button class="btn btn-b" onclick="openQonto()" style="background:#FF4B4B">🏦 Qonto</button>
+    <button class="btn btn-b" onclick="openMeta()" style="background:#1877F2">📣 Meta Ads</button>
+    <button class="btn btn-b" onclick="window.open('https://calendly.com','_blank')" style="background:#006BFF">🔗 Calendly</button>
+    <button class="btn btn-b" onclick="window.open('${API_URL}','_blank')" style="background:var(--green)">📊 Google Sheets</button>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  DOKUMENTE
+// ══════════════════════════════════════════════════════
+function renderDokumente(){
+  const el=document.getElementById('tab-dokumente');
+  if(!DB.dokumente) DB.dokumente=[];
+  const docs=DB.dokumente;
+  const kategorien=['Angebot','Vertrag','Rechnung','NDA','Sonstiges'];
+  const katFilter=window._dokKat||'alle';
+  const filtered=katFilter==='alle'?docs:docs.filter(d=>d.kategorie===katFilter);
+  const sortedDocs=[...filtered].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+
+  const katButtons=['alle',...kategorien].map(k=>`
+    <button class="cflt${katFilter===k?' active':''}" onclick="window._dokKat='${k}';renderDokumente()">${k.toUpperCase()}</button>`).join('');
+
+  const docList=sortedDocs.length===0
+    ?`<div style="padding:40px;text-align:center;color:var(--text-3);font-family:var(--fm);font-size:10px">${ic('folder_open','mi-xl')}<br><br>Noch keine Dokumente.</div>`
+    :sortedDocs.map(d=>`
+    <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="width:36px;height:36px;background:var(--raised);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${ic(docMI(d.typ))}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.name}</div>
+        <div style="font-family:var(--fm);font-size:9px;color:var(--text-3);margin-top:2px">${d.kategorie||'—'} · ${d.kunde||'—'} · ${fmtDate(d.createdAt)}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        ${d.url?`<a href="${d.url}" target="_blank" class="btn btn-g btn-sm">${ic('open_in_new','mi-sm')} ÖFFNEN</a>`:''}
+        <button class="btn btn-g btn-sm" onclick="openDokModal('${d.id}')">${ic('edit','mi-sm')}</button>
+        <button onclick="deleteDok('${d.id}')" style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:14px;padding:0 4px">×</button>
+      </div>
+    </div>`).join('');
+
+  el.innerHTML=`
+  <div class="page-header">
+    <div><h1>DOKUMENTE</h1><p>${docs.length} GESPEICHERT</p></div>
+    <div class="page-actions"><button class="btn btn-b btn-sm" onclick="openDokModal()">${ic('add','mi-sm')} DOKUMENT</button></div>
+  </div>
+  <div class="g5 gap">
+    ${kategorien.map(k=>{
+      const cnt=docs.filter(d=>d.kategorie===k).length;
+      return `<div class="stat" style="cursor:pointer" onclick="window._dokKat='${k}';renderDokumente()">
+        <div class="sv" style="font-size:20px">${cnt}</div>
+        <div class="sl">${k.toUpperCase()}</div>
+      </div>`;
+    }).join('')}
+  </div>
+  <div class="filter-bar">${katButtons}</div>
+  <div class="card">${docList}</div>`;
+}
+
+function docMI(typ){
+  const m={pdf:'picture_as_pdf',doc:'article',docx:'article',xls:'table_chart',xlsx:'table_chart',ppt:'slideshow',pptx:'slideshow',png:'image',jpg:'image',zip:'folder_zip'};
+  return m[(typ||'').toLowerCase()]||'attach_file';
+}
+
+function openDokModal(editId){
+  const d=editId?(DB.dokumente||[]).find(x=>x.id===editId):{};
+  if(editId&&!d) return;
+  const kategorien=['Angebot','Vertrag','Rechnung','NDA','Sonstiges'];
+  const katOpts=kategorien.map(k=>`<option value="${k}"${d.kategorie===k?' selected':''}>${k}</option>`).join('');
+  const kundenOpts=['— Kein Bezug —',...(DB.kunden||[]).map(k=>k.name)].map((n,i)=>`<option value="${i===0?'':n}"${d.kunde===n?' selected':''}>${n}</option>`).join('');
+
+  const modal=document.createElement('div');
+  modal.className='mbg open';
+  modal.innerHTML=`<div class="modal">
+    <div class="mh"><div class="mt2">${editId?'DOKUMENT BEARBEITEN':'DOKUMENT HINZUFÜGEN'}</div><button class="mcl" onclick="this.closest('.mbg').remove()">✕</button></div>
+    <div class="mbody">
+      <div class="fg"><label>Name / Titel *</label><input id="df-name" value="${d.name||''}"></div>
+      <div class="fgr">
+        <div class="fg"><label>Kategorie</label><select id="df-kat">${katOpts}</select></div>
+        <div class="fg"><label>Kunde</label><select id="df-kunde">${kundenOpts}</select></div>
+      </div>
+      <div class="fg"><label>Link / URL (Google Drive, Dropbox, etc.)</label><input id="df-url" type="url" value="${d.url||''}" placeholder="https://drive.google.com/..."></div>
+      <div class="fgr">
+        <div class="fg"><label>Dateityp</label><select id="df-typ">
+          ${['pdf','docx','xlsx','pptx','jpg','png','zip','sonstiges'].map(t=>`<option value="${t}"${d.typ===t?' selected':''}>${t.toUpperCase()}</option>`).join('')}
+        </select></div>
+        <div class="fg"><label>Notiz</label><input id="df-notiz" value="${d.notiz||''}"></div>
+      </div>
+    </div>
+    <div class="mf">
+      ${editId?`<button class="btn btn-r btn-sm" style="margin-right:auto" onclick="deleteDok('${editId}',this)">LÖSCHEN</button>`:''}
+      <button class="btn btn-g" onclick="this.closest('.mbg').remove()">ABBRECHEN</button>
+      <button class="btn btn-b" onclick="saveDok('${editId||''}',this)">SPEICHERN</button>
+    </div>
+  </div>`;
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+  document.body.appendChild(modal);
+}
+
+function saveDok(editId,btn){
+  const modal=btn.closest('.mbg');
+  const name=modal.querySelector('#df-name').value.trim();
+  if(!name){toast('Name eingeben!');return;}
+  if(!DB.dokumente) DB.dokumente=[];
+  const dok={
+    id:editId||uid(), name,
+    kategorie:modal.querySelector('#df-kat').value,
+    kunde:modal.querySelector('#df-kunde').value,
+    url:modal.querySelector('#df-url').value.trim(),
+    typ:modal.querySelector('#df-typ').value,
+    notiz:modal.querySelector('#df-notiz').value.trim(),
+    createdAt:editId?((DB.dokumente.find(x=>x.id===editId)||{}).createdAt||Date.now()):Date.now(),
+    updatedAt:Date.now(), createdBy:SESSION?.name||''
+  };
+  if(editId){const i=DB.dokumente.findIndex(x=>x.id===editId);if(i>=0)DB.dokumente[i]=dok;}
+  else DB.dokumente.unshift(dok);
+  saveDB(); if(typeof pushRecord==='function') pushRecord('dokumente',dok);
+  modal.remove(); renderDokumente(); toast('DOKUMENT GESPEICHERT');
+}
+
+function deleteDok(id,btn){
+  if(!confirm('Dokument löschen?')) return;
+  DB.dokumente=(DB.dokumente||[]).filter(x=>x.id!==id);
+  saveDB(); if(typeof pushDelete==='function') pushDelete('dokumente',id);
+  if(btn) btn.closest('.mbg')?.remove();
+  renderDokumente(); toast('GELÖSCHT');
+}
+
+// ══════════════════════════════════════════════════════
+//  TODOBAR (Global Quick-Todos)
+// ══════════════════════════════════════════════════════
+function renderTodoBar(){
+  const bar=document.getElementById('todoBarItems');
+  if(!bar) return;
+  if(!DB.globalTodos) DB.globalTodos=[];
+  const badge=document.getElementById('todoBarCount');
+  const open=DB.globalTodos.filter(t=>!t.done);
+  if(badge){ badge.textContent=open.length; badge.style.display=open.length>0?'inline':'none'; }
+  bar.innerHTML=open.slice(0,12).map(t=>`
+    <div style="display:flex;align-items:center;gap:5px;background:var(--raised);border:1px solid var(--border);border-radius:20px;padding:2px 10px;flex-shrink:0;max-width:220px">
+      <input type="checkbox" style="width:12px;height:12px;accent-color:var(--accent);cursor:pointer;flex-shrink:0" onchange="checkGlobalTodo('${t.id}',this.checked)">
+      <span style="font-family:var(--fb);font-size:11px;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px" title="${t.text}">${t.text}</span>
+      <button onclick="removeGlobalTodo('${t.id}')" style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:11px;flex-shrink:0;line-height:1;padding:0 2px">×</button>
+    </div>`).join('');
+}
+
+function addGlobalTodo(text,inputEl){
+  text=(text||'').trim(); if(!text) return;
+  if(!DB.globalTodos) DB.globalTodos=[];
+  const t={id:uid(),text,done:false,createdBy:SESSION?.name||'',createdAt:Date.now(),updatedAt:Date.now()};
+  DB.globalTodos.unshift(t); saveDB();
+  if(typeof pushRecord==='function') pushRecord('globalTodos',t);
+  if(inputEl) inputEl.value='';
+  renderTodoBar();
+}
+
+function checkGlobalTodo(id,done){
+  const t=(DB.globalTodos||[]).find(x=>x.id===id); if(!t) return;
+  t.done=done; t.updatedAt=Date.now();
+  if(done){ setTimeout(()=>{ DB.globalTodos=DB.globalTodos.filter(x=>x.id!==id); saveDB(); renderTodoBar(); },600); }
+  else { saveDB(); renderTodoBar(); }
+}
+
+function removeGlobalTodo(id){
+  DB.globalTodos=(DB.globalTodos||[]).filter(x=>x.id!==id);
+  saveDB(); renderTodoBar();
+}
+
+// ══════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════
+function init(){
+  DB=loadDB();
+  if(!DB.users||DB.users.length===0) DB=defaultDB();
+  migrateDB();
+  SESSION=loadSession();
+
+  // Responsive menu button
+  const _mob=()=>{
+    const btn=document.getElementById('mobileMenuBtn');
+    if(btn) btn.style.display=window.innerWidth<=860?'flex':'none';
+  };
+  _mob();
+  window.addEventListener('resize',_mob);
+
+  initLogin();
+
+  if(SESSION){
+    const user=DB.users.find(u=>u.id===SESSION.id&&u.pin===SESSION.pin);
+    if(user){ SESSION=user; startApp(); return; }
+  }
+  document.getElementById('loginScreen').style.display='flex';
+}
+
+init();
+</script>
+</body>
+</html>
