@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agerium CRM v5.4</title>
+<title>Agerium CRM v5.5</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
 <style>
@@ -95,10 +95,10 @@ input,select,textarea{font-family:var(--fb);}
 #app.visible{display:flex;}
 
 /* ── SIDEBAR ── */
-#sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:100;}
+#sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:100;overflow-y:auto;overflow-x:hidden;}
 .sb-brand{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
 .sb-logo{display:flex;align-items:center;}
-.sb-logo svg{width:130px;height:auto;}
+.sb-logo svg{width:160px;height:auto;}
 .sb-logo .it{color:var(--blue);} .sb-logo .so{color:var(--orange);} .sb-logo .ai{color:var(--green);}
 .sb-ver{font-family:var(--fm);font-size:9px;color:var(--text-3);letter-spacing:1px;margin-top:2px;}
 .sb-section{padding:16px 12px 4px;}
@@ -108,7 +108,7 @@ input,select,textarea{font-family:var(--fb);}
 .nav-item.active{background:rgba(255,255,255,.06);color:var(--text);}
 .nav-item .mi{font-size:18px;flex-shrink:0;}
 .nav-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-family:var(--fm);font-size:9px;font-weight:700;}
-.sb-footer{margin-top:auto;padding:16px 16px;border-top:1px solid var(--border);}
+.sb-footer{margin-top:auto;padding:16px 16px;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--surface);}
 .sb-user{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .sb-avatar{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:14px;letter-spacing:1px;flex-shrink:0;}
 .sb-uname{font-size:13px;font-weight:700;}
@@ -452,22 +452,82 @@ tbody tr:last-child td{border-bottom:none;}
     <div class="sb-brand">
       <div>
         <div class="sb-logo">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 218 30" fill="none">
-            <g fill="#ffffff">
-              <g transform="translate(0.599656, 23.539463) scale(0.88)"><path d="M 1.09375 0 L 11.59375 -20.984375 L 15.1875 -20.984375 L 25.71875 0 L 21.875 0 L 20.15625 -3.375 L 6.625 -3.375 L 4.90625 0 Z M 13.390625 -16.703125 L 8.1875 -6.46875 L 18.59375 -6.46875 Z"/></g>
-              <g transform="translate(33.538526, 23.539463) scale(0.88)"><path d="M 22.90625 -11.296875 L 22.90625 0 L 21.046875 0 L 20.21875 -2.015625 C 19.3125 -1.160156 18.253906 -0.515625 17.046875 -0.078125 C 15.847656 0.347656 14.597656 0.5625 13.296875 0.5625 C 11.960938 0.5625 10.613281 0.335938 9.25 -0.109375 C 7.894531 -0.566406 6.644531 -1.25 5.5 -2.15625 C 4.351562 -3.0625 3.4375 -4.195312 2.75 -5.5625 C 2.0625 -6.9375 1.71875 -8.53125 1.71875 -10.34375 C 1.71875 -12.15625 2.066406 -13.742188 2.765625 -15.109375 C 3.460938 -16.484375 4.378906 -17.625 5.515625 -18.53125 C 6.648438 -19.4375 7.898438 -20.113281 9.265625 -20.5625 C 10.640625 -21.019531 11.984375 -21.25 13.296875 -21.25 C 15.253906 -21.25 17.085938 -20.863281 18.796875 -20.09375 C 20.515625 -19.332031 21.925781 -18.234375 23.03125 -16.796875 L 20.1875 -14.484375 C 19.40625 -15.492188 18.390625 -16.285156 17.140625 -16.859375 C 15.898438 -17.441406 14.660156 -17.734375 13.421875 -17.734375 C 11.679688 -17.734375 10.222656 -17.375 9.046875 -16.65625 C 7.878906 -15.9375 7.003906 -15.015625 6.421875 -13.890625 C 5.847656 -12.765625 5.5625 -11.582031 5.5625 -10.34375 C 5.5625 -9.125 5.847656 -7.945312 6.421875 -6.8125 C 7.003906 -5.675781 7.878906 -4.75 9.046875 -4.03125 C 10.222656 -3.3125 11.679688 -2.953125 13.421875 -2.953125 C 14.703125 -2.953125 15.785156 -3.203125 16.671875 -3.703125 C 17.554688 -4.210938 18.226562 -4.882812 18.6875 -5.71875 C 19.15625 -6.5625 19.390625 -7.472656 19.390625 -8.453125 L 19.390625 -8.8125 L 14.09375 -8.8125 L 14.09375 -11.296875 Z"/></g>
-              <g transform="translate(64.141615, 23.539463) scale(0.88)"><path d="M 5.890625 -3.109375 L 20.71875 -3.109375 L 20.71875 0 L 2.28125 0 L 2.28125 -20.6875 L 20.546875 -20.6875 L 20.546875 -17.59375 L 5.890625 -17.59375 L 5.890625 -11.90625 L 18.53125 -11.90625 L 18.53125 -8.8125 L 5.890625 -8.8125 Z"/></g>
-              <g transform="translate(92.468049, 23.539463) scale(0.88)"><path d="M 2.28125 0 L 2.28125 -20.6875 L 14.421875 -20.6875 C 15.921875 -20.6875 17.164062 -20.382812 18.15625 -19.78125 C 19.15625 -19.1875 19.898438 -18.414062 20.390625 -17.46875 C 20.890625 -16.519531 21.140625 -15.523438 21.140625 -14.484375 C 21.140625 -13.640625 20.96875 -12.816406 20.625 -12.015625 C 20.289062 -11.210938 19.789062 -10.503906 19.125 -9.890625 C 18.457031 -9.285156 17.609375 -8.847656 16.578125 -8.578125 L 23.359375 0 L 18.796875 0 L 12.625 -8.3125 L 5.890625 -8.3125 L 5.890625 0 Z M 5.890625 -17.5625 L 5.890625 -11.4375 L 13.78125 -11.4375 C 14.976562 -11.4375 15.875 -11.75 16.46875 -12.375 C 17.070312 -13.007812 17.375 -13.710938 17.375 -14.484375 C 17.375 -15.253906 17.070312 -15.957031 16.46875 -16.59375 C 15.875 -17.238281 14.976562 -17.5625 13.78125 -17.5625 Z"/></g>
-              <g transform="translate(122.952874, 23.539463) scale(0.88)"><path d="M 2.28125 0 L 2.28125 -20.6875 L 5.890625 -20.6875 L 5.890625 0 Z"/></g>
-              <g transform="translate(137.235044, 23.539463) scale(0.88)"><path d="M 1.984375 -8.1875 L 1.984375 -20.6875 L 5.59375 -20.6875 L 5.59375 -8.1875 C 5.59375 -6.988281 5.910156 -5.988281 6.546875 -5.1875 C 7.191406 -4.382812 8.015625 -3.785156 9.015625 -3.390625 C 10.023438 -3.003906 11.070312 -2.8125 12.15625 -2.8125 C 13.257812 -2.8125 14.304688 -3.003906 15.296875 -3.390625 C 16.296875 -3.785156 17.113281 -4.382812 17.75 -5.1875 C 18.394531 -5.988281 18.71875 -6.988281 18.71875 -8.1875 L 18.71875 -20.6875 L 22.3125 -20.6875 L 22.3125 -8.1875 C 22.3125 -6.707031 22.023438 -5.40625 21.453125 -4.28125 C 20.890625 -3.15625 20.117188 -2.222656 19.140625 -1.484375 C 18.160156 -0.753906 17.070312 -0.203125 15.875 0.171875 C 14.675781 0.546875 13.4375 0.734375 12.15625 0.734375 C 10.894531 0.734375 9.65625 0.546875 8.4375 0.171875 C 7.226562 -0.203125 6.132812 -0.753906 5.15625 -1.484375 C 4.175781 -2.222656 3.398438 -3.15625 2.828125 -4.28125 C 2.265625 -5.40625 1.984375 -6.707031 1.984375 -8.1875 Z"/></g>
-              <g transform="translate(167.6903, 23.539463) scale(0.88)"><path d="M 2.28125 0 L 2.28125 -20.6875 L 5.890625 -20.6875 L 14.984375 -5.078125 L 24.0625 -20.6875 L 27.703125 -20.6875 L 27.703125 0 L 24.0625 0 L 24.0625 -14.421875 L 15.640625 0 L 14.3125 0 L 5.890625 -14.421875 L 5.890625 0 Z"/></g>
-            </g>
-            <line x1="0.5" y1="27" x2="72.5" y2="27" stroke="#2f6ed0" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="73" y1="27" x2="145" y2="27" stroke="#e98128" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="145.5" y1="27" x2="217.5" y2="27" stroke="#1fae6a" stroke-width="3.5" stroke-linecap="round"/>
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="132 230 274 50">
+<!-- AGERIUM wordmark — original vector paths, transforms flattened -->
+<g transform="translate(103,174)">
+  <g transform="translate(0.6,23.54)">
+    <path fill="#fff" d="M35.99,65.85l14-27.98h4.79l14.04,27.98H63.7l-2.29-4.5H43.37l-2.29,4.5H35.99z M52.39,43.58l-6.94,13.65h13.88L52.39,43.58z"/>
+  </g>
+  <g transform="translate(33.54,23.54)">
+    <path fill="#fff" d="M76.05,50.78v15.06h-2.48l-1.1-2.69c-1.21,1.14-2.62,2-4.23,2.58c-1.6,0.57-3.27,0.85-5,0.85c-1.78,0-3.58-0.3-5.4-0.9c-1.81-0.61-3.47-1.52-5-2.73c-1.53-1.21-2.75-2.72-3.67-4.54c-0.92-1.83-1.38-3.96-1.38-6.38c0-2.42,0.46-4.53,1.4-6.35c0.93-1.83,2.15-3.35,3.67-4.56c1.51-1.21,3.18-2.11,5-2.71c1.83-0.61,3.62-0.92,5.38-0.92c2.61,0,5.05,0.52,7.33,1.54c2.29,1.02,4.17,2.48,5.65,4.4l-3.79,3.08c-1.04-1.34-2.4-2.4-4.06-3.17c-1.66-0.78-3.31-1.17-4.96-1.17c-2.32,0-4.27,0.48-5.83,1.44c-1.56,0.96-2.72,2.19-3.5,3.69c-0.77,1.5-1.15,3.08-1.15,4.73c0,1.62,0.38,3.2,1.15,4.71c0.78,1.52,1.94,2.75,3.5,3.71c1.57,0.96,3.51,1.44,5.83,1.44c1.71,0,3.15-0.33,4.33-1c1.18-0.68,2.07-1.57,2.69-2.69c0.62-1.12,0.94-2.34,0.94-3.65V54.1H64.3v-3.31H76.05z"/>
+  </g>
+  <g transform="translate(64.14,23.54)">
+    <path fill="#fff" d="M63.57,61.7h19.77v4.15H58.76V38.26h24.35v4.12H63.57v7.58h16.85v4.12H63.57V61.7z"/>
+  </g>
+  <g transform="translate(92.47,23.54)">
+    <path fill="#fff" d="M68.2,65.85V38.26h16.19c2,0,3.66,0.41,4.98,1.21c1.33,0.79,2.32,1.82,2.98,3.08c0.67,1.27,1,2.59,1,3.98c0,1.12-0.23,2.22-0.69,3.29c-0.45,1.07-1.11,2.02-2,2.83c-0.89,0.81-2.02,1.39-3.4,1.75l9.04,11.44h-6.08l-8.23-11.08h-8.98v11.08H68.2z M73.01,42.43v8.17h10.52c1.59,0,2.79-0.42,3.58-1.25c0.8-0.84,1.21-1.78,1.21-2.81c0-1.03-0.41-1.96-1.21-2.81c-0.79-0.86-1.99-1.29-3.58-1.29H73.01z"/>
+  </g>
+  <g transform="translate(122.95,23.54)">
+    <path fill="#fff" d="M78.36,65.85V38.26h4.81v27.58H78.36z"/>
+  </g>
+  <g transform="translate(137.24,23.54)">
+    <path fill="#fff" d="M82.72,54.93V38.26h4.81v16.67c0,1.6,0.42,2.93,1.27,4c0.86,1.07,1.96,1.87,3.29,2.4c1.34,0.52,2.74,0.77,4.19,0.77c1.47,0,2.86-0.26,4.19-0.77c1.33-0.53,2.42-1.32,3.27-2.4c0.86-1.07,1.29-2.4,1.29-4V38.26h4.79v16.67c0,1.97-0.39,3.71-1.15,5.21c-0.75,1.5-1.78,2.74-3.08,3.73c-1.31,0.97-2.76,1.71-4.35,2.21c-1.6,0.5-3.25,0.75-4.96,0.75c-1.68,0-3.33-0.25-4.96-0.75c-1.61-0.5-3.07-1.23-4.38-2.21c-1.31-0.98-2.34-2.23-3.1-3.73C83.1,58.64,82.72,56.9,82.72,54.93z"/>
+  </g>
+  <g transform="translate(167.69,23.54)">
+    <path fill="#fff" d="M93.27,65.85V38.26h4.81l12.12,20.81l12.1-20.81h4.85v27.58h-4.85V46.62l-11.23,19.23h-1.77L98.08,46.62v19.23H93.27z"/>
+  </g>
+</g>
+<!-- Tagline IT - SOCIALS - AI -->
+<g transform="translate(153,212)">
+  <g transform="translate(0.76,7.09)">
+    <path fill="#fff" d="M52.04,66.43h1.52v6.6h-1.52V66.43z"/>
+  </g>
+  <g transform="translate(6.69,7.09)">
+    <path fill="#fff" d="M55.38,67.68h-2.1v-1.25h5.75v1.25h-2.1v5.35h-1.54V67.68z"/>
+  </g>
+  <g transform="translate(14.68,7.09)">
+    <path fill="#fff" d="M56.39,69.78h2.67v1.19h-2.67V69.78z"/>
+  </g>
+  <g transform="translate(21.03,7.09)">
+    <path fill="#fff" d="M60.97,73.14c-0.53,0-1.04-0.07-1.52-0.21c-0.49-0.14-0.88-0.32-1.17-0.54l0.52-1.17c0.28,0.21,0.61,0.39,1,0.52c0.39,0.12,0.78,0.19,1.17,0.19c0.44,0,0.76-0.06,0.96-0.19c0.21-0.14,0.31-0.31,0.31-0.52c0-0.17-0.06-0.3-0.19-0.4c-0.11-0.11-0.27-0.19-0.46-0.25c-0.2-0.07-0.45-0.14-0.77-0.21c-0.52-0.12-0.93-0.24-1.25-0.35c-0.32-0.12-0.6-0.32-0.83-0.58c-0.22-0.26-0.33-0.61-0.33-1.06c0-0.38,0.1-0.71,0.31-1.02c0.21-0.32,0.52-0.57,0.94-0.75c0.42-0.19,0.93-0.29,1.54-0.29c0.42,0,0.82,0.06,1.23,0.17c0.4,0.1,0.76,0.24,1.06,0.44l-0.48,1.15c-0.61-0.34-1.22-0.52-1.83-0.52c-0.43,0-0.75,0.07-0.96,0.21c-0.2,0.14-0.29,0.33-0.29,0.56c0,0.22,0.11,0.39,0.35,0.5c0.23,0.11,0.59,0.22,1.08,0.31c0.5,0.12,0.91,0.25,1.23,0.38c0.32,0.11,0.59,0.3,0.81,0.56c0.23,0.25,0.35,0.6,0.35,1.04c0,0.38-0.1,0.72-0.31,1.04c-0.21,0.31-0.53,0.55-0.96,0.73C62.07,73.04,61.56,73.14,60.97,73.14z"/>
+  </g>
+  <g transform="translate(29.15,7.09)">
+    <path fill="#fff" d="M64.7,73.14c-0.68,0-1.3-0.15-1.85-0.44c-0.54-0.29-0.97-0.69-1.29-1.21c-0.31-0.53-0.46-1.11-0.46-1.77c0-0.64,0.15-1.21,0.46-1.73c0.32-0.53,0.75-0.94,1.29-1.23c0.55-0.3,1.17-0.46,1.85-0.46c0.69,0,1.31,0.16,1.85,0.46c0.54,0.29,0.97,0.7,1.29,1.23c0.32,0.52,0.48,1.09,0.48,1.73c0,0.66-0.16,1.24-0.48,1.77c-0.32,0.52-0.75,0.92-1.29,1.21C66.01,72.99,65.39,73.14,64.7,73.14z M64.7,71.84c0.39,0,0.74-0.09,1.06-0.27c0.32-0.18,0.56-0.43,0.73-0.75c0.18-0.32,0.27-0.69,0.27-1.1c0-0.4-0.09-0.76-0.27-1.08c-0.17-0.32-0.41-0.57-0.73-0.75c-0.32-0.18-0.68-0.27-1.06-0.27c-0.39,0-0.74,0.09-1.06,0.27c-0.31,0.18-0.55,0.43-0.73,0.75c-0.18,0.32-0.27,0.68-0.27,1.08c0,0.42,0.09,0.79,0.27,1.1c0.18,0.32,0.42,0.57,0.73,0.75C63.95,71.76,64.31,71.84,64.7,71.84z"/>
+  </g>
+  <g transform="translate(38.74,7.09)">
+    <path fill="#fff" d="M67.85,73.14c-0.67,0-1.27-0.15-1.81-0.44c-0.54-0.29-0.97-0.69-1.29-1.21c-0.31-0.51-0.46-1.1-0.46-1.77c0-0.65,0.15-1.23,0.46-1.75c0.32-0.51,0.75-0.92,1.29-1.21c0.54-0.3,1.15-0.46,1.83-0.46c0.57,0,1.08,0.1,1.54,0.31c0.47,0.2,0.86,0.49,1.17,0.88l-0.98,0.9c-0.45-0.51-1-0.77-1.67-0.77c-0.41,0-0.77,0.09-1.08,0.27c-0.32,0.18-0.57,0.43-0.75,0.75c-0.18,0.32-0.27,0.68-0.27,1.08c0,0.42,0.09,0.79,0.27,1.1c0.18,0.32,0.43,0.57,0.75,0.75c0.32,0.18,0.68,0.27,1.08,0.27c0.67,0,1.22-0.26,1.67-0.79l0.98,0.92c-0.31,0.38-0.7,0.67-1.17,0.88C68.96,73.04,68.43,73.14,67.85,73.14z"/>
+  </g>
+  <g transform="translate(47.54,7.09)">
+    <path fill="#fff" d="M67.64,66.43h1.52v6.6h-1.52V66.43z"/>
+  </g>
+  <g transform="translate(53.48,7.09)">
+    <path fill="#fff" d="M73.95,71.61h-3.06l-0.58,1.42h-1.56l2.94-6.6h1.52l2.96,6.6h-1.6L73.95,71.61z M73.47,70.45l-1.04-2.52l-1.04,2.52H73.47z"/>
+  </g>
+  <g transform="translate(62.51,7.09)">
+    <path fill="#fff" d="M72.63,66.43h1.52v5.35h3.31v1.25h-4.83V66.43z"/>
+  </g>
+  <g transform="translate(70.4,7.09)">
+    <path fill="#fff" d="M77.42,73.14c-0.53,0-1.04-0.07-1.52-0.21c-0.49-0.14-0.88-0.32-1.17-0.54l0.52-1.17c0.28,0.21,0.61,0.39,1,0.52c0.39,0.12,0.78,0.19,1.17,0.19c0.44,0,0.76-0.06,0.96-0.19c0.21-0.14,0.31-0.31,0.31-0.52c0-0.17-0.06-0.3-0.19-0.4c-0.11-0.11-0.27-0.19-0.46-0.25c-0.2-0.07-0.45-0.14-0.77-0.21c-0.52-0.12-0.93-0.24-1.25-0.35c-0.32-0.12-0.6-0.32-0.83-0.58c-0.22-0.26-0.33-0.61-0.33-1.06c0-0.38,0.1-0.71,0.31-1.02c0.21-0.32,0.52-0.57,0.94-0.75c0.42-0.19,0.93-0.29,1.54-0.29c0.42,0,0.82,0.06,1.23,0.17c0.4,0.1,0.76,0.24,1.06,0.44l-0.48,1.15c-0.61-0.34-1.22-0.52-1.83-0.52c-0.43,0-0.75,0.07-0.96,0.21c-0.2,0.14-0.29,0.33-0.29,0.56c0,0.22,0.11,0.39,0.35,0.5c0.23,0.11,0.59,0.22,1.08,0.31c0.5,0.12,0.91,0.25,1.23,0.38c0.32,0.11,0.59,0.3,0.81,0.56c0.23,0.25,0.35,0.6,0.35,1.04c0,0.38-0.1,0.72-0.31,1.04c-0.21,0.31-0.53,0.55-0.96,0.73C78.53,73.04,78.02,73.14,77.42,73.14z"/>
+  </g>
+  <g transform="translate(78.53,7.09)">
+    <path fill="#fff" d="M77.68,69.78h2.67v1.19h-2.67V69.78z"/>
+  </g>
+  <g transform="translate(84.87,7.09)">
+    <path fill="#fff" d="M84.42,71.61h-3.06l-0.58,1.42h-1.56l2.94-6.6h1.52l2.96,6.6h-1.6L84.42,71.61z M83.94,70.45l-1.04-2.52l-1.04,2.52H83.94z"/>
+  </g>
+  <g transform="translate(93.91,7.09)">
+    <path fill="#fff" d="M83.09,66.43h1.52v6.6h-1.52V66.43z"/>
+  </g>
+</g>
+<!-- Three colored bars -->
+<g transform="translate(102,204)">
+  <line x1="37.04" y1="70.91" x2="120.59" y2="70.91" stroke="#2F6ED0" stroke-width="4.42" stroke-linecap="round"/>
+  <line x1="124.79" y1="70.91" x2="208.34" y2="70.91" stroke="#E98128" stroke-width="4.42" stroke-linecap="round"/>
+  <line x1="212.75" y1="70.91" x2="296.3" y2="70.91" stroke="#1FAE6A" stroke-width="4.42" stroke-linecap="round"/>
+</g>
+</svg>
         </div>
-        <div class="sb-ver">CRM v5.4</div>
+        <div class="sb-ver">CRM v5.5</div>
       </div>
     </div>
 
@@ -480,6 +540,7 @@ tbody tr:last-child td{border-bottom:none;}
     <div class="sb-section">
       <div class="sb-section-lbl">Sales</div>
       <div class="nav-item" id="nav-akquise" onclick="switchTab('akquise')"><span class="mi">radar</span> Akquise <span class="nav-badge" id="akquiseBadge" style="display:none">0</span></div>
+      <div class="nav-item" id="nav-scraper" onclick="switchTab('scraper')"><span class="mi">search</span> Scraper <span class="nav-badge" id="scraperBadge" style="display:none">0</span></div>
       <div class="nav-item" id="nav-crm" onclick="switchTab('crm')"><span class="mi">track_changes</span> CRM Pipeline</div>
       <div class="nav-item" id="nav-kunden" onclick="switchTab('kunden')"><span class="mi">people</span> Kunden</div>
       <div class="nav-item" id="nav-projekte" onclick="switchTab('projekte')"><span class="mi">work</span> Projekte</div>
@@ -532,6 +593,7 @@ tbody tr:last-child td{border-bottom:none;}
     <div id="content-container">
       <div class="tab-content active" id="tab-cockpit"></div>
       <div class="tab-content" id="tab-akquise"></div>
+      <div class="tab-content" id="tab-scraper"></div>
       <div class="tab-content" id="tab-crm"></div>
       <div class="tab-content" id="tab-kunden"></div>
       <div class="tab-content" id="tab-projekte"></div>
@@ -831,72 +893,87 @@ function defaultAffiliates(){
 function defaultTemplates(){
   return [
     {
-      id:'tpl_email_1', name:'E-Mail 1 · Erstkontakt', channel:'email', subject:'Schnelle Frage zu {firma}',
+      id:'tpl_email_1', name:'E-Mail 1 · Erstkontakt (System-Positionierung)', channel:'email', subject:'Dein Betrieb läuft. Dein System noch nicht.',
       body:`Hallo {vorname},
 
-ich bin beim Durchsehen in {region} über {firma} gestolpert — und mir ist {hook} aufgefallen.
+ich hab mir {firma} heute Morgen kurz online angeschaut — und mir ist aufgefallen: {gutachten_kurz}
 
-Das kostet euch vermutlich Anfragen, ohne dass ihr es merkt. Ich habe eine 3-Minuten-Idee, wie man das in wenigen Tagen sauber abstellt.
+Kurz zu uns: AGERIUM ist keine Agentur, die euch ein 5.000-€-Paket verkauft und weg ist. Wir sind Unternehmensberater für digitale Systeme. Unsere Website kostet 99 €/Monat statt 5.000 € einmalig — weil ein System mitwachsen muss. Und es muss sich jeden Monat für euch rechnen.
 
-Soll ich sie euch kurz per Video schicken — oder lieber 15 Min. nächste Woche?
+Dein Betrieb läuft. Aus unserer Erfahrung liegen genau hier meistens die Hebel — nicht im Marketing, sondern im System dahinter.
+
+Mein Vorschlag: 15 Minuten nächste Woche. Ich zeige dir, was uns konkret bei {firma} aufgefallen ist — und was das realistisch bedeuten kann.
 
 Viele Grüße
-Sonif — AGERIUM
+Sonif Anwar — AGERIUM
 agerium.de`
     },
     {
-      id:'tpl_email_2', name:'E-Mail 2 · Follow-up mit Beweis', channel:'email', subject:'Kurzes Video zu {firma}',
+      id:'tpl_email_2', name:'E-Mail 2 · Follow-up mit Zahl', channel:'email', subject:'{firma} — die Zahl aus meiner Analyse',
       body:`Hallo {vorname},
 
-ich habe mir {firma} nochmal angeschaut und ein 2-Min.-Video gedreht, das genau zeigt, wie man {hook} anpackt.
+ich komme nochmal kurz auf meine letzte Nachricht zurück.
 
-Möchten Sie es sehen? Ich schicke den Link direkt — ohne Aufwand für Sie.
+Unser kostenloses Mini-Gutachten für {firma} hat ergeben: {gutachten_kurz}
+
+Rechnerisch bedeutet das für einen Betrieb in deiner Größe: geschätzt {hook} — Woche für Woche, ohne dass es jemandem auffällt.
+
+Unser Ansatz passt hier: {empfehlung_paket}. Kein Einmalpaket, keine Verträge über 12 Monate, kein Marketing-Blabla. Ein System, das mitläuft — und das du jederzeit kündigen kannst, wenn es nichts bringt.
+
+Soll ich dir das 3-Min.-Erklärvideo schicken? Eine Zeile „ja" reicht.
 
 Viele Grüße
 Sonif`
     },
     {
-      id:'tpl_email_3', name:'E-Mail 3 · Break-up', channel:'email', subject:'Soll ich die Sache {firma} zumachen?',
+      id:'tpl_email_3', name:'E-Mail 3 · Break-up', channel:'email', subject:'Letzte Nachricht zu {firma}',
       body:`Hallo {vorname},
 
-ich habe zweimal geschrieben — keine Rückmeldung. Alles gut, ich weiß, wie voll der Alltag ist.
+letzte Nachricht von meiner Seite. Wenn das Thema für {firma} aktuell nicht passt: verstehe ich vollständig — der Alltag ist voll, und Digitalkram hat selten Priorität.
 
-Soll ich das Thema für jetzt zumachen und in 6 Monaten nochmal kurz reinschauen? Eine Zeile „ja" genügt — dann stören wir euch nicht mehr.
+Ich melde mich in 6 Monaten nochmal kurz. Bis dahin viel Erfolg.
+
+Eine Zeile „später" reicht, wenn du in Zukunft nochmal hören willst — „nein" auch, dann streiche ich {firma} still und leise aus meinem Verteiler.
 
 Viele Grüße
 Sonif — AGERIUM`
     },
     {
       id:'tpl_linkedin_connect', name:'LinkedIn · Verbindungsanfrage', channel:'linkedin', subject:'',
-      body:`Hallo {vorname}, ich unterstütze Unternehmen in {region} bei Website/KI-Setup. Bei {firma} ist mir {hook} aufgefallen — passt eine kurze Verbindung für einen fachlichen Austausch?`
+      body:`Hallo {vorname}, ich arbeite mit Betrieben aus {region} im Bereich digitaler Systeme. Kein Agentur-Kram, kein Verkauf — nur fachlicher Austausch. Passt eine Verbindung?`
     },
     {
-      id:'tpl_linkedin_followup', name:'LinkedIn · Follow-up nach Connect', channel:'linkedin', subject:'',
-      body:`Danke fürs Vernetzen, {vorname}! Kurz zum Grund: bei {firma} habe ich gesehen {hook}. Ich habe eine 2-Min.-Idee, wie man das sauber umsetzt — darf ich das per Video schicken?`
+      id:'tpl_linkedin_followup', name:'LinkedIn · Follow-up mit Gutachten-Hinweis', channel:'linkedin', subject:'',
+      body:`Danke fürs Vernetzen, {vorname}! Kurz zum Hintergrund: ich habe mir {firma} angeschaut und ein kleines Mini-Gutachten gemacht. Kernpunkt: {gutachten_kurz}
+
+Wenn es für dich passt, schicke ich dir das Gutachten als PDF — ohne Verkaufs-Absicht. Einfach als zweites Paar Augen.`
     },
     {
       id:'tpl_call_script', name:'Cold Call · Kurzes Skript', channel:'call', subject:'',
       body:`Einstieg (10 Sek.):
-„Hallo {vorname}, Sonif von AGERIUM — habe kurz Zeit, oder störe ich?"
+„Guten Tag {vorname}, Sonif Anwar von AGERIUM — habe ich kurz Zeit, oder störe ich gerade?"
 
-Grund (15 Sek.):
-„Ich habe bei {firma} {hook} gesehen — das kostet euch vermutlich Anfragen. Ich habe eine schnelle Idee dazu."
+Grund (20 Sek.):
+„Ich hab mir Ihren Betrieb kurz angeschaut und mir ist Folgendes aufgefallen: {gutachten_kurz}"
+
+Positionierung (15 Sek.):
+„Wir sind keine Agentur, die Ihnen jetzt ein 5.000-Euro-Paket verkaufen will. Wir sind Unternehmensberater für digitale Systeme. Unser Ansatz ist monatlich statt einmalig — weil ein System mitwachsen muss."
 
 Frage (10 Sek.):
-„Lohnt sich für 10 Minuten nächste Woche — oder machen Sie das schon?"
+„Macht es Sinn, dass ich Ihnen kurz per Mail zusammenfasse, was ich bei {firma} konkret sehe? 15 Minuten nächste Woche dann ausführlicher?"
 
 Fallback:
-„Schicke ich Ihnen per Mail — welche Adresse?"`
+„Welche E-Mail-Adresse schicke ich Ihnen das hin?"`
     },
     {
       id:'tpl_followup_termin', name:'Termin · Bestätigungsmail', channel:'email', subject:'Termin bestätigt — {firma}',
       body:`Hallo {vorname},
 
-kurz zur Bestätigung unseres Termins. Ich bereite mich auf {firma} vor und schaue mir {hook} genauer an.
+kurz zur Bestätigung unseres Termins. Was bis dahin bei mir auf dem Tisch liegt: {gutachten_kurz}
 
-Sie müssen nichts vorbereiten — 20 Minuten reichen für einen Überblick + 2 konkrete Ansatzpunkte.
+Was du vorbereiten musst: nichts. 20 Minuten reichen für einen Überblick, zwei konkrete Hebel und eine ehrliche Einschätzung, ob {empfehlung_paket} überhaupt Sinn für {firma} macht.
 
-Bis dahin, beste Grüße
+Bis dahin beste Grüße
 Sonif — AGERIUM`
     }
   ];
@@ -936,7 +1013,7 @@ const PAKETE_INFO = {
 };
 
 const ROLES = {
-  admin:      {label:'ADMIN',      tabs:['cockpit','akquise','crm','kunden','projekte','finanzen','affiliates','social','wochenplan','sheets','dokumente','integrationen','templates','kontrolle','settings']},
+  admin:      {label:'ADMIN',      tabs:['cockpit','akquise','scraper','crm','kunden','projekte','finanzen','affiliates','social','wochenplan','sheets','dokumente','integrationen','templates','kontrolle','settings']},
   partner:    {label:'PARTNER',    tabs:['cockpit','akquise','crm','kunden','projekte','finanzen','affiliates','social','wochenplan','dokumente','integrationen','templates','kontrolle']},
   mitarbeiter:{label:'MITARBEITER',tabs:['cockpit','akquise','crm','kunden','projekte','social','templates']},
 };
@@ -997,6 +1074,23 @@ function defaultDB(){
         qontoUrl:'https://app.qonto.com',
         metaAccountId:'',
         googleCalendarId:'',
+      },
+      scraper:{
+        googleApiKey:'',
+        pagespeedApiKey:'',
+        regions:['Münster','Osnabrück'],
+        branches:['Dachdecker','Elektriker'],
+        minReviews:5,
+        minRating:4.0,
+        maxPerCombo:40,
+        campaign:'',
+        schedule:'manual',  // 'manual' | 'weekly'
+        weeklyDay:1,        // 0=So..6=Sa
+        weeklyHour:9,
+        lastRun:null,
+        active:false,
+        dailyMailBudget:80,
+        responseSheetUrl:''
       }
     }
   };
@@ -1014,6 +1108,16 @@ function loadDB(){
     if(!d.settings) d.settings = defaultDB().settings;
     if(typeof d.settings.syncSecret !== 'string') d.settings.syncSecret = '';
     if(!Array.isArray(d.templates) || d.templates.length===0) d.templates = defaultTemplates();
+    // ── Migration v5.5: scraper-Config ──
+    if(!d.settings.scraper) d.settings.scraper = defaultDB().settings.scraper;
+    else {
+      const defSc = defaultDB().settings.scraper;
+      Object.keys(defSc).forEach(k=>{
+        if(!(k in d.settings.scraper)) d.settings.scraper[k] = defSc[k];
+      });
+    }
+    // gutachten ist optionales Feld pro Akquise-Lead — nichts zu migrieren,
+    // wird bei erstem Scrape gesetzt
     return d;
   }catch(e){ _isFreshBrowser=true; return defaultDB(); }
 }
@@ -1182,7 +1286,7 @@ function startApp(){
 
 function applyRoleNav(){
   const allowed=ROLES[SESSION.role]?.tabs||[];
-  ['cockpit','crm','kunden','projekte','finanzen','social','wochenplan','sheets','dokumente','integrationen','kontrolle','settings'].forEach(t=>{
+  ['cockpit','akquise','scraper','crm','kunden','projekte','finanzen','affiliates','social','wochenplan','sheets','dokumente','integrationen','templates','kontrolle','settings'].forEach(t=>{
     const el=document.getElementById('nav-'+t);
     if(el) el.style.display=allowed.includes(t)?'flex':'none';
   });
@@ -1194,7 +1298,7 @@ function applyRoleNav(){
 // ══════════════════════════════════════════════════════
 //  TAB ROUTER
 // ══════════════════════════════════════════════════════
-const TAB_TITLES={cockpit:'COCKPIT',akquise:'AKQUISE · COLD OUTREACH',crm:'CRM PIPELINE',kunden:'KUNDEN',projekte:'PROJEKTE',finanzen:'FINANZEN',affiliates:'AFFILIATES · TOOL-PROVISIONEN',social:'SOCIAL MEDIA',wochenplan:'WOCHENPLAN',sheets:'GOOGLE SHEETS',dokumente:'DOKUMENTE',integrationen:'INTEGRATIONEN',templates:'TEMPLATES · VORLAGEN-BIBLIOTHEK',kontrolle:'KONTROLLE',settings:'EINSTELLUNGEN'};
+const TAB_TITLES={cockpit:'COCKPIT',akquise:'AKQUISE · COLD OUTREACH',scraper:'SCRAPER · LEAD-GENERATOR',crm:'CRM PIPELINE',kunden:'KUNDEN',projekte:'PROJEKTE',finanzen:'FINANZEN',affiliates:'AFFILIATES · TOOL-PROVISIONEN',social:'SOCIAL MEDIA',wochenplan:'WOCHENPLAN',sheets:'GOOGLE SHEETS',dokumente:'DOKUMENTE',integrationen:'INTEGRATIONEN',templates:'TEMPLATES · VORLAGEN-BIBLIOTHEK',kontrolle:'KONTROLLE',settings:'EINSTELLUNGEN'};
 
 function switchTab(id){
   const allowed=ROLES[SESSION.role]?.tabs||[];
@@ -1206,7 +1310,7 @@ function switchTab(id){
   if(tc) tc.classList.add('active');
   if(ni) ni.classList.add('active');
   document.getElementById('topbarTitle').textContent=TAB_TITLES[id]||id.toUpperCase();
-  const fns={cockpit:renderCockpit,akquise:renderAkquise,crm:renderCRM,kunden:renderKunden,projekte:renderProjekte,finanzen:renderFinanzen,affiliates:renderAffiliates,social:renderSocial,wochenplan:renderWochenplan,sheets:renderSheets,dokumente:renderDokumente,integrationen:renderIntegrationen,templates:renderTemplates,kontrolle:renderKontrolle,settings:renderSettings};
+  const fns={cockpit:renderCockpit,akquise:renderAkquise,scraper:renderScraper,crm:renderCRM,kunden:renderKunden,projekte:renderProjekte,finanzen:renderFinanzen,affiliates:renderAffiliates,social:renderSocial,wochenplan:renderWochenplan,sheets:renderSheets,dokumente:renderDokumente,integrationen:renderIntegrationen,templates:renderTemplates,kontrolle:renderKontrolle,settings:renderSettings};
   if(fns[id]) fns[id]();
   if(window.innerWidth<=860) document.getElementById('sidebar').classList.remove('open');
 }
@@ -2010,19 +2114,56 @@ function akqBulkSource(){
 function akqBulkStartSeq(){
   const ids = Array.from(akqSelected);
   if(!ids.length) return;
-  if(!confirm(`${ids.length} Lead(s) in SEQ 1 starten? Jeder erhält einen Activity-Log-Eintrag.`)) return;
+  const useServerQueue = confirm(
+    `${ids.length} Lead(s) in SEQ 1 starten?\n\n`+
+    `OK = Server-Sequenz starten (Apps Script plant Mail 1/2/3 + LinkedIn-Task + Break-up)\n`+
+    `Abbrechen = Nur lokal loggen (Sonif sendet manuell)`
+  );
+  if(useServerQueue){
+    const url = DB.settings?.appsScriptUrl;
+    if(!url){ toast('Apps Script URL fehlt'); return; }
+    // Default-Templates aus vorhandener Bibliothek
+    const defaults = {
+      mail1:    (DB.templates||[]).find(t=>t.id==='tpl_email_1')?.id    || 'tpl_email_1',
+      mail2:    (DB.templates||[]).find(t=>t.id==='tpl_email_2')?.id    || 'tpl_email_2',
+      mail3:    (DB.templates||[]).find(t=>t.id==='tpl_email_3')?.id    || 'tpl_email_3',
+      breakup:  (DB.templates||[]).find(t=>t.id==='tpl_email_3')?.id    || 'tpl_email_3',
+      linkedin: (DB.templates||[]).find(t=>t.id==='tpl_linkedin_followup')?.id || 'tpl_linkedin_followup'
+    };
+    fetch(syncUrlWithSecret(url), {
+      method:'POST',
+      headers: syncHeaders(),
+      body: JSON.stringify(_injectSecretIntoBody({ action:'startSequence', leadIds: ids, templates: defaults }))
+    }).then(r=>r.json()).then(data=>{
+      if(data && data.ok){
+        ids.forEach(id=>{
+          const a=DB.akquise.find(x=>x.id===id); if(!a) return;
+          if(!a.activities) a.activities=[];
+          a.activities.push({ts:Date.now(), type:'stage', note:'Server-Sequenz gestartet ('+data.queued+' Steps)', user:SESSION?.name||''});
+          a.stage='seq1'; a.stageChangedAt=Date.now(); a.updatedAt=Date.now();
+          pushRecord('akquise', a);
+        });
+        saveDB(); akqSelected.clear(); renderAkquise();
+        toast(`SEQUENZ AKTIV · ${data.queued} STEPS GEPLANT`);
+      } else {
+        toast('FEHLER: '+(data?.error||'unbekannt'));
+      }
+    }).catch(err=>{ toast('NETZ-FEHLER: '+err.message); });
+    return;
+  }
+  // Lokale Variante (wie bisher)
+  if(!confirm(`${ids.length} Lead(s) lokal auf SEQ 1 setzen?`)) return;
   ids.forEach(id=>{
     const a=DB.akquise.find(x=>x.id===id); if(!a) return;
     if(!a.activities) a.activities=[];
-    a.activities.push({ts:Date.now(), type:'email', note:'SEQ 1 Mass-Start (bulk)', user:SESSION?.name||''});
+    a.activities.push({ts:Date.now(), type:'email', note:'SEQ 1 Mass-Start (bulk, lokal)', user:SESSION?.name||''});
     a.stage='seq1'; a.stageChangedAt=Date.now(); a.updatedAt=Date.now();
-    // Follow-up in 3 Tagen
     const d=new Date(); d.setDate(d.getDate()+3);
     a.nextActionDate=d.toISOString().split('T')[0];
     a.nextAction='Follow-up-Mail';
     pushRecord('akquise', a);
   });
-  saveDB(); akqSelected.clear(); renderAkquise(); toast(`${ids.length} × SEQ 1 GESTARTET`);
+  saveDB(); akqSelected.clear(); renderAkquise(); toast(`${ids.length} × SEQ 1 GESTARTET (LOKAL)`);
 }
 function akqBulkDelete(){
   const ids = Array.from(akqSelected);
@@ -2294,11 +2435,15 @@ function renderAkqCard(a){
   </div>`;
   const sel = akqSelected.has(a.id);
   const cbox = `<input type="checkbox" ${sel?'checked':''} onclick="event.stopPropagation();akqToggleSelect('${a.id}')" title="Auswählen für Bulk-Aktion" style="cursor:pointer;accent-color:var(--blue);margin-right:6px;vertical-align:middle">`;
+  const hasGut = !!(a.gutachten && (a.gutachten.analyse || a.gutachten.kurz));
+  const gutBtn = hasGut
+    ? `<button onclick="event.stopPropagation();openGutachtenModal('${a.id}')" title="Gutachten ansehen" style="background:none;border:none;cursor:pointer;padding:0 3px;font-size:14px;line-height:1">📋</button>`
+    : '';
   return `<div onclick="openAkqModal('${a.id}')" style="cursor:pointer;padding:10px 11px;margin-bottom:7px;background:var(--raised);border:1px solid ${sel?'var(--blue)':'var(--border)'};border-left:3px solid ${stage.color};border-radius:5px">
     ${staleBar}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:4px">
       <div style="font-size:12px;font-weight:700;color:var(--text);line-height:1.25;flex:1">${cbox}${fire}${a.firma||'—'}</div>
-      ${dueBadge}
+      ${gutBtn}${dueBadge}
     </div>
     <div style="font-family:var(--fm);font-size:9px;color:var(--muted);margin-top:3px">${a.branche||''} · ${a.region||''}</div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px;font-family:var(--fm);font-size:9px">
@@ -2429,6 +2574,225 @@ function openAkqModal(id=null){
   </div>`;
   modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
   document.body.appendChild(modal);
+}
+
+// ══════════════════════════════════════════════════════
+//  GUTACHTEN-MODAL (v5.5)
+// ══════════════════════════════════════════════════════
+function openGutachtenModal(id){
+  const a = DB.akquise.find(x=>x.id===id);
+  if(!a){ toast('Lead nicht gefunden'); return; }
+  const g = a.gutachten || {};
+  const tech = g.technik || {};
+  const inhalt = g.inhalt || {};
+  const praesenz = g.praesenz || {};
+  const esc = s => String(s==null?'':s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const chk = b => b===true?'✓':(b===false?'✗':'—');
+  const analyseHtml = g.analyse
+    ? `<pre style="font-family:var(--fb);font-size:12px;color:var(--text-2);line-height:1.55;white-space:pre-wrap;margin:0">${esc(g.analyse)}</pre>`
+    : `<div style="color:var(--muted);font-size:12px">Analyse-Text wurde nicht mitgeliefert.</div>`;
+
+  const genAt = g.generatedAt ? new Date(g.generatedAt).toLocaleString('de-DE') : '—';
+  const modal=document.createElement('div');
+  modal.className='mbg open';
+  modal.innerHTML = `<div class="modal" style="max-width:860px">
+    <div class="mh">
+      <div class="mt2">GUTACHTEN · ${esc(a.firma||'')}</div>
+      <button class="mcl" onclick="this.closest('.mbg').remove()">✕</button>
+    </div>
+    <div class="mbody">
+      <!-- Kopfzeile: Score + Key-Facts -->
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:14px 16px;background:var(--raised);border:1px solid var(--border);border-radius:8px;margin-bottom:14px">
+        <div>
+          <div style="font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--text-3)">SCORE</div>
+          <div style="font-family:var(--fd);font-size:24px;font-weight:700;color:${akqScoreColor(g.score||0)}">${g.score||0}/100</div>
+        </div>
+        <div>
+          <div style="font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--text-3)">GESCHÄTZTE VERLUSTE</div>
+          <div style="font-family:var(--fb);font-size:14px;font-weight:600;color:#e74c3c">${esc(g.anfrageverluste||'—')}</div>
+        </div>
+        <div>
+          <div style="font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--text-3)">EMPFOHLENES PAKET</div>
+          <div style="font-family:var(--fb);font-size:13px;font-weight:600;color:var(--text)">${esc(g.empfohlenesPaket||'—')}</div>
+        </div>
+        <span style="flex:1"></span>
+        <div style="text-align:right">
+          <div style="font-family:var(--fm);font-size:9px;letter-spacing:1px;color:var(--text-3)">GENERIERT</div>
+          <div style="font-family:var(--fm);font-size:10px;color:var(--muted)">${genAt}</div>
+        </div>
+      </div>
+
+      <!-- Abschnitt TECHNIK -->
+      <div style="margin-bottom:14px">
+        <div style="font-family:var(--fd);font-size:12px;letter-spacing:2px;margin-bottom:6px;color:var(--blue)">TECHNIK</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px 24px;font-size:12px">
+          <div><span style="color:var(--muted)">SSL / HTTPS:</span> <strong>${esc(tech.ssl||a.ssl||'—')}</strong></div>
+          <div><span style="color:var(--muted)">Mobile-optimiert:</span> <strong>${esc(tech.mobile||a.mobile||'—')}</strong></div>
+          <div><span style="color:var(--muted)">PageSpeed mobile:</span> <strong>${tech.pagespeedMobile!=null?tech.pagespeedMobile+'/100':'—'}</strong></div>
+          <div><span style="color:var(--muted)">LCP-Ladezeit:</span> <strong>${tech.lcp?tech.lcp.toFixed?tech.lcp.toFixed(1)+'s':tech.lcp+'s':(a.ladezeit?a.ladezeit+'s':'—')}</strong></div>
+          <div style="grid-column:span 2"><span style="color:var(--muted)">Tech-Stack:</span> <strong>${esc((tech.techStack||[]).join(', ')||'—')}</strong></div>
+        </div>
+      </div>
+
+      <!-- Abschnitt INHALT & RECHT -->
+      <div style="margin-bottom:14px">
+        <div style="font-family:var(--fd);font-size:12px;letter-spacing:2px;margin-bottom:6px;color:var(--orange)">INHALT &amp; RECHT</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px 24px;font-size:12px">
+          <div><span style="color:var(--muted)">Impressum:</span> <strong>${chk(inhalt.impressum)}</strong></div>
+          <div><span style="color:var(--muted)">Datenschutz:</span> <strong>${chk(inhalt.datenschutz)}</strong></div>
+          <div><span style="color:var(--muted)">Kontaktformular:</span> <strong>${chk(inhalt.contactForm)}</strong></div>
+          <div><span style="color:var(--muted)">Entscheider (Annahme):</span> <strong>${esc(inhalt.contactName||'—')}</strong></div>
+          <div style="grid-column:span 2"><span style="color:var(--muted)">Title:</span> <em>${esc(inhalt.title||'—')}</em></div>
+          <div style="grid-column:span 2"><span style="color:var(--muted)">Meta-Description:</span> <em>${esc(inhalt.description||'—')}</em></div>
+        </div>
+      </div>
+
+      <!-- Abschnitt ONLINE-PRÄSENZ -->
+      <div style="margin-bottom:14px">
+        <div style="font-family:var(--fd);font-size:12px;letter-spacing:2px;margin-bottom:6px;color:#22C55E">ONLINE-PRÄSENZ</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px 24px;font-size:12px">
+          <div><span style="color:var(--muted)">Rating:</span> <strong>⭐ ${a.googleRating||'—'} (${a.googleReviews||0} Reviews)</strong></div>
+          <div><span style="color:var(--muted)">Letzte Archiv-Aktualisierung:</span> <strong>${esc(praesenz.waybackLast||'—')}</strong></div>
+          <div style="grid-column:span 2"><span style="color:var(--muted)">Social-Profile:</span> <strong>${esc((praesenz.socials||[]).join(', ')||'KEINE')}</strong></div>
+          <div><span style="color:var(--muted)">Cookie-Banner:</span> <strong>${chk(praesenz.cookieBanner)}</strong></div>
+        </div>
+      </div>
+
+      <!-- Abschnitt GUTACHTEN FÜR ANSPRACHE -->
+      <div style="margin-bottom:14px">
+        <div style="font-family:var(--fd);font-size:12px;letter-spacing:2px;margin-bottom:6px;color:var(--text)">GUTACHTEN FÜR ANSPRACHE</div>
+        <div style="background:var(--raised);border:1px solid var(--border);border-left:3px solid var(--blue);padding:12px 16px;border-radius:6px;font-size:12.5px;line-height:1.55;color:var(--text)">
+          ${esc(g.kurz||'—')}
+        </div>
+      </div>
+
+      <!-- Abschnitt EMPFEHLUNG -->
+      <div style="margin-bottom:14px">
+        <div style="font-family:var(--fd);font-size:12px;letter-spacing:2px;margin-bottom:6px;color:#22C55E">EMPFEHLUNG</div>
+        <div style="background:var(--raised);border:1px solid var(--border);border-left:3px solid #22C55E;padding:12px 16px;border-radius:6px;font-size:12.5px;line-height:1.55;color:var(--text)">
+          ${esc(g.empfehlung||'—')}
+        </div>
+      </div>
+
+      <!-- Roh-Analyse (collapsed) -->
+      <details style="margin-top:10px">
+        <summary style="cursor:pointer;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--text-3)">ROH-ANALYSE</summary>
+        <div style="margin-top:10px;background:var(--bg3);padding:14px;border:1px solid var(--border);border-radius:6px;max-height:240px;overflow-y:auto">
+          ${analyseHtml}
+        </div>
+      </details>
+    </div>
+    <div class="mf">
+      <button class="btn btn-g" onclick="gutachtenAction('${a.id}','call',this)">📞 ANRUFEN</button>
+      <button class="btn btn-g" onclick="gutachtenAction('${a.id}','visit',this)">🚗 VORBEIFAHREN</button>
+      <button class="btn btn-b" onclick="gutachtenAction('${a.id}','email',this)">✉ E-MAIL</button>
+      <button class="btn btn-g" onclick="gutachtenAction('${a.id}','linkedin',this)">in LINKEDIN</button>
+    </div>
+  </div>`;
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
+function gutachtenAction(id, type, btn){
+  const a = DB.akquise.find(x=>x.id===id); if(!a) return;
+  if(!a.activities) a.activities=[];
+
+  if(type==='call'){
+    const tel=a.telefon||'';
+    if(!tel){ toast('Keine Telefonnummer'); return; }
+    if(navigator.clipboard) navigator.clipboard.writeText(tel).catch(()=>{});
+    toast('NUMMER KOPIERT: '+tel);
+    const res = prompt('Gespräch-Ergebnis (optional):','');
+    logAkqActivity(id, 'call', res||'');
+    renderAkquise();
+    return;
+  }
+  if(type==='visit'){
+    const adr = [a.firma, a.region].filter(Boolean).join(' ');
+    window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(adr),'_blank');
+    const d=new Date(); let added=0;
+    while(added<2){ d.setDate(d.getDate()+1); const w=d.getDay(); if(w!==0&&w!==6) added++; }
+    a.nextActionDate=d.toISOString().split('T')[0];
+    a.nextAction='Vorbeifahrt/Check';
+    a.activities.push({ts:Date.now(),type:'visit_planned',note:'Maps geöffnet · Follow-up in 2 Werktagen',user:SESSION?.name||''});
+    a.updatedAt=Date.now();
+    saveDB(); pushRecord('akquise', a); renderAkquise();
+    toast('MAPS GEÖFFNET · FOLLOW-UP GESETZT');
+    return;
+  }
+  if(type==='email'){
+    // Kleines Picker-Popover im Footer: zeige Auswahl der E-Mail-Templates
+    const emailTpls = (DB.templates||[]).filter(t=>t.channel==='email');
+    if(!emailTpls.length){ toast('Keine E-Mail-Templates vorhanden — erst anlegen'); return; }
+    const opts = emailTpls.map(t=>`${t.name} :: ${t.id}`).join('\n');
+    const pick = prompt('Template wählen (Nummer):\n\n'+emailTpls.map((t,i)=>`${i+1}. ${t.name}`).join('\n'),'1');
+    if(!pick) return;
+    const idx=parseInt(pick,10)-1;
+    const tpl=emailTpls[idx];
+    if(!tpl){ toast('Ungültige Auswahl'); return; }
+    gutachtenSendEmail(a, tpl);
+    return;
+  }
+  if(type==='linkedin'){
+    const q=encodeURIComponent((a.firma||'')+' '+(a.region||''));
+    window.open('https://www.linkedin.com/search/results/companies/?keywords='+q,'_blank');
+    a.activities.push({ts:Date.now(),type:'linkedin_search',note:'LinkedIn-Suche geöffnet',user:SESSION?.name||''});
+    a.updatedAt=Date.now();
+    saveDB(); pushRecord('akquise', a); renderAkquise();
+    toast('LINKEDIN-SUCHE GEÖFFNET');
+    return;
+  }
+}
+
+async function gutachtenSendEmail(a, tpl){
+  const ctx = _mergeCtxFromLead(a);
+  const subject = fillTemplate(tpl.subject||'', ctx);
+  const body    = fillTemplate(tpl.body||'', ctx);
+  // Zwei Optionen: Apps Script sendet, oder in Zwischenablage
+  const confirmed = confirm(`E-Mail an ${a.email||'(keine Adresse)'} mit Template "${tpl.name}" senden?\n\nOK = Jetzt senden via Apps Script\nAbbrechen = Nur in Zwischenablage`);
+  if(confirmed){
+    if(!a.email){ toast('Keine E-Mail-Adresse'); return; }
+    const url = DB.settings?.appsScriptUrl;
+    if(!url){ toast('Apps Script URL fehlt'); return; }
+    try{
+      const resp = await fetch(syncUrlWithSecret(url), {
+        method:'POST',
+        headers: syncHeaders(),
+        body: JSON.stringify(_injectSecretIntoBody({
+          action:'sendMail', leadId:a.id, to:a.email, subject, textBody:body, htmlBody:body.replace(/\n/g,'<br>')
+        }))
+      });
+      const data = await resp.json();
+      if(data && data.ok){
+        logAkqActivity(a.id, 'email', 'Template: '+tpl.name);
+        toast('MAIL GESENDET');
+      } else {
+        toast('FEHLER: '+(data.error||'unbekannt'));
+      }
+    }catch(err){ toast('NETZ-FEHLER: '+err.message); }
+  } else {
+    const text = (subject?`Betreff: ${subject}\n\n`:'') + body;
+    try{ await navigator.clipboard.writeText(text); toast('IN ZWISCHENABLAGE'); }
+    catch(e){ prompt('Kopieren:', text); }
+    logAkqActivity(a.id, 'email', 'Template in Zwischenablage: '+tpl.name);
+  }
+  renderAkquise();
+}
+
+// Merge-Kontext aus Akquise-Lead für Templates
+function _mergeCtxFromLead(a){
+  const g = a.gutachten || {};
+  return {
+    firma: a.firma||'',
+    contact: a.contact||'',
+    region: a.region||'',
+    hookText: a.hookText || g.kurz || '',
+    googleRating: a.googleRating,
+    googleReviews: a.googleReviews,
+    ladezeit: a.ladezeit,
+    gutachten_kurz: g.kurz||'',
+    empfehlung_paket: g.empfohlenesPaket||''
+  };
 }
 
 function insertTemplateForAkq(id){
@@ -3933,6 +4297,15 @@ function checkReminders(){
     const pending=DB.akquise.filter(a=>['responded','seq1','seq2','seq3'].includes(a.stage)).length;
     if(pending>0){ akqBadge.style.display='flex'; akqBadge.textContent=pending; } else akqBadge.style.display='none';
   }
+  // v5.5: NEUE ANTWORT Badge — Leads, die in den letzten 48h auf 'responded' gingen
+  const cutoff = Date.now() - 48*3600*1000;
+  const recentResp = (DB.akquise||[]).filter(a=>a.stage==='responded' && (a.updatedAt||a.stageChangedAt||0) > cutoff);
+  const scBadge=document.getElementById('scraperBadge');
+  if(scBadge){
+    if(recentResp.length>0){ scBadge.style.display='flex'; scBadge.textContent=recentResp.length; scBadge.title=recentResp.length+' neue Antworten (48h)'; }
+    else scBadge.style.display='none';
+  }
+  if(recentResp.length>0) alerts.unshift({type:'response', label:`✉ ${recentResp.length} neue Antworten in Akquise (48h)`, urgent:true});
   if(alerts.filter(a=>a.urgent).length>0&&Notification.permission==='granted'){
     new Notification('⚠ AGERIUM CRM Alert',{body:`${alerts.filter(a=>a.urgent).length} überfällige Follow-ups`});
   }
@@ -3943,6 +4316,412 @@ function showReminders(){
   const alerts=checkReminders();
   if(alerts.length===0){toast('✓ KEINE OFFENEN ERINNERUNGEN');return;}
   alert('⚠ OFFENE ERINNERUNGEN\n\n'+alerts.slice(0,8).map(a=>'• '+a.label).join('\n')+(alerts.length>8?`\n...+${alerts.length-8} weitere`:''));
+}
+
+// ══════════════════════════════════════════════════════
+//  SCRAPER (v5.5) — Admin-only
+// ══════════════════════════════════════════════════════
+let _scraperPoll = null;     // Interval-Handle für Progress-Polling
+let _scraperRequestId = null;
+let _scraperPreview = [];    // Leads der letzten Runde (noch nicht importiert)
+
+function _scraperCfg(){
+  if(!DB.settings.scraper) DB.settings.scraper = defaultDB().settings.scraper;
+  return DB.settings.scraper;
+}
+
+function renderScraper(){
+  const el=document.getElementById('tab-scraper');
+  if(SESSION.role!=='admin'){
+    el.innerHTML = `<div class="page-header"><div><h1>SCRAPER</h1><p>NUR FÜR ADMIN</p></div></div>
+      <div class="card" style="padding:20px">Dieser Bereich ist nur für Admins sichtbar. Bitte mit einem Admin-Konto einloggen.</div>`;
+    return;
+  }
+  const sc=_scraperCfg();
+  const regionsChips = (sc.regions||[]).map(r=>`<span class="chip">${r}<button onclick="scraperRemoveChip('regions','${r.replace(/'/g,"\\'")}')" title="Entfernen">✕</button></span>`).join('');
+  const branchesChips = (sc.branches||[]).map(b=>`<span class="chip">${b}<button onclick="scraperRemoveChip('branches','${b.replace(/'/g,"\\'")}')" title="Entfernen">✕</button></span>`).join('');
+  const combos = (sc.regions||[]).length * (sc.branches||[]).length;
+  const estMax = combos * (sc.maxPerCombo||40);
+  const lastRunTxt = sc.lastRun ? new Date(sc.lastRun).toLocaleString('de-DE') : '—';
+  const wdays=['So','Mo','Di','Mi','Do','Fr','Sa'];
+  el.innerHTML=`
+  <style>
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--overlay);border:1px solid var(--border-hi);border-radius:14px;font-family:var(--fm);font-size:10.5px;color:var(--text);margin:3px 4px 3px 0}
+    .chip button{background:none;border:none;color:var(--muted);cursor:pointer;padding:0;font-size:11px}
+    .scrp-row{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0}
+    .scrp-row label{font-family:var(--fm);font-size:9.5px;letter-spacing:1px;color:var(--text-3);margin-bottom:3px;display:block}
+    .scrp-in{background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--fm);font-size:11.5px;padding:7px 10px;outline:none;border-radius:5px}
+    .scrp-in:focus{border-color:var(--blue)}
+    .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+  </style>
+  <div class="page-header">
+    <div><h1>SCRAPER</h1><p>LEAD-GENERATOR · GOOGLE PLACES + DEEP-SCAN + GUTACHTEN</p></div>
+    <div class="page-actions">
+      <button class="btn btn-g btn-sm" onclick="scraperResetCfg()" title="Auf Standard zurücksetzen">RESET</button>
+    </div>
+  </div>
+
+  <!-- STATUS -->
+  <div class="card" style="padding:16px 20px;margin-bottom:14px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="dot" style="background:${sc.active?'#10b981':'#64748b'};box-shadow:0 0 10px ${sc.active?'#10b98166':'transparent'}"></span>
+      <div>
+        <div style="font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--text-3)">STATUS</div>
+        <div style="font-family:var(--fb);font-size:13px;font-weight:700;color:${sc.active?'#10b981':'var(--muted)'}">${sc.active?'AKTIV':'INAKTIV'}</div>
+      </div>
+    </div>
+    <button class="btn btn-sm ${sc.active?'btn-r':'btn-b'}" onclick="scraperToggleActive()">${sc.active?'⏸ DEAKTIVIEREN':'▶ AKTIVIEREN'}</button>
+    <span style="flex:1"></span>
+    <div style="font-family:var(--fm);font-size:10px;color:var(--text-3)">Letzter Lauf: <span style="color:var(--text)">${lastRunTxt}</span></div>
+    <div style="font-family:var(--fm);font-size:10px;color:var(--text-3)">Erwartete Leads: <span style="color:var(--text)">bis ${estMax}</span> (${combos} Kombinationen)</div>
+  </div>
+
+  <div class="g2 gap">
+    <!-- SPALTE 1: KEYS + ZIELE -->
+    <div>
+      <div class="card gap">
+        <div class="ch">API-KEYS</div>
+        <div class="scrp-row" style="display:block">
+          <label>Google Places API Key *</label>
+          <input type="password" id="sc-placeskey" class="scrp-in" style="width:100%" value="${(sc.googleApiKey||'').replace(/"/g,'&quot;')}" placeholder="AIza…">
+        </div>
+        <div class="scrp-row" style="display:block">
+          <label>Google PageSpeed API Key (optional — für höhere Quota)</label>
+          <input type="password" id="sc-pskey" class="scrp-in" style="width:100%" value="${(sc.pagespeedApiKey||'').replace(/"/g,'&quot;')}" placeholder="AIza…">
+        </div>
+        <div style="font-family:var(--fm);font-size:9.5px;color:var(--muted);line-height:1.4">
+          Keys gibt&apos;s kostenlos in Google Cloud Console. Places API: 0–$200 gratis/Monat, reicht für ~2500 Suchen &amp; 20k Details.
+        </div>
+      </div>
+
+      <div class="card gap">
+        <div class="ch">REGIONEN &amp; BRANCHEN</div>
+        <div class="scrp-row" style="display:block">
+          <label>Regionen (Städte)</label>
+          <div id="sc-chips-regions">${regionsChips||'<span style="color:var(--muted);font-size:11px">Keine Regionen</span>'}</div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <input id="sc-newregion" class="scrp-in" style="flex:1" placeholder="z.B. Bielefeld" onkeydown="if(event.key==='Enter'){scraperAddChip('regions',this.value);this.value='';}">
+            <button class="btn btn-g btn-sm" onclick="scraperAddChip('regions',document.getElementById('sc-newregion').value);document.getElementById('sc-newregion').value=''">+ REGION</button>
+          </div>
+        </div>
+        <div class="scrp-row" style="display:block">
+          <label>Branchen</label>
+          <div id="sc-chips-branches">${branchesChips||'<span style="color:var(--muted);font-size:11px">Keine Branchen</span>'}</div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <input id="sc-newbranch" class="scrp-in" style="flex:1" placeholder="z.B. Malermeister" onkeydown="if(event.key==='Enter'){scraperAddChip('branches',this.value);this.value='';}">
+            <button class="btn btn-g btn-sm" onclick="scraperAddChip('branches',document.getElementById('sc-newbranch').value);document.getElementById('sc-newbranch').value=''">+ BRANCHE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPALTE 2: FILTER + SCHEDULER -->
+    <div>
+      <div class="card gap">
+        <div class="ch">FILTER</div>
+        <div class="scrp-row">
+          <div style="flex:1"><label>Min Reviews</label>
+            <input type="number" min="0" id="sc-minrev" class="scrp-in" style="width:100%" value="${sc.minReviews||5}">
+          </div>
+          <div style="flex:1"><label>Min Rating</label>
+            <input type="number" step="0.1" min="0" max="5" id="sc-minrating" class="scrp-in" style="width:100%" value="${sc.minRating||4}">
+          </div>
+          <div style="flex:1"><label>Max pro Kombi</label>
+            <input type="number" min="1" max="60" id="sc-maxcombo" class="scrp-in" style="width:100%" value="${sc.maxPerCombo||40}">
+          </div>
+        </div>
+        <div class="scrp-row" style="display:block">
+          <label>Kampagnen-Tag (wird allen Leads angehängt)</label>
+          <input id="sc-campaign" class="scrp-in" style="width:100%" value="${(sc.campaign||'').replace(/"/g,'&quot;')}" placeholder="z.B. Handwerk Münster #1">
+        </div>
+      </div>
+
+      <div class="card gap">
+        <div class="ch">SCHEDULER</div>
+        <div class="scrp-row">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0">
+            <input type="radio" name="sc-sched" value="manual" ${sc.schedule!=='weekly'?'checked':''} onchange="_scraperCfg().schedule='manual'">
+            Manuell
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;margin:0">
+            <input type="radio" name="sc-sched" value="weekly" ${sc.schedule==='weekly'?'checked':''} onchange="_scraperCfg().schedule='weekly'">
+            Automatisch wöchentlich
+          </label>
+        </div>
+        <div class="scrp-row">
+          <div style="flex:1"><label>Wochentag</label>
+            <select id="sc-weekday" class="scrp-in" style="width:100%">
+              ${wdays.map((w,i)=>`<option value="${i}"${sc.weeklyDay===i?' selected':''}>${w}</option>`).join('')}
+            </select>
+          </div>
+          <div style="flex:1"><label>Uhrzeit</label>
+            <input type="number" min="0" max="23" id="sc-weekhour" class="scrp-in" style="width:100%" value="${sc.weeklyHour||9}">
+          </div>
+        </div>
+        <div style="font-family:var(--fm);font-size:9.5px;color:var(--muted);line-height:1.4">
+          Wöchentliche Läufe werden von Apps Script per Time-Trigger getriggert — nach dem Speichern einmal "SPRINT STARTEN" drücken, Apps Script installiert den Trigger.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+    <button class="btn btn-g" onclick="scraperSaveCfg()"><span class="mi mi-sm">save</span> KONFIG SPEICHERN</button>
+    <span style="flex:1"></span>
+    <button class="btn btn-b" style="font-weight:700;padding:11px 24px;font-size:13px;letter-spacing:1.5px" onclick="scraperStartSprint()">
+      <span class="mi mi-sm">rocket_launch</span> SPRINT STARTEN
+    </button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div id="sc-progress" style="display:none;margin-top:18px">
+    <div class="card" style="padding:16px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-family:var(--fd);font-size:13px;letter-spacing:2px">SPRINT LÄUFT…</div>
+        <button class="btn btn-r btn-sm" onclick="scraperStopPoll()">STOP</button>
+      </div>
+      <div id="sc-progress-label" style="font-family:var(--fm);font-size:11px;color:var(--text-2);margin-bottom:8px">Warte auf Apps Script…</div>
+      <div style="height:8px;background:var(--overlay);border-radius:4px;overflow:hidden">
+        <div id="sc-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--blue),#22C55E);transition:width .4s"></div>
+      </div>
+      <div id="sc-progress-detail" style="margin-top:8px;font-family:var(--fm);font-size:10px;color:var(--muted)"></div>
+    </div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div id="sc-preview"></div>
+  `;
+}
+
+function scraperAddChip(key, val){
+  val = String(val||'').trim();
+  if(!val) return;
+  const sc = _scraperCfg();
+  if(!Array.isArray(sc[key])) sc[key]=[];
+  if(sc[key].some(x=>x.toLowerCase()===val.toLowerCase())){ toast('BEREITS VORHANDEN'); return; }
+  sc[key].push(val);
+  saveDB(); renderScraper();
+}
+function scraperRemoveChip(key, val){
+  const sc = _scraperCfg();
+  sc[key] = (sc[key]||[]).filter(x=>x!==val);
+  saveDB(); renderScraper();
+}
+function scraperToggleActive(){
+  const sc = _scraperCfg();
+  sc.active = !sc.active;
+  saveDB(); renderScraper();
+  toast(sc.active?'SCRAPER AKTIV':'SCRAPER DEAKTIVIERT');
+}
+function scraperSaveCfg(){
+  const sc = _scraperCfg();
+  sc.googleApiKey     = document.getElementById('sc-placeskey').value.trim();
+  sc.pagespeedApiKey  = document.getElementById('sc-pskey').value.trim();
+  sc.minReviews       = parseInt(document.getElementById('sc-minrev').value)||5;
+  sc.minRating        = parseFloat(document.getElementById('sc-minrating').value)||4;
+  sc.maxPerCombo      = parseInt(document.getElementById('sc-maxcombo').value)||40;
+  sc.campaign         = document.getElementById('sc-campaign').value.trim();
+  const schedRadio    = document.querySelector('input[name=sc-sched]:checked');
+  sc.schedule         = schedRadio ? schedRadio.value : 'manual';
+  sc.weeklyDay        = parseInt(document.getElementById('sc-weekday').value)||1;
+  sc.weeklyHour       = parseInt(document.getElementById('sc-weekhour').value)||9;
+  saveDB();
+  toast('KONFIG GESPEICHERT');
+}
+function scraperResetCfg(){
+  if(!confirm('Scraper-Konfiguration auf Standard zurücksetzen?')) return;
+  DB.settings.scraper = defaultDB().settings.scraper;
+  saveDB(); renderScraper();
+  toast('KONFIG ZURÜCKGESETZT');
+}
+
+async function scraperStartSprint(){
+  const sc = _scraperCfg();
+  scraperSaveCfg(); // aktuelle Felder persistieren
+  if(!sc.googleApiKey){ toast('Google Places API Key fehlt'); return; }
+  if(!sc.regions.length || !sc.branches.length){ toast('Regionen & Branchen wählen'); return; }
+  const url = DB.settings?.appsScriptUrl;
+  if(!url){ toast('Apps Script URL in Einstellungen fehlt'); return; }
+  if(!DB.settings.syncSecret){ if(!confirm('Shared Secret ist nicht gesetzt — trotzdem starten?')) return; }
+
+  _scraperRequestId = 'run_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
+  _scraperPreview = [];
+  const progEl = document.getElementById('sc-progress');
+  const previewEl = document.getElementById('sc-preview');
+  if(progEl) progEl.style.display = 'block';
+  if(previewEl) previewEl.innerHTML = '';
+  _scraperUpdateProgress(0, 'Starte Sprint…', '');
+
+  // Kick off
+  try{
+    const payload = {
+      action:'runScraper',
+      requestId: _scraperRequestId,
+      config: {
+        googleApiKey: sc.googleApiKey,
+        pagespeedApiKey: sc.pagespeedApiKey,
+        regions: sc.regions, branches: sc.branches,
+        minReviews: sc.minReviews, minRating: sc.minRating,
+        maxPerCombo: sc.maxPerCombo,
+        campaign: sc.campaign
+      }
+    };
+    fetch(syncUrlWithSecret(url), {
+      method:'POST',
+      headers: syncHeaders(),
+      body: JSON.stringify(_injectSecretIntoBody(payload))
+    }).then(r=>r.json()).then(data=>{
+      if(data && data.ok && data.leads){
+        _scraperPreview = data.leads;
+        _scraperUpdateProgress(100, `Fertig · ${data.leads.length} Leads`, `Response erhalten`);
+        _scraperRenderPreview();
+        scraperStopPoll();
+        sc.lastRun = Date.now(); saveDB();
+      } else if(data && !data.ok){
+        _scraperUpdateProgress(0, 'Fehler: '+(data.error||'unbekannt'), '');
+        scraperStopPoll();
+      }
+    }).catch(err=>{
+      _scraperUpdateProgress(0, 'Netzwerkfehler: '+err.message, '');
+      scraperStopPoll();
+    });
+    // Poll in paralleler Schleife
+    scraperStartPoll(url);
+  }catch(err){
+    toast('FEHLER: '+err.message);
+  }
+}
+
+function scraperStartPoll(url){
+  scraperStopPoll();
+  _scraperPoll = setInterval(async ()=>{
+    try{
+      const resp = await fetch(syncUrlWithSecret(url+'?action=scraperStatus&requestId='+encodeURIComponent(_scraperRequestId)), {cache:'no-store', headers: syncHeaders()});
+      const data = await resp.json();
+      if(data && data.ok){
+        const pct = data.total>0 ? Math.round((data.done/data.total)*100) : 0;
+        const label = data.phase || `${data.done||0} von ${data.total||0}`;
+        _scraperUpdateProgress(pct, label, data.current||'');
+        if(data.finished){ scraperStopPoll(); }
+      }
+    }catch(e){ /* still polling, ignore transient */ }
+  }, 2000);
+}
+function scraperStopPoll(){
+  if(_scraperPoll){ clearInterval(_scraperPoll); _scraperPoll=null; }
+}
+function _scraperUpdateProgress(pct, label, detail){
+  const bar = document.getElementById('sc-progress-bar');
+  const lbl = document.getElementById('sc-progress-label');
+  const det = document.getElementById('sc-progress-detail');
+  if(bar) bar.style.width = pct+'%';
+  if(lbl) lbl.textContent = label;
+  if(det) det.textContent = detail||'';
+}
+
+function _scraperRenderPreview(){
+  const el = document.getElementById('sc-preview');
+  if(!el) return;
+  if(!_scraperPreview.length){
+    el.innerHTML = `<div class="card" style="padding:20px;margin-top:18px;color:var(--muted)">Keine Leads geliefert.</div>`;
+    return;
+  }
+  const rows = _scraperPreview.slice(0,20).map(a=>{
+    const score = a.gutachten?.score || akqScore(a);
+    const fire = score>=75?'🔥':'';
+    return `<tr style="border-top:1px solid var(--border)">
+      <td style="padding:8px 10px;font-size:12px">${fire}${(a.firma||'—').replace(/</g,'&lt;')}</td>
+      <td style="padding:8px 10px;font-family:var(--fm);font-size:10.5px;color:var(--muted)">${a.branche||''} · ${a.region||''}</td>
+      <td style="padding:8px 10px;text-align:right;font-family:var(--fm);font-size:10.5px">${a.googleRating?'⭐'+a.googleRating:''} ${a.googleReviews?'('+a.googleReviews+')':''}</td>
+      <td style="padding:8px 10px;text-align:right;font-family:var(--fm);font-size:10.5px;color:${akqScoreColor(score)}">${score}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<div class="card" style="padding:16px 20px;margin-top:18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-family:var(--fd);font-size:13px;letter-spacing:2px">VORSCHAU · ${Math.min(20,_scraperPreview.length)} VON ${_scraperPreview.length}</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-g btn-sm" onclick="scraperDiscardPreview()">VERWERFEN</button>
+        <button class="btn btn-b btn-sm" onclick="scraperImportPreview()">📥 ALLE ${_scraperPreview.length} IN AKQUISE</button>
+      </div>
+    </div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="background:var(--overlay)">
+        <th style="padding:8px 10px;text-align:left;font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px">FIRMA</th>
+        <th style="padding:8px 10px;text-align:left;font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px">BRANCHE / REGION</th>
+        <th style="padding:8px 10px;text-align:right;font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px">RATING</th>
+        <th style="padding:8px 10px;text-align:right;font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px">SCORE</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
+function scraperDiscardPreview(){
+  _scraperPreview = [];
+  _scraperRenderPreview();
+  document.getElementById('sc-preview').innerHTML='';
+}
+
+function scraperImportPreview(){
+  if(!_scraperPreview.length){ toast('Keine Leads'); return; }
+  if(!DB.akquise) DB.akquise=[];
+  const dupes = _scraperPreview.map(c=>({cand:c, dup:findAkqDuplicate(c)})).filter(x=>x.dup);
+  let decision='add';
+  if(dupes.length>0){
+    decision = askBulkDupeDecision(dupes.length);
+    if(decision==='cancel'){ toast('ABGEBROCHEN'); return; }
+  }
+  let added=0, merged=0, skipped=0;
+  const now = Date.now();
+  const sc = _scraperCfg();
+  _scraperPreview.forEach(lead=>{
+    const cand = {
+      id: lead.id || uid(),
+      stage: 'enriched',
+      firma: lead.firma||'',
+      branche: lead.branche||'',
+      region: lead.region||'',
+      contact: lead.contact||'',
+      telefon: lead.telefon||'',
+      email: lead.email||'',
+      website: lead.website||'',
+      googleRating: lead.googleRating||0,
+      googleReviews: lead.googleReviews||0,
+      ladezeit: lead.ladezeit||0,
+      ssl: lead.ssl||'',
+      mobile: lead.mobile||'',
+      hookText: lead.hookText|| (lead.gutachten?.kurz||''),
+      placeId: lead.placeId||'',
+      googleMapsUrl: lead.googleMapsUrl||'',
+      source: 'scraper-gmaps',
+      campaign: lead.campaign || sc.campaign || '',
+      gutachten: lead.gutachten || null,
+      activities: [],
+      createdAt: now,
+      stageChangedAt: now,
+      updatedAt: now
+    };
+    const d = findAkqDuplicate(cand);
+    if(d){
+      if(decision==='skip'){ skipped++; return; }
+      if(decision==='merge'){
+        const m = mergeAkqRecords(d, cand);
+        // Gutachten immer übernehmen, wenn neu
+        if(cand.gutachten) m.gutachten = cand.gutachten;
+        const i = DB.akquise.findIndex(x=>x.id===d.id);
+        if(i>=0){ DB.akquise[i]=m; merged++; }
+        pushRecord('akquise', DB.akquise[i]);
+        return;
+      }
+    }
+    DB.akquise.push(cand);
+    pushRecord('akquise', cand);
+    added++;
+  });
+  saveDB();
+  _scraperPreview=[];
+  renderScraper();
+  toast(`${added} NEU · ${merged} GEMERGT · ${skipped} ÜBERSPRUNGEN`);
 }
 
 // ══════════════════════════════════════════════════════
@@ -3960,15 +4739,22 @@ function templateChannelColor(id){ return (TEMPLATE_CHANNELS.find(c=>c.id===id)|
 // Merge-Fields ersetzen — Werte kommen meist aus einem Akquise-Lead
 function fillTemplate(body, ctx){
   const c = ctx||{};
-  const vorname = (c.contact||'').trim().split(/\s+/)[0] || 'dort';
+  const nameParts = (c.contact||'').trim().split(/\s+/);
+  const vorname = nameParts[0] || 'dort';
+  const nachname = nameParts.slice(1).join(' ') || '';
+  const g = c.gutachten || {};
   const map = {
     '{firma}':    c.firma||'Ihrem Unternehmen',
     '{vorname}':  vorname,
+    '{nachname}': nachname,
     '{hook}':     c.hookText||'einige Punkte auf der Website',
     '{rating}':   (c.googleRating!=null && c.googleRating!==0) ? String(c.googleRating) : '',
     '{reviews}':  c.googleReviews ? String(c.googleReviews) : '',
     '{ladezeit}': c.ladezeit ? String(c.ladezeit)+'s' : '',
-    '{region}':   c.region||'Ihrer Region'
+    '{region}':   c.region||'Ihrer Region',
+    // v5.5: Gutachten-Merge-Fields
+    '{gutachten_kurz}':  c.gutachten_kurz || g.kurz || c.hookText || '',
+    '{empfehlung_paket}': c.empfehlung_paket || g.empfohlenesPaket || ''
   };
   let out = String(body||'');
   Object.keys(map).forEach(k=>{ out = out.split(k).join(map[k]); });
@@ -4004,6 +4790,7 @@ function renderTemplates(){
       <p>VORLAGEN FÜR E-MAIL · LINKEDIN · CALL · WIEDERVERWENDBAR MIT MERGE-FIELDS</p>
     </div>
     <div class="page-actions">
+      <button class="btn btn-g btn-sm" onclick="restoreDefaultTemplates()" title="v5.5-Standardvorlagen ergänzen / wiederherstellen">↺ STANDARDS</button>
       <button class="btn btn-b btn-sm" onclick="openTemplateModal()"><span class="mi mi-sm">add</span> NEUE VORLAGE</button>
     </div>
   </div>
@@ -4011,11 +4798,14 @@ function renderTemplates(){
     <strong>Merge-Fields</strong> werden beim Einfügen im Lead-Modal ersetzt:
     <code style="font-family:var(--fm);font-size:10.5px;color:var(--blue)">{firma}</code>
     <code style="font-family:var(--fm);font-size:10.5px;color:var(--blue)">{vorname}</code>
+    <code style="font-family:var(--fm);font-size:10.5px;color:var(--blue)">{nachname}</code>
     <code style="font-family:var(--fm);font-size:10.5px;color:var(--blue)">{hook}</code>
     <code style="font-family:var(--fm);font-size:10.5px;color:var(--blue)">{rating}</code>
     <code style="font-family:var(--fm);font-size:10.5px;color:var(--blue)">{reviews}</code>
     <code style="font-family:var(--fm);font-size:10.5px;color:var(--blue)">{ladezeit}</code>
     <code style="font-family:var(--fm);font-size:10.5px;color:var(--blue)">{region}</code>
+    <code style="font-family:var(--fm);font-size:10.5px;color:#22C55E">{gutachten_kurz}</code>
+    <code style="font-family:var(--fm);font-size:10.5px;color:#22C55E">{empfehlung_paket}</code>
   </div>
   <div class="g2 gap">${cards || '<div style="color:var(--muted);padding:24px;text-align:center">Keine Templates. Lege eine erste Vorlage an.</div>'}</div>`;
 }
@@ -4076,6 +4866,34 @@ function deleteTemplate(id){
   if(!confirm(`Template "${t.name}" löschen?`)) return;
   DB.templates = DB.templates.filter(x=>x.id!==id);
   saveDB(); renderTemplates(); toast('TEMPLATE GELÖSCHT');
+}
+function restoreDefaultTemplates(){
+  const choice = prompt(
+    'Standard-Vorlagen (v5.5 Positionierung) wiederherstellen:\n\n'+
+    'o = Nur fehlende ergänzen (deine eigenen bleiben)\n'+
+    'r = Alle mit Standard-IDs ersetzen (überschreibt tpl_email_1/2/3 etc.)\n'+
+    'n = Abbrechen', 'o'
+  );
+  if(!choice) return;
+  const c = String(choice).trim().toLowerCase()[0];
+  const defs = defaultTemplates();
+  if(!Array.isArray(DB.templates)) DB.templates=[];
+  let added=0, replaced=0;
+  if(c==='r'){
+    defs.forEach(d=>{
+      const i = DB.templates.findIndex(x=>x.id===d.id);
+      if(i>=0){ DB.templates[i] = d; replaced++; }
+      else    { DB.templates.push(d); added++; }
+    });
+  } else if(c==='o'){
+    defs.forEach(d=>{
+      if(!DB.templates.some(x=>x.id===d.id)){ DB.templates.push(d); added++; }
+    });
+  } else {
+    return;
+  }
+  saveDB(); renderTemplates();
+  toast(`${added} NEU · ${replaced} ERSETZT`);
 }
 async function copyTemplate(id, ctx){
   const t=DB.templates.find(x=>x.id===id); if(!t) return;
@@ -4154,6 +4972,13 @@ function renderSettings(){
             <button class="btn btn-g btn-sm" onclick="toggleSecretVisibility()">ANZEIGEN</button>
           </div>
         </div>
+        <div class="settings-row" style="margin-top:12px">
+          <div class="settings-info">
+            <h4>Response-Sheet</h4>
+            <p>${DB.settings.scraper?.responseSheetUrl ? '<a href="'+DB.settings.scraper.responseSheetUrl+'" target="_blank" style="color:var(--blue)">Sheet öffnen</a>' : 'Noch nicht angelegt — Apps Script erstellt ein neues Google-Sheet für Antwort-Tracking.'}</p>
+          </div>
+          <button class="btn btn-g btn-sm" onclick="createResponseSheet()">${DB.settings.scraper?.responseSheetUrl?'NEU ERSTELLEN':'RESPONSE-SHEET ERSTELLEN'}</button>
+        </div>
         <details style="margin-top:12px;border:1px solid var(--border);border-radius:6px;padding:8px 12px;background:var(--bg3)">
           <summary style="cursor:pointer;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--text-3)">APPS-SCRIPT-SNIPPET FÜR SERVER-SEITIGE PRÜFUNG</summary>
           <p style="font-size:11px;color:var(--muted);margin:10px 0 6px">In deinem Apps-Script-Projekt ganz oben einfügen. Anschließend neu deployen.</p>
@@ -4183,7 +5008,7 @@ function _check(e){
       </div>
       <div class="card">
         <div class="ch">SYSTEM INFO</div>
-        <div class="settings-row"><div class="settings-info"><h4>Version</h4></div><span class="tag tag-green">v5.4</span></div>
+        <div class="settings-row"><div class="settings-info"><h4>Version</h4></div><span class="tag tag-green">v5.5</span></div>
         <div class="settings-row"><div class="settings-info"><h4>Leads gesamt</h4></div><span style="font-family:var(--fm);font-size:11px">${DB.leads.length}</span></div>
         <div class="settings-row"><div class="settings-info"><h4>Kunden gesamt</h4></div><span style="font-family:var(--fm);font-size:11px">${DB.kunden.length}</span></div>
         <div class="settings-row"><div class="settings-info"><h4>Projekte gesamt</h4></div><span style="font-family:var(--fm);font-size:11px">${DB.projekte.length}</span></div>
@@ -4292,6 +5117,29 @@ function exportAffiliatesCSV(){
 }
 function importData(e){ const file=e.target.files[0]; if(!file)return; const reader=new FileReader(); reader.onload=ev=>{try{const d=JSON.parse(ev.target.result); if(!d.users||!d.leads){toast('UNGÜLTIGE BACKUP-DATEI');return;} if(!confirm('Alle Daten überschreiben?'))return; DB=d;saveDB();switchTab('cockpit');toast('IMPORT ERFOLGREICH');}catch(err){toast('FEHLER BEIM IMPORT');}}; reader.readAsText(file); }
 function resetData(){ if(!confirm('WIRKLICH alle Daten zurücksetzen?'))return; DB=defaultDB();saveDB();switchTab('cockpit');toast('RESET ABGESCHLOSSEN'); }
+async function createResponseSheet(){
+  const url = DB.settings?.appsScriptUrl;
+  if(!url){ toast('Apps Script URL fehlt'); return; }
+  if(!confirm('Neues Google-Sheet "AGERIUM_Responses" erstellen? Link wird in Einstellungen gespeichert.')) return;
+  try{
+    const resp = await fetch(syncUrlWithSecret(url), {
+      method:'POST',
+      headers: syncHeaders(),
+      body: JSON.stringify(_injectSecretIntoBody({action:'createResponseSheet'}))
+    });
+    const data = await resp.json();
+    if(data && data.ok && data.url){
+      if(!DB.settings.scraper) DB.settings.scraper={};
+      DB.settings.scraper.responseSheetUrl = data.url;
+      saveDB(); renderSettings();
+      toast('SHEET ERSTELLT');
+      window.open(data.url,'_blank');
+    } else {
+      toast('FEHLER: '+(data?.error||'unbekannt'));
+    }
+  }catch(err){ toast('NETZ-FEHLER: '+err.message); }
+}
+
 function resetUserPin(userId){
   const u=DB.users.find(x=>x.id===userId);
   if(!u) return;
