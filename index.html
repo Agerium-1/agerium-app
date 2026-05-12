@@ -5551,6 +5551,14 @@ init();
 
   whenReady(function(){
 
+    // ── 0) CORS-FIX · syncHeaders ohne Custom-Header (verhindert Preflight) ──
+    // X-Api-Key Header triggert CORS-Preflight → Apps Script antwortet nicht auf OPTIONS
+    // Secret wird ohnehin per URL-Param via syncUrlWithSecret() übertragen
+    if (typeof syncHeaders === 'function' && !window.__corsFixed) {
+      window.syncHeaders = function(extra){ return Object.assign({}, extra||{}); };
+      window.__corsFixed = true;
+    }
+
     // ── 1) AKQUISE-PULL · ergänzt pullAll um den getAkquise-Endpunkt ──
     if (!window.__akquisePatched) {
       const orig = window.pullAll;
@@ -5565,7 +5573,7 @@ init();
           );
           const j = await resp.json();
           if (j.ok && Array.isArray(j.akquise)) {
-            window.DB.akquise = j.akquise;
+            DB.akquise = j.akquise;
             if (typeof saveLocal === 'function') saveLocal();
             if (typeof refreshCurrentTab === 'function') refreshCurrentTab();
           }
