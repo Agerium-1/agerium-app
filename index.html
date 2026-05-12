@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agerium CRM v5.5</title>
+<title>Agerium CRM v5.6-mini</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
 <style>
@@ -5528,5 +5528,174 @@ function init(){
 
 init();
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     v5.6-mini PATCH BLOCK
+     · Akquise-Pull (akquise-Sheet vom Server ziehen)
+     · Telefon-Anzeige auf Kanban-Karten (tel:-Link + Kopieren)
+     · Anwahl-Tracker (Cold-Call-Logging mit Auto-Stage)
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+(function(){
+  // Wait for DB to be ready (init may still be running async)
+  function ready(){ return typeof DB !== 'undefined' && DB && typeof renderAkqCard === 'function'; }
+  function whenReady(cb){
+    if (ready()) { cb(); return; }
+    let tries = 0;
+    const iv = setInterval(()=>{
+      tries++;
+      if (ready()) { clearInterval(iv); cb(); }
+      else if (tries > 50) { clearInterval(iv); console.warn('v5.6-mini patch: DB never ready'); }
+    }, 200);
+  }
+
+  whenReady(function(){
+
+    // ── 1) AKQUISE-PULL · ergänzt pullAll um den getAkquise-Endpunkt ──
+    if (!window.__akquisePatched) {
+      const orig = window.pullAll;
+      window.pullAll = async function(url){
+        if (orig) await orig(url);
+        try {
+          const data = JSON.parse(localStorage.getItem('agerium_crm_v5')||'{}');
+          if (!data.settings || !data.settings.appsScriptUrl) return;
+          const resp = await fetch(
+            data.settings.appsScriptUrl + '?action=getAkquise&secret=' + encodeURIComponent(data.settings.syncSecret||'') + '&_=' + Date.now(),
+            {cache:'no-store'}
+          );
+          const j = await resp.json();
+          if (j.ok && Array.isArray(j.akquise)) {
+            window.DB.akquise = j.akquise;
+            if (typeof saveLocal === 'function') saveLocal();
+            if (typeof refreshCurrentTab === 'function') refreshCurrentTab();
+          }
+        } catch(e) { console.error('v5.6-mini akquise-pull error:', e); }
+      };
+      window.__akquisePatched = true;
+    }
+
+    // ── 2) CALL-TRACKER · logAttempt + showCallDialog ──
+    window.copyPhone = function(ev, val){
+      if (ev) ev.stopPropagation();
+      navigator.clipboard.writeText(val).then(()=>{ if(window.toast) toast('📋 '+val+' kopiert'); });
+    };
+
+    window.logCallAttempt = function(ev, leadId, result){
+      if (ev) ev.stopPropagation();
+      const a = DB.akquise.find(x => x.id === leadId); if (!a) return;
+      a.callAttempts = (a.callAttempts||0) + 1;
+      a.lastCallAt = Date.now();
+      a.lastCallResult = result;
+      if (!a.activities) a.activities = [];
+      const labels = {no_answer:'📵 Keine Antwort', voicemail:'📭 Mailbox · Sprachnachricht hinterlassen', wrong_number:'❌ Falsche Nummer', callback:'🔁 Bitte später anrufen', spoke:'✅ Gesprochen', not_interested:'🚫 Kein Interesse'};
+      a.activities.push({ts: Date.now(), type:'call', result, note: labels[result]||result, user: (window.SESSION&&SESSION.name)||''});
+      a.updatedAt = Date.now();
+      if (result === 'spoke') { a.stage = 'rückruf'; a.nextAction = 'Termin/Angebot senden'; }
+      else if (result === 'callback') { a.stage = 'rückruf'; const d=new Date(); d.setDate(d.getDate()+1); a.nextActionDate = d.toISOString().split('T')[0]; a.nextAction = 'Rückruf'; }
+      else if (result === 'not_interested') { a.stage = 'raus'; }
+      else if (result === 'wrong_number') { a.stage = 'raus'; }
+      else if (a.callAttempts >= 3 && result === 'no_answer') { a.stage = 'rückruf'; const d=new Date(); d.setDate(d.getDate()+3); a.nextActionDate = d.toISOString().split('T')[0]; a.nextAction = '3× nicht erreicht'; }
+      if (typeof saveDB === 'function') saveDB();
+      if (typeof pushRecord === 'function') pushRecord('akquise', a);
+      if (typeof renderAkquise === 'function') renderAkquise();
+      if (typeof toast === 'function') toast(labels[result]||result);
+    };
+
+    window.showCallDialog = function(ev, leadId){
+      if (ev) ev.stopPropagation();
+      const existing = document.getElementById('__callDialog'); if (existing) existing.remove();
+      const a = DB.akquise.find(x => x.id === leadId); if (!a) return;
+      const attempts = a.callAttempts || 0;
+      const lastAt = a.lastCallAt ? new Date(a.lastCallAt).toLocaleString('de',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—';
+      const lastResult = a.lastCallResult || '—';
+      const dlg = document.createElement('div');
+      dlg.id = '__callDialog';
+      dlg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#161A23;border:1px solid #2A3140;border-radius:8px;padding:20px;z-index:99999;min-width:340px;box-shadow:0 12px 40px rgba(0,0,0,0.6);color:#E5E7EB;font-family:inherit';
+      const esc = (a.firma||'').replace(/'/g,"\\'").substring(0,40);
+      dlg.innerHTML =
+        '<div style="font-size:14px;font-weight:700;margin-bottom:4px">📞 '+esc+'</div>'
+       +'<div style="font-family:monospace;font-size:16px;color:#60A5FA;margin-bottom:6px">'+(a.telefon||'—')+'</div>'
+       +'<div style="font-size:11px;color:#9CA3AF;margin-bottom:14px">Bisher: '+attempts+' Versuche · zuletzt '+lastAt+' ('+lastResult+')</div>'
+       +'<div style="font-size:11px;color:#9CA3AF;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em">Ergebnis dieses Anrufs:</div>'
+       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'
+       +'<button onclick="document.getElementById(\'__callDialog\').remove();logCallAttempt(null,\''+leadId+'\',\'no_answer\')" style="padding:10px;background:#1F2937;border:1px solid #374151;color:#E5E7EB;font-size:12px;cursor:pointer;border-radius:5px;text-align:left">📵 Keine Antwort</button>'
+       +'<button onclick="document.getElementById(\'__callDialog\').remove();logCallAttempt(null,\''+leadId+'\',\'voicemail\')" style="padding:10px;background:#1F2937;border:1px solid #374151;color:#E5E7EB;font-size:12px;cursor:pointer;border-radius:5px;text-align:left">📭 Mailbox</button>'
+       +'<button onclick="document.getElementById(\'__callDialog\').remove();logCallAttempt(null,\''+leadId+'\',\'wrong_number\')" style="padding:10px;background:#1F2937;border:1px solid #374151;color:#E5E7EB;font-size:12px;cursor:pointer;border-radius:5px;text-align:left">❌ Falsche Nr.</button>'
+       +'<button onclick="document.getElementById(\'__callDialog\').remove();logCallAttempt(null,\''+leadId+'\',\'callback\')" style="padding:10px;background:#1F2937;border:1px solid #374151;color:#E5E7EB;font-size:12px;cursor:pointer;border-radius:5px;text-align:left">🔁 Bitte später</button>'
+       +'<button onclick="document.getElementById(\'__callDialog\').remove();logCallAttempt(null,\''+leadId+'\',\'spoke\')" style="padding:10px;background:#065F46;border:1px solid #10B981;color:#D1FAE5;font-size:12px;cursor:pointer;border-radius:5px;text-align:left;grid-column:span 2">✅ Gesprochen — Gespräch zustande gekommen</button>'
+       +'<button onclick="document.getElementById(\'__callDialog\').remove();logCallAttempt(null,\''+leadId+'\',\'not_interested\')" style="padding:10px;background:#7F1D1D;border:1px solid #DC2626;color:#FECACA;font-size:12px;cursor:pointer;border-radius:5px;text-align:left;grid-column:span 2">🚫 Kein Interesse → raus</button>'
+       +'</div>'
+       +'<button onclick="document.getElementById(\'__callDialog\').remove()" style="margin-top:8px;width:100%;padding:6px;background:none;border:1px solid #374151;color:#9CA3AF;font-size:11px;cursor:pointer;border-radius:4px">Abbrechen</button>';
+      document.body.appendChild(dlg);
+    };
+
+    // ── 3) PHONE DISPLAY + CALL TRACKER auf Karten ──
+    if (!window.__cardPatched) {
+      const orig = window.renderAkqCard;
+      window.renderAkqCard = function(a){
+        let html = orig(a);
+
+        // 3a) Phone block
+        const phone = (a.telefon||'').toString().trim();
+        if (phone && phone.length > 5 && !/^#ERROR/.test(phone)) {
+          const telClean = phone.replace(/[^\d+]/g, '');
+          const phoneBlock =
+            '<div style="margin-top:7px;padding:6px 8px;background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.3);border-radius:5px;display:flex;align-items:center;justify-content:space-between;gap:6px">'
+           +'<a href="tel:'+telClean+'" onclick="event.stopPropagation()" style="font-family:var(--fm,monospace);font-size:12px;font-weight:600;color:#60A5FA;text-decoration:none;flex:1">📞 '+phone+'</a>'
+           +'<button onclick="copyPhone(event,\''+phone.replace(/'/g,"\\'")+'\')" title="Kopieren für Sipgate" style="padding:3px 8px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.4);color:#93C5FD;font-size:10px;cursor:pointer;border-radius:4px">⎘ Kopieren</button>'
+           +'</div>';
+          html = html.replace(/(<div style="display:flex;gap:3px;margin-top:7px;padding-top:6px;border-top)/, phoneBlock + '$1');
+        }
+
+        // 3b) Email block
+        const email = (a.email||'').toString().trim();
+        if (email && email.indexOf('@') > 0 && !/^#ERROR/.test(email)) {
+          const emailBlock =
+            '<div style="margin-top:4px;padding:4px 8px;background:var(--overlay);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:space-between;gap:6px">'
+           +'<a href="mailto:'+email+'" onclick="event.stopPropagation()" style="font-family:var(--fm,monospace);font-size:10px;color:var(--text-2);text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">✉ '+email+'</a>'
+           +'<button onclick="copyPhone(event,\''+email.replace(/'/g,"\\'")+'\')" title="Kopieren" style="padding:2px 6px;background:none;border:1px solid var(--border);color:var(--muted);font-size:9px;cursor:pointer;border-radius:3px">⎘</button>'
+           +'</div>';
+          html = html.replace(/(<div style="display:flex;gap:3px;margin-top:7px;padding-top:6px;border-top)/, emailBlock + '$1');
+        }
+
+        // 3c) Call-attempt tracker
+        const attempts = a.callAttempts || 0;
+        if (attempts > 0) {
+          const lastAt = a.lastCallAt ? new Date(a.lastCallAt).toLocaleDateString('de',{day:'2-digit',month:'2-digit'}) : '';
+          const colors = {no_answer:'#9CA3AF', voicemail:'#FBBF24', wrong_number:'#EF4444', callback:'#60A5FA', spoke:'#10B981', not_interested:'#EF4444'};
+          const lblShort = {no_answer:'keine Antw.', voicemail:'Mailbox', wrong_number:'falsche Nr.', callback:'Rückruf', spoke:'Gespräch', not_interested:'kein Int.'};
+          const c = colors[a.lastCallResult] || '#9CA3AF';
+          const lbl = lblShort[a.lastCallResult] || a.lastCallResult || '';
+          const tracker =
+            '<div style="margin-top:5px;padding:4px 7px;background:rgba(96,165,250,0.05);border:1px solid rgba(96,165,250,0.2);border-radius:4px;font-size:10px;color:#9CA3AF;display:flex;justify-content:space-between">'
+           +'<span>📞 '+attempts+'× Versuche</span><span style="color:'+c+'">'+lbl+' · '+lastAt+'</span>'
+           +'</div>';
+          html = html.replace(/(<div style="display:flex;gap:3px;margin-top:7px;padding-top:6px;border-top)/, tracker + '$1');
+        }
+
+        // 3d) Replace existing 📞 quick-action onclick → opens dialog
+        html = html.replace(
+          /onclick="event\.stopPropagation\(\);akqQuick\('([^']+)','call'\)"/g,
+          'onclick="showCallDialog(event,\'$1\')"'
+        );
+
+        return html;
+      };
+      window.__cardPatched = true;
+    }
+
+    // ── 4) Trigger fresh akquise pull ──
+    const data = JSON.parse(localStorage.getItem('agerium_crm_v5')||'{}');
+    if (data.settings && data.settings.appsScriptUrl) {
+      window.pullAll(data.settings.appsScriptUrl).then(()=>{
+        if (typeof renderAkquise === 'function') renderAkquise();
+      });
+    }
+
+    console.log('%c✓ Agerium CRM v5.6-mini patches loaded', 'color:#10B981;font-weight:bold');
+  });
+})();
+</script>
+
 </body>
 </html>
